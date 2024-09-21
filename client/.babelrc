@@ -1,0 +1,13 @@
+{
+  "plugins": [
+    [
+      "module-resolver",
+      {
+        "alias": {
+          "~": "./src",
+          "@images": "./src/asset/images"
+        }
+      }
+    ]
+  ]
+}
