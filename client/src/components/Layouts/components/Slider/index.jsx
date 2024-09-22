@@ -1,10 +1,10 @@
 import React, { useEffect, useRef } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Autoplay, Pagination,EffectFade } from 'swiper/modules';
+import { Autoplay, Pagination, EffectFade, Navigation } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
-import styles from './Slider.module.scss'
+import styles from './Slider.module.scss';
 
 import slide1 from '../../../../assets/images/slider_1.jpg';
 import slide2 from '../../../../assets/images/slider_2.jpg';
@@ -38,23 +38,15 @@ const Slider = () => {
 
     return (
         <Swiper
-            ref={swiperRef}
+            modules={[Navigation, Pagination, Autoplay]}
+            speed={800}
             loop={true}
-            centeredSlides={true}
-            autoplay={{
-                delay: 3000,
-                disableOnInteraction: false,
-            }}
+            autoplay={true}
+            navigation
             pagination={{
                 clickable: true,
             }}
-            navigation={true}
-            speed={1000}
-            slidesPerView={1}
-            allowTouchMove={false}
-            simulateTouch={false}
-            modules={[Autoplay, Pagination,EffectFade]}
-            className={styles['swiper']}
+            className="mySwiper"
         >
             {slides.map((slide, index) => (
                 <SwiperSlide key={index} className={styles['swiper-slide']}>
@@ -64,9 +56,7 @@ const Slider = () => {
                     >
                         <div className={styles['overlay']}></div>
                     </div>
-                    <div className={`${styles['slide-title']} ${styles['animate']}`}>
-                        <h2>{slide.title}</h2>
-                    </div>
+
                 </SwiperSlide>
             ))}
         </Swiper>

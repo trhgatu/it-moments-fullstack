@@ -1,52 +1,25 @@
 import express from 'express';
-import http from 'http';
-import { ApolloServer } from '@apollo/server';
-import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
-import bodyParser from 'body-parser';
-import { expressMiddleware } from '@apollo/server/express4';
+import { connect as connectDatabase } from './config/database.js';
+import dotenv from 'dotenv';
+import bodyParser from "body-parser";
 import cors from 'cors';
-import fakeData from './fakeData/index.js';
+import setupRoutes from './api/v1/routes/index.route.js';
 
+dotenv.config();
 const app = express();
-const httpServer = http.createServer(app);
+const port = process.env.PORT || 3000;
 
-const typeDefs = `#graphql
-    type Folder {
-        id: String,
-        name: String,
-        createdAt: String,
-        author: Author
+app.use(cors());
 
-    }
 
-    type Author {
-        id: String,
-        name: String,
-    }
-    type Query {
-        folders: [Folder]
-    }
-`;
+connectDatabase();
 
-const resolvers = {
-    Query: {
-        folders: () => { return fakeData.folders }
-    },
-    Folder: {
-        author: (parent, args) => { console.log(parent, args);return {id: '123', name: 'Anh Tu'}}
-    }
-};
+app.use(bodyParser.json());
 
-const server = new ApolloServer({
-    typeDefs,
-    resolvers,
-    plugins: [ApolloServerPluginDrainHttpServer({ httpServer })]
+//Router api ver 1
+setupRoutes(app);
+
+// Khởi động server
+app.listen(port, () => {
+    console.log(`App đang lắng nghe trên cổng ${port}`);
 });
-
-await server.start();
-
-app.use(cors(), bodyParser.json(), expressMiddleware(server));
-
-await new Promise((resolve) => httpServer.listen(4000, resolve));
-
-console.log('Server đang chạy ở port 4000');
