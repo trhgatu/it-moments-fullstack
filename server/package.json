@@ -4,7 +4,11 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+<<<<<<< HEAD
     "start": "nodemon server.mjs"
+=======
+    "start": "nodemon --inspect server.mjs"
+>>>>>>> 1e3de5e48d3100adcdc168970fe28f5f8a21a898
   },
   "keywords": [],
   "author": "",
@@ -15,8 +19,14 @@
     "@apollo/server": "^4.11.0",
     "body-parser": "^1.20.3",
     "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
     "express": "^4.21.0",
+<<<<<<< HEAD
     "http": "^0.0.1-security"
+=======
+    "http": "^0.0.1-security",
+    "mongoose": "^8.6.3"
+>>>>>>> 1e3de5e48d3100adcdc168970fe28f5f8a21a898
   },
   "devDependencies": {
     "nodemon": "^3.1.7"

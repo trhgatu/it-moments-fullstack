@@ -1,8 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 @import 'normalize.css';
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Kranky&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Rowdies:wght@300;400;700&display=swap');
+
 :root{
+    --header-height: 60px;
+    --primary : #0066B3;
     --default-layout-header-height: 70px;
     --default-layout-width: 100%;
     --black: #000;
@@ -30,6 +37,5 @@ button, input, [tabindex]{
 }
 
 a[href]{
-    color: var(--text-color);
     text-decoration: none;
 }
