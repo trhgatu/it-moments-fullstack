@@ -29,7 +29,11 @@ export default createBrowserRouter([
                     {
                         element: <Event />,
                         path: '/event'
-                    }
+                    },
+                    {
+                        element: <About />,
+                        path: '/about'
+                    },
                 ]
             }
 
