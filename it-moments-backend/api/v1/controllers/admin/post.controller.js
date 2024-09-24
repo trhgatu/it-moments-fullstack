@@ -1,5 +1,6 @@
 import Post from '../../models/post.model.js';
 import pagination from '../../../../helpers/pagination.js';
+import search from '../../../../helpers/search.js';
 const controller = {
 
     /* [GET] api/v1/admin/posts */
@@ -9,6 +10,11 @@ const controller = {
         }
         if(req.query.status) {
             find.status = req.query.status;
+        }
+        const objectSearch = search(req.query);
+
+        if(req.query.keyword) {
+            find.title = objectSearch.regex;
         }
 
         // Pagination

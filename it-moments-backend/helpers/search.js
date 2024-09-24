@@ -1,4 +1,4 @@
-module.exports = (query) =>{
+const search = (query) =>{
     let objectSearch = {
         keyword: "",
     }
@@ -10,3 +10,4 @@ module.exports = (query) =>{
     }
     return objectSearch;
 }
+export default search;
