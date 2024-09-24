@@ -1,10 +1,10 @@
 import md5 from 'md5';
 import User from '../../models/user.model.js';
 import ForgotPassword from '../../models/forgot-password.model.js';
-import { generateRandomNumber } from '../../../../helpers/generate.js';
+import { generateRandomNumber, generateRandomString } from '../../../../helpers/generate.js';
 import { sendEmail } from '../../../../helpers/sendMail.js';
 const controller = {
-    /* [POST] api/v1/users/register */
+    /* [POST] api/v1/client/users/register */
     register: async (req, res) => {
         req.body.password = md5(req.body.password);
         const existEmail = await User.findOne({
@@ -22,15 +22,14 @@ const controller = {
             const user = new User({
                 fullName: req.body.fullName,
                 email: req.body.email,
-                password: req.body.password
+                password: req.body.password,
+                token: generateRandomString(30)
             });
             user.save();
 
             const token = user.token;
 
             res.cookie("token", token);
-
-            console.log(req.body);
             res.json(
                 {
                     code: 200,
@@ -99,7 +98,7 @@ const controller = {
         const objectForgotPassword = {
             email: email,
             otp: otp,
-            expireAt: Date.now() + timeExpire * 60,
+            expireAt: Date.now() + timeExpire * 60 * 1000,
         }
         const forgotPassword = new ForgotPassword(objectForgotPassword);
         await forgotPassword.save();

@@ -84,10 +84,6 @@ const controller = {
     changeMulti: async (req, res) => {
         try {
             const { ids, key, value } = req.body;
-            console.log(ids)
-            console.log(key)
-            console.log(value)
-
             switch(key) {
                 case "status":
                     await Post.updateMany({
@@ -98,6 +94,18 @@ const controller = {
                     res.json({
                         code: 200,
                         message: "Cập nhật trạng thái thành công"
+                    });
+                    break;
+                case "delete":
+                    await Post.updateMany({
+                        _id: { $in: ids }
+                    }, {
+                        deleted: true,
+                        deletedAt: new Date()
+                    });
+                    res.json({
+                        code: 200,
+                        message: "Xóa thành công"
                     });
                     break;
                 default:
@@ -150,6 +158,26 @@ const controller = {
             res.json({
                 code: 400,
                 message: "Lỗi",
+            })
+        }
+    },
+    delete: async (req, res) => {
+        try {
+            const id = req.params.id;
+            await Post.updateOne({
+                _id: id,
+            }, {
+                deleted: true,
+                deletedAt: new Date()
+            });
+            res.json({
+                code: 200,
+                message: "Xóa thành công"
+            })
+        } catch(error) {
+            res.json({
+                code: 400,
+                message: "Lỗi"
             })
         }
     },
