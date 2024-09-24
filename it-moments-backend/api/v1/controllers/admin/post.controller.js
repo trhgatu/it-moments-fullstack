@@ -115,7 +115,7 @@ const controller = {
         }
 
     },
-    createPost : async (req, res) => {
+    createPost: async (req, res) => {
         try {
             const post = new Post(req.body);
             const data = await post.save();
@@ -125,7 +125,28 @@ const controller = {
                 message: "Tạo thành công",
                 data: data
             })
-        } catch (error) {
+        } catch(error) {
+            res.json({
+                code: 400,
+                message: "Lỗi",
+            })
+        }
+    },
+    editPatch: async (req, res) => {
+        try {
+            const id = req.params.id;
+            await Post.updateOne({
+                _id: id,
+
+            },
+                req.body
+            );
+
+            res.json({
+                code: 200,
+                message: "Cập nhật thành công",
+            })
+        } catch(error) {
             res.json({
                 code: 400,
                 message: "Lỗi",

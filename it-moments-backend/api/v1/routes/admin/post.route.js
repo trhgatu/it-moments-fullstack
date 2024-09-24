@@ -12,4 +12,6 @@ router.patch('/change-status/:id', controller.changeStatus);
 router.patch('/change-status-multi', controller.changeMulti);
 
 router.post('/create', controller.createPost);
+
+router.patch('/edit/:id', controller.editPatch);
 export default router;
