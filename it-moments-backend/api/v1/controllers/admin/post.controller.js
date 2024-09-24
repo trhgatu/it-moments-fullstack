@@ -56,7 +56,7 @@ const controller = {
         console.log(post);
         res.json(post);
     },
-    /* [PATCH] api/v1/admin/posts/detail/:id */
+    /* [PATCH] api/v1/admin/posts/change-status/:id */
     changeStatus: async (req, res) => {
         try {
             const id = req.params.id;
@@ -73,6 +73,40 @@ const controller = {
                 code: 200,
                 message: "Cập nhật trạng thái thành công"
             });
+        } catch(error) {
+            res.json({
+                code: 404,
+                message: "Cập nhật trạng thái thất bại"
+            });
+        }
+
+    },
+    changeMulti: async (req, res) => {
+        try {
+            const { ids, key, value } = req.body;
+            console.log(ids)
+            console.log(key)
+            console.log(value)
+
+            switch(key) {
+                case "status":
+                    await Post.updateMany({
+                        _id: { $in: ids }
+                    }, {
+                        status: value
+                    });
+                    res.json({
+                        code: 200,
+                        message: "Cập nhật trạng thái thành công"
+                    });
+                    break;
+                default:
+                    res.json({
+                        code: 404,
+                        message: "Không tồn tại"
+                    });
+                    break;
+            }
         } catch(error) {
             res.json({
                 code: 404,
