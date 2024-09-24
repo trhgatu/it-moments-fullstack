@@ -114,7 +114,24 @@ const controller = {
             });
         }
 
-    }
+    },
+    createPost : async (req, res) => {
+        try {
+            const post = new Post(req.body);
+            const data = await post.save();
+
+            res.json({
+                code: 200,
+                message: "Tạo thành công",
+                data: data
+            })
+        } catch (error) {
+            res.json({
+                code: 400,
+                message: "Lỗi",
+            })
+        }
+    },
 
 }
 export default controller;
