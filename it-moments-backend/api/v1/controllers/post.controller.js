@@ -4,10 +4,20 @@ const controller = {
 
     /* [GET] api/v1/posts */
     index: async (req, res) => {
-        const posts = await Post.find({
+        const find = {
             deleted: false
-        })
-        console.log(posts);
+        }
+        if(req.query.status){
+            find.status = req.query.status;
+        }
+        //Sort
+        const sort = {}
+
+        if(req.query.sortKey && req.query.sortValue){
+            sort[req.query.sortKey] = req.query.sortValue;
+        }
+        //End Sort
+        const posts = await Post.find(find);
         res.json(posts);
     },
 
