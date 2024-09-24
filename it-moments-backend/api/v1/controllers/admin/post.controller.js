@@ -46,7 +46,7 @@ const controller = {
         res.json(posts);
     },
 
-    /* [GET] api/v1/posts/detail/:id */
+    /* [GET] api/v1/admin/posts/detail/:id */
     detail: async (req, res) => {
         const id = req.params.id;
         const post = await Post.findOne({
@@ -55,6 +55,32 @@ const controller = {
         })
         console.log(post);
         res.json(post);
+    },
+    /* [PATCH] api/v1/admin/posts/detail/:id */
+    changeStatus: async (req, res) => {
+        try {
+            const id = req.params.id;
+
+            const status = req.body.status;
+
+            await Post.updateOne({
+                _id: id
+            }, {
+                status: status
+            });
+
+            res.json({
+                code: 200,
+                message: "Cập nhật trạng thái thành công"
+            });
+        } catch(error) {
+            res.json({
+                code: 404,
+                message: "Cập nhật trạng thái thất bại"
+            });
+        }
+
     }
+
 }
 export default controller;
