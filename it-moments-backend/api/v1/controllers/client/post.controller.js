@@ -1,4 +1,4 @@
-import Post from '../models/post.model.js';
+import Post from '../../models/post.model.js';
 
 const controller = {
 

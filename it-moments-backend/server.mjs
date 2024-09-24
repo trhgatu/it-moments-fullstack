@@ -3,7 +3,8 @@ import { connect as connectDatabase } from './config/database.js';
 import dotenv from 'dotenv';
 import bodyParser from "body-parser";
 import cors from 'cors';
-import setupRoutes from './api/v1/routes/index.route.js';
+import adminRoutes from './api/v1/routes/admin/index.route.js';
+import clientRouter from './api/v1/routes/client/index.route.js';
 import cookieParser from 'cookie-parser';
 dotenv.config();
 const app = express();
@@ -18,7 +19,8 @@ app.use(bodyParser.json());
 app.use(express.json());
 app.use(cookieParser());
 //Router api ver 1
-setupRoutes(app);
+adminRoutes(app);
+clientRouter(app);
 
 // Khởi động server
 app.listen(port, () => {

@@ -1,8 +1,8 @@
 import md5 from 'md5';
-import User from '../models/user.model.js';
-import ForgotPassword from '../models/forgot-password.model.js';
-import { generateRandomNumber } from '../../../helpers/generate.js';
-import { sendEmail } from '../../../helpers/sendMail.js';
+import User from '../../models/user.model.js';
+import ForgotPassword from '../../models/forgot-password.model.js';
+import { generateRandomNumber } from '../../../../helpers/generate.js';
+import { sendEmail } from '../../../../helpers/sendMail.js';
 const controller = {
     /* [POST] api/v1/users/register */
     register: async (req, res) => {
