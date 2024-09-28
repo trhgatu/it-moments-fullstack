@@ -1,0 +1,228 @@
+/* Reset and global styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    font-family: 'Roboto Slab', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #ffffff;
+}
+
+/* Hiệu ứng di chuyển nền */
+.loginContainer {
+    width: 100vw;
+    height: 100vh;
+    background-image: url('../../../assets/images/slider_1.jpg');
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.spinner {
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top: 4px solid white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    animation: spin 1s linear infinite;
+    display: inline-block;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.toggleEye {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.icon:hover .toggleEye {
+    opacity: 0.7;
+    transform: rotate(15deg);
+}
+
+@keyframes moveBackground {
+    0% { background-position: 0% 0%; }
+    100% { background-position: 100% 100%; }
+}
+
+/* Hiệu ứng form đăng nhập */
+.loginForm {
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 30px 40px;
+    border-radius: 10px;
+    box-shadow: 0px 15px 30px rgba(0, 0, 0, 0.1);
+    width: 600px;
+    height: auto;
+    transition: box-shadow 0.3s ease;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.5s ease forwards;
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Hiệu ứng hover form */
+.loginForm:hover {
+    background-color: rgba(255, 255, 255, 0.9);
+    box-shadow: 0px 20px 50px rgba(0, 0, 0, 0.3);
+}
+
+.loginForm h3 {
+    font-size: 24px;
+    font-weight: 500;
+    text-align: center;
+    margin-bottom: 15px;
+    color: #000000;
+}
+
+.loginForm p {
+    font-size: 14px;
+    color: #555;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+/* Input fields với hiệu ứng hover và focus */
+.inputIcon {
+    position: relative;
+    margin-bottom: 15px;
+}
+
+.inputIcon input {
+    width: 100%;
+    height: 50px;
+    padding: 12px 20px;
+    padding-left: 50px;
+    border-radius: 25px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    color: #333;
+    background-color: #f0f0f0;
+    transition: border 0.3s ease, box-shadow 0.3s ease;
+}
+
+.inputIcon input:hover {
+    border: 2px solid #2196f3;
+    box-shadow: 0px 0px 8px rgba(33, 150, 243, 0.6);
+}
+
+.inputIcon input:focus {
+    border: 2px solid #0d47a1;
+    box-shadow: 0px 0px 12px rgba(13, 71, 161, 0.6);
+    animation: shake 0.2s ease;
+}
+
+@keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-2px); }
+    50% { transform: translateX(2px); }
+    75% { transform: translateX(-2px); }
+    100% { transform: translateX(0); }
+}
+
+/* Hiệu ứng icon khi hover và focus */
+.inputIcon .icon {
+    position: absolute;
+    top: 50%;
+    left: 15px;
+    transform: translateY(-50%);
+    font-size: 16px;
+    color: #2196f3;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.inputIcon input:hover + .icon {
+    color: #0d47a1;
+    transform: translateY(-50%) rotate(10deg);
+}
+
+.inputIcon input:focus + .icon {
+    color: #0d47a1;
+    transform: translateY(-50%) rotate(-10deg);
+}
+
+.rememberForgot {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.rememberForgot a {
+    color: #007bff;
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.3s ease;
+}
+
+.rememberForgot a:hover {
+    color: #0056b3;
+    text-decoration: underline;
+    transform: translateX(-5px);
+    transition: transform 0.2s ease;
+}
+
+/* Button đăng nhập với hiệu ứng gradient động */
+form button {
+    width: 100%;
+    height: 50px;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    margin-top: 10px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+form button:hover {
+    background: linear-gradient(90deg, #007bff, #0056b3, #2196f3, #0d47a1);
+    background-size: 200% 200%;
+    animation: gradientAnimation 4s ease infinite;
+    transform: translateY(-5px);
+}
+
+@keyframes gradientAnimation {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+form button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+.signup {
+    text-align: center;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+.signup a {
+    color: #007bff;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.signup a:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
