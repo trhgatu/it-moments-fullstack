@@ -1,16 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import Slider from './components/Slider';
-import { Link } from "react-router-dom";
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Autoplay } from 'swiper/modules';
 import 'swiper/css';
 import './Home.module.scss';
-import SwiperPagination from './components/SwiperPagination';
 import slide1 from '../../assets/images/slider_1.jpg';
 import slide2 from '../../assets/images/slider_2.jpg';
 import slide3 from '../../assets/images/slider_3.jpg';
-
+import PopularPerformances from './components/PopularPerformances';
+import PostSection from './components/PostSection';
+import NewPost from './components/NewPost';
 export default function Home() {
+
+
     const slides = [
         { src: slide1, alt: "Image 1", title: "Lưu giữ những khoảnh khắc" },
         { src: slide2, alt: "Image 2", title: "Những sự kiện mới" },
@@ -18,7 +18,7 @@ export default function Home() {
     ];
 
     // Dữ liệu cho tiết mục văn nghệ nhiều lượt xem
-    const popularPerformances = [
+    const performances = [
         { title: "Tiết mục 1", views: 250 },
         { title: "Tiết mục 2", views: 300 },
         { title: "Tiết mục 3", views: 150 },
@@ -69,106 +69,15 @@ export default function Home() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                    {/* Phần chính bên trái */}
-                    <div className="relative overflow-hidden block md:col-span-2">
-                        <div
-                            className="relative overflow-hidden min-h-full"
-                            style={{
-                                backgroundImage: `url(${slide1})`,
-                                backgroundSize: 'cover',
-                                backgroundPosition: 'center',
-                            }}
-                        >
-                            <div className="absolute inset-0 bg-black opacity-35"></div>
-                            <span className="absolute bg-blue-500 text-white text-xl font-semibold px-6 py-1 left-5 top-5">Mới</span>
+                    <NewPost/>
 
-                            <div className="absolute z-10 w-full bottom-0 px-11 h-72">
-                                {/* Danh mục */}
-                                <div className="mb-4 flex">
-                                    <Link className="text-white text-2xl uppercase hover:text-blue-600">Văn nghệ</Link>
-                                    <p className="text-white text-2xl ml-2 mr-2">/</p>
-                                    <p className="text-white text-2xl">28/9/24</p>
-                                </div>
 
-                                {/* Tiêu đề */}
-                                <div className="mb-4">
-                                    <p className="text-4xl font-semibold text-white mt-2">
-                                        <Link to="/path-to-your-performances" className="hover:text-blue-500 transition-colors duration-300">
-                                            GALA Chào đón tân sinh viên K15: Tiết mục "Chúng ta của hiện tại"
-                                        </Link>
-                                    </p>
-                                </div>
-
-                                {/* Mô tả */}
-                                <div className="w-3/6 mt-4 mb-4">
-                                    <p className="text-2xl text-white font-normal">
-                                        Tiết mục đạt giải nhất trong sự kiện GALA Chào đón tân sinh viên k15...
-                                    </p>
-                                </div>
-
-                                {/* Thông tin người đăng và lượt xem */}
-                                <div className="w-full pt-9">
-                                    <div className="flex justify-between text-white w-full font-normal">
-                                        <span>Admin</span>
-                                        <span>Views: 100</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Phần bài viết bên phải */}
-                    <div className="w-full">
-                        {/* Thanh lựa chọn */}
-                        <div className="flex space-x-4 border-b-2 pb-2 mb-4">
-                            {Object.keys(postData).map((tab, index) => (
-                                <button
-                                    key={index}
-                                    className={`text-lg font-semibold ${activeTab === tab ? 'text-blue-500 border-blue-500 border-b-2' : 'text-gray-500'}`}
-                                    onClick={() => setActiveTab(tab)}
-                                >
-                                    {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                                </button>
-                            ))}
-                        </div>
-
-                        {/* Nội dung dựa trên tab được chọn */}
-                        <div className="flex flex-col gap-4">
-                            {renderContent()}
-                        </div>
-                    </div>
+                    <PostSection postData={postData} activeTab={activeTab} setActiveTab={setActiveTab} />
+                </div>
+                <div className="h-full">
+                    <PopularPerformances performances={performances} />
                 </div>
 
-                {/* Phần "Tiết mục nhiều lượt xem" */}
-                <div className="flex justify-between">
-                    <p className="text-4xl my-4">Tiết mục nhiều lượt xem</p>
-                    <SwiperPagination />
-                </div>
-
-                {/* Swiper section */}
-                <div className="w-full">
-                    <Swiper
-                        slidesPerView={4}
-                        spaceBetween={30}
-                        navigation={{
-                            nextEl: '.swiper-button-next',
-                            prevEl: '.swiper-button-prev',
-                        }}
-                        autoplay={true}
-                        loop={true}
-                        modules={[Navigation, Autoplay]}
-                        className="mySwiper"
-                    >
-                        {popularPerformances.map((performance, index) => (
-                            <SwiperSlide key={index}>
-                                <div className="border p-4 text-center">
-                                    <h3 className="font-semibold">{performance.title}</h3>
-                                    <p className="text-gray-600">Lượt xem: {performance.views}</p>
-                                </div>
-                            </SwiperSlide>
-                        ))}
-                    </Swiper>
-                </div>
             </div>
         </>
     );
