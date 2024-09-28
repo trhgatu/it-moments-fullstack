@@ -41,8 +41,6 @@ const controller = {
         const posts = await Post.find(find).sort(sort)
             .limit(objectPagination.limitItems)
             .skip(objectPagination.skip);
-
-
         res.json(posts);
     },
 

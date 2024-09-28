@@ -15,7 +15,7 @@ function DefaultLayout({ children }) {
                     <Outlet />
                 </div>
             </div>
-            {/* <Footer /> */}
+            {/* <Footer/> */}
         </div>
     );
 }
