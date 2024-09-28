@@ -29,11 +29,11 @@ export default function Home() {
 
     // Dữ liệu bài viết dựa trên từng tab
     const postData = {
-        'nhiều comment': [
-            { title: "Bài viết có nhiều comment 1", description: "Mô tả ngắn cho bài viết này." },
-            { title: "Bài viết có nhiều comment 2", description: "Mô tả ngắn cho bài viết này." },
-            { title: "Bài viết có nhiều comment 3", description: "Mô tả ngắn cho bài viết này." },
-            { title: "Bài viết có nhiều comment 4", description: "Mô tả ngắn cho bài viết này." }
+        'Mới': [
+            { title: "Bài viết Mới 1", description: "Mô tả ngắn cho bài viết này." },
+            { title: "Bài viết Mới 2", description: "Mô tả ngắn cho bài viết này." },
+            { title: "Bài viết Mới 3", description: "Mô tả ngắn cho bài viết này." },
+            { title: "Bài viết Mới 4", description: "Mô tả ngắn cho bài viết này." }
         ],
         'liên quan': [
             { title: "Bài viết liên quan 1", description: "Mô tả ngắn cho bài viết liên quan này." },
@@ -41,24 +41,15 @@ export default function Home() {
             { title: "Bài viết liên quan 3", description: "Mô tả ngắn cho bài viết liên quan này." },
             { title: "Bài viết liên quan 4", description: "Mô tả ngắn cho bài viết liên quan này." }
         ],
-        'mới': [
-            { title: "Bài viết mới 1", description: "Mô tả ngắn cho bài viết mới này." },
-            { title: "Bài viết mới 2", description: "Mô tả ngắn cho bài viết mới này." },
-            { title: "Bài viết mới 3", description: "Mô tả ngắn cho bài viết mới này." },
-            { title: "Bài viết mới 4", description: "Mô tả ngắn cho bài viết mới này." }
+        'Nhiều like': [
+            { title: "Bài viết nhiều like 1", description: "Mô tả ngắn cho bài viết nhiều like này." },
+            { title: "Bài viết nhiều like 2", description: "Mô tả ngắn cho bài viết nhiều like này." },
+            { title: "Bài viết nhiều like 3", description: "Mô tả ngắn cho bài viết nhiều like này." },
+            { title: "Bài viết nhiều like 4", description: "Mô tả ngắn cho bài viết nhiều like này." }
         ]
     };
 
-    const [activeTab, setActiveTab] = useState('nhiều comment');
-
-    const renderContent = () => {
-        return postData[activeTab].map((post, index) => (
-            <div className="border p-4" key={index}>
-                <h4 className="font-semibold">{post.title}</h4>
-                <p className="text-gray-600">{post.description}</p>
-            </div>
-        ));
-    };
+    const [activeTab, setActiveTab] = useState('Mới');
 
     return (
         <>
@@ -68,11 +59,11 @@ export default function Home() {
                     <p className="text-4xl">VĂN NGHỆ</p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                    <NewPost/>
-
-
-                    <PostSection postData={postData} activeTab={activeTab} setActiveTab={setActiveTab} />
+                <div className="main-content">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                        <NewPost />
+                        <PostSection postData={postData} activeTab={activeTab} setActiveTab={setActiveTab} />
+                    </div>
                 </div>
                 <div className="h-full">
                     <PopularPerformances performances={performances} />
