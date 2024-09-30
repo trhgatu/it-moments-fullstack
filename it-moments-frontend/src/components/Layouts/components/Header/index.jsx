@@ -33,7 +33,7 @@ export const Header = () => {
     return (
         <header
             className={cx(
-                'flex items-center justify-between px-5 py-3 fixed top-0 left-0 right-0 z-50 transition-all duration-300',
+                'flex items-center justify-between px-9 py-3 fixed top-0 left-0 right-0 z-50 transition-all duration-300',
                 {
                     'bg-white shadow-md': isScrolled || location.pathname !== '/',
                     'bg-transparent': !isScrolled && location.pathname === '/'

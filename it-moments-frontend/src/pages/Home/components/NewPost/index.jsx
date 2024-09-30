@@ -3,9 +3,9 @@ import { Link } from "react-router-dom";
 
 export default function NewPost() {
     return (
-        <div className="relative overflow-hidden block md:col-span-2">
+        <div className="relative overflow-hidden block md:col-span-2 h-full">
             <div
-                className="relative overflow-hidden min-h-full"
+                className="relative overflow-hidden min-h-full h-full"
                 style={{
                     backgroundImage: `url(${slide1})`,
                     backgroundSize: 'cover',
@@ -15,10 +15,10 @@ export default function NewPost() {
                 <div className="absolute inset-0 bg-black opacity-50"></div>
                 <span className="absolute bg-blue-500 text-white text-lg md:text-xl font-semibold px-6 py-1 left-5 top-5">Mới</span>
 
-                <div className="absolute z-10 w-full bottom-0 px-4 md:px-11 h-72">
+                <div className="absolute z-10 w-full bottom-0 px-4 md:px-11 pb-6">
                     {/* Danh mục */}
                     <div className="mb-4 flex flex-wrap">
-                        <Link className="text-white text-lg md:text-2xl uppercase hover:text-blue-600">Văn nghệ</Link>
+                        <Link className="text-white text-lg md:text-2xl uppercase hover:text-blue-600 duration-300">Văn nghệ</Link>
                         <p className="text-white text-lg md:text-2xl ml-2 mr-2">/</p>
                         <p className="text-white text-lg md:text-2xl">28/9/24</p>
                     </div>
@@ -40,7 +40,7 @@ export default function NewPost() {
                     </div>
 
                     {/* Thông tin người đăng và lượt xem */}
-                    <div className="w-full pt-9">
+                    <div className="w-full mt-auto">
                         <div className="flex justify-between text-white w-full font-normal">
                             <span>Admin</span>
                             <span>Views: 100</span>
@@ -49,5 +49,6 @@ export default function NewPost() {
                 </div>
             </div>
         </div>
+
     );
 }

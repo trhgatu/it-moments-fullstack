@@ -53,6 +53,7 @@ export default function EventSection() {
                     <SwiperComponent ref={swiperRef} items={ongoingEvents} slidesPerView={2} autoPlay={false} />
                 </div>
 
+
                 <div className="md:col-span-1">
                     <PostSection postData={postData} activeTab={activeTab} setActiveTab={setActiveTab} />
                 </div>

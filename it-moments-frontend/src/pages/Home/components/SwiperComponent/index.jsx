@@ -20,20 +20,19 @@ const SwiperComponent = forwardRef(({ items = [], slidesPerView, autoPlay }, ref
             >
                 {items.map((item, index) => (
                     <SwiperSlide key={index}>
-                        <div className="relative p-4 text-white bg-cover bg-center overflow-hidden h-96"
+                        <div className="relative text-white bg-cover bg-center overflow-hidden h-96"
                             style={{
                                 backgroundImage: `url(${slide1})`,
                             }}
                         >
                             <div className="absolute inset-0 bg-black opacity-50"></div>
-                            <div className="relative z-10 p-4">
-                                <div className="mb-4 flex">
-                                    <Link className="text-white text-2xl uppercase hover:text-blue-600">Văn nghệ</Link>
-                                    <p className="text-white text-2xl ml-2 mr-2">/</p>
-                                    <p className="text-white text-2xl">{item.date || '28/9/24'}</p>
+                            <div className="absolute z-10 w-full bottom-0 px-9">
+                                <div className="flex flex-wrap">
+                                    <Link className="text-white text-xl uppercase hover:text-blue-600 duration-300">Văn nghệ</Link>
+                                    <p className="text-white text-2xl ml-3 mr-3 font-light">/</p>
+                                    <p className="text-white text-xl font-light">{item.date || '28/9/24'}</p>
                                 </div>
-                                <h3 className="font-semibold text-xl mb-2">{item.title}</h3>
-                                <p className="text-sm line-clamp-2">{item.description}</p>
+                                <h3 className="font-normal text-3xl mb-2 text-white">{item.title}</h3>
                             </div>
                         </div>
                     </SwiperSlide>

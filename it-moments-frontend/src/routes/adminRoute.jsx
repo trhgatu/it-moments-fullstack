@@ -1,7 +1,7 @@
 import "../admin/assets/styles/main.css";
 import "../admin/assets/styles/responsive.css";
 import Dashboard from '../admin/pages/Dashboard';
-import Tables from '../admin/pages/Tables';
+import Posts from '../admin/pages/Posts';
 import Profile from '../admin/pages/Profile';
 import SignUp from '../admin/pages/Auth/SignUp';
 import SignIn from '../admin/pages/Auth/SignIn';
@@ -17,8 +17,8 @@ export const adminRoute = [
                 element: <Dashboard />
             },
             {
-                path: "tables",
-                element: <Tables />
+                path: "posts",
+                element: <Posts />
             },
             {
                 path: "profile",

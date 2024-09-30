@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 
-
 const userSchema = new mongoose.Schema({
     fullName: String,
     email: String,
@@ -8,6 +7,12 @@ const userSchema = new mongoose.Schema({
     token: String,
     phone: String,
     avatar: String,
+    deleted: {
+        type: Boolean,
+        default: false
+    },
+    role_id: String,
+    status: String,
     deleted: {
         type: Boolean,
         default: false

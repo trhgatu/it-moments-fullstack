@@ -18,8 +18,8 @@ export default function Home() {
     ];
 
     const performances = [
-        { title: "Tiết mục 1", views: 250 },
-        { title: "Tiết mục 2", views: 300 },
+        { title: "Chúng ta của hiện tại", views: 250 },
+        { title: "Đừng làm trái tim anh đau", views: 300 },
         { title: "Tiết mục 3", views: 150 },
         { title: "Tiết mục 4", views: 400 },
         { title: "Tiết mục 5", views: 500 },

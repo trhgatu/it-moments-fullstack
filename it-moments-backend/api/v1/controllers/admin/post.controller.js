@@ -1,10 +1,13 @@
 import Post from '../../models/post.model.js';
 import pagination from '../../../../helpers/pagination.js';
 import search from '../../../../helpers/search.js';
+import filterStatus from '../../../../helpers/filterStatus.js';
+import User from '../../models/user.model.js';
 const controller = {
 
     /* [GET] api/v1/admin/posts */
     index: async (req, res) => {
+        const filterStatusList = filterStatus(req.query);
         const find = {
             deleted: false
         }
@@ -18,30 +21,58 @@ const controller = {
         }
 
         // Pagination
-        let initPaginagtion = {
+        const initPagination = {
             currentPage: 1,
-            limitItem: 2,
+            limitItems: 6,
         };
         const countPosts = await Post.countDocuments(find);
         const objectPagination = pagination(
-            initPaginagtion,
+            initPagination,
             req.query,
             countPosts
         );
-        //end Pagination
-
-        //Sort
         const sort = {}
 
         if(req.query.sortKey && req.query.sortValue) {
             sort[req.query.sortKey] = req.query.sortValue;
+        } else {
+            sort.position = "desc";
         }
+
         //End Sort
 
-        const posts = await Post.find(find).sort(sort)
+        const posts = await Post.find(find)
+            .sort(sort)
             .limit(objectPagination.limitItems)
-            .skip(objectPagination.skip);
-        res.json(posts);
+            .skip(objectPagination.skip)
+            .lean();
+
+        for(const post of posts) {
+            const user = await User.findOne({_id: post.createdBy.account_id});
+
+            if(user) {
+                post.accountFullName = user.fullName;
+            }
+            const updatedBy = post.updatedBy.slice(-1)[0];
+            if(updatedBy) {
+                const userUpdated = await User.findOne(
+                    {
+                        _id: updatedBy.account_id
+                    }
+                );
+                updatedBy.accountFullName = userUpdated.fullName;
+            }
+            console.log(post);
+        }
+        res.json({
+            success: true,
+            data: {
+                posts: posts,
+                filterStatus: filterStatusList,
+                keyword: objectSearch.keyword,
+                pagination: objectPagination,
+            },
+        });
     },
 
     /* [GET] api/v1/admin/posts/detail/:id */
