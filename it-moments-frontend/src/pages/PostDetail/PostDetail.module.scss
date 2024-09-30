@@ -1,0 +1,291 @@
+.postDetail {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: white;
+  height: 100vh;
+  overflow-y: scroll;
+}
+
+.headerImage img {
+  width: 100%;
+  height: auto;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hoverEffect:hover {
+  transform: scale(1.05);
+  box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* Lightbox effect */
+.lightbox {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.lightboxImage {
+  max-width: 90%;
+  max-height: 90%;
+  border-radius: 10px;
+}
+
+.closeButton {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  font-size: 30px;
+  color: white;
+  cursor: pointer;
+}
+
+.content {
+  margin-top: 20px;
+  line-height: 1.6;
+  color: #333;
+  padding-right: 20px;
+}
+
+.articleHeader {
+  margin-bottom: 20px;
+}
+
+.title {
+  font-size: 36px;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+.metaInfo {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: #777;
+  margin-bottom: 10px;
+}
+
+.author {
+  font-style: italic;
+}
+
+.date {
+  color: #555;
+}
+
+.category {
+  background-color: #007bff;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 3px;
+  font-size: 12px;
+  margin-top: 10px;
+}
+
+/* Hình ảnh nhỏ hơn */
+.secondaryImage img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Phần cảm xúc */
+.reactionContainer {
+  display: flex;
+  align-items: center;
+  margin-top: 20px;
+  position: relative;
+}
+
+.heartIcon,
+.commentIcon {
+  font-size: 32px;
+  margin-right: 20px;
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.2s;
+}
+
+.heartIcon:hover,
+.commentIcon:hover {
+  transform: scale(1.2);
+}
+
+.reactionMenu {
+  display: flex;
+  position: absolute;
+  top: -60px;
+  left: 0;
+  background-color: white;
+  border-radius: 20px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  z-index: 10;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.fadeIn {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reactionButton {
+  background: none;
+  border: none;
+  font-size: 24px;
+  margin: 0 5px;
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.reactionButton.animate {
+  animation: bounce 0.3s ease;
+}
+
+@keyframes bounce {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.3);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Phần bình luận */
+.commentsSection {
+  margin-top: 40px;
+}
+
+.comment,
+.reply {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  padding: 15px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.comment:hover,
+.reply:hover {
+  background-color: #f9f9f9;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.avatar {
+  border-radius: 50%;
+  margin-right: 15px;
+  width: 50px;
+  height: 50px;
+}
+
+.commentContent {
+  flex-grow: 1;
+}
+
+.commentContent p {
+  margin: 0;
+  margin-bottom: 5px;
+}
+
+.replies {
+  margin-left: 40px;
+}
+
+.replyContent {
+  flex-grow: 1;
+}
+
+.commentActions {
+  display: flex;
+  gap: 10px;
+}
+
+.commentActions button {
+  background: none;
+  border: none;
+  color: #777;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 5px;
+}
+
+.commentActions button:hover {
+  color: #000;
+}
+
+.liked {
+  color: red;
+  font-weight: bold;
+}
+
+.toggleRepliesButton {
+  background: none;
+  border: none;
+  color: #007bff;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.toggleRepliesButton:hover {
+  text-decoration: underline;
+}
+
+/* Bài viết liên quan */
+.relatedPosts {
+  margin-top: 40px;
+}
+
+.relatedPostsGrid {
+  display: flex;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.relatedPost {
+  flex: 1;
+  max-width: 200px;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.relatedPost:hover {
+  transform: scale(1.05);
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.relatedPostImage {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.relatedPostTitle {
+  margin-top: 10px;
+  font-size: 14px;
+  font-weight: bold;
+  color: #333;
+}
+
+.relatedPostDescription {
+  font-size: 12px;
+  color: #555;
+  margin-top: 5px;
+}
