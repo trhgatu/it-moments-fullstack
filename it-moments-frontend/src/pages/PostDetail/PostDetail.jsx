@@ -1,5 +1,4 @@
 import React, { useState, useRef } from 'react';
-import styles from './PostDetail.module.scss';
 import slider1 from '../../assets/images/slider_1.jpg';
 import slider2 from '../../assets/images/slider_2.jpg';
 import Gravatar from 'react-gravatar';
@@ -118,88 +117,89 @@ const PostDetail = () => {
   ];
 
   return (
-    <div className={styles.postDetail}>
-      <div className={styles.headerImage} onClick={openLightbox}>
-        <img src={slider1} alt="Post Title" className={styles.hoverEffect} />
+    <div className="max-w-screen-lg mx-auto p-6 bg-white h-screen overflow-y-scroll">
+      {/* Hình ảnh đầu bài viết */}
+      <div className="cursor-pointer" onClick={openLightbox}>
+        <img src={slider1} alt="Post Title" className="w-full h-96 object-cover hover:scale-105 transition-transform duration-300 shadow-lg" />
       </div>
 
+      {/* Lightbox mở rộng hình ảnh */}
       {lightboxOpen && (
-        <div className={styles.lightbox} onClick={closeLightbox}>
-          <img src={slider1} alt="Post Title" className={styles.lightboxImage} />
-          <span className={styles.closeButton} onClick={closeLightbox}>
-            &times;
-          </span>
+        <div className="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center z-50" onClick={closeLightbox}>
+          <img src={slider1} alt="Post Title" className="max-w-4xl max-h-[90%] rounded-lg" />
+          <span className="absolute top-5 right-5 text-white text-4xl cursor-pointer" onClick={closeLightbox}>&times;</span>
         </div>
       )}
 
-      <div className={styles.content}>
-        <div className={styles.articleHeader}>
-          <h1 className={styles.title}>Cách tối ưu hóa hiệu suất website của bạn</h1>
-          <div className={styles.metaInfo}>
-            <span className={styles.author}>Bởi John Doe</span>
-            <span className={styles.date}>September 28, 2024</span>
+      {/* Nội dung bài viết */}
+      <div className="mt-6 leading-relaxed text-gray-900">
+        <div className="mb-8">
+          <h1 className="text-5xl font-bold mb-4 text-black">Cách tối ưu hóa hiệu suất website của bạn</h1>
+          <div className="flex justify-between text-lg text-gray-700 mb-3">
+            <span className="italic">Bởi John Doe</span>
+            <span className="text-gray-600">September 28, 2024</span>
           </div>
-          <span className={styles.category}>Web Development</span>
+          <span className="bg-blue-600 text-white text-sm px-4 py-2 rounded">Web Development</span>
         </div>
 
-        <p>
-          Website của bạn có đang tải chậm không? Hiệu suất kém có thể ảnh hưởng nghiêm
-          trọng đến trải nghiệm người dùng...
+        <p className="text-lg">
+          Website của bạn có đang tải chậm không? Hiệu suất kém có thể ảnh hưởng nghiêm trọng đến trải nghiệm người dùng...
         </p>
 
-        <div className={styles.secondaryImage}>
-          <img src={slider2} alt="Image Optimization" className={styles.hoverEffect} />
+        {/* Phần trích dẫn */}
+        <blockquote className="mt-6 border-l-4 border-blue-500 pl-4 italic text-gray-700">
+          "Một website nhanh và hiệu quả không chỉ cải thiện trải nghiệm người dùng mà còn có thể tăng tỷ lệ chuyển đổi và doanh thu."
+        </blockquote>
+
+        {/* Hình ảnh phụ và chú thích */}
+        <div className="mt-8">
+          <img src={slider2} alt="Image Optimization" className="w-full h-80 object-cover rounded-lg shadow-lg hover:scale-105 transition-transform duration-300" />
+          <p className="text-sm text-gray-600 mt-2 italic text-center">Chú thích: Hình ảnh mô tả quá trình tối ưu hóa hình ảnh cho website.</p>
         </div>
       </div>
 
+      {/* Phần cảm xúc và bình luận */}
       <div
-        className={styles.reactionContainer}
+        className="flex items-center mt-6 space-x-8 relative"
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-        <div className={styles.heartIcon}>
+        <div className="text-4xl cursor-pointer transition-transform transform hover:scale-125">
           {selectedReaction ? <span>{selectedReaction}</span> : '♡'}
           {showReactions && (
-            <div className={`${styles.reactionMenu} ${styles.fadeIn}`}>
-              <button onClick={() => handleReaction('👍')} className={`${styles.reactionButton} ${animateReaction === '👍' ? styles.animate : ''}`}>
-                👍
-              </button>
-              <button onClick={() => handleReaction('❤️')} className={`${styles.reactionButton} ${animateReaction === '❤️' ? styles.animate : ''}`}>
-                ❤️
-              </button>
-              <button onClick={() => handleReaction('😂')} className={`${styles.reactionButton} ${animateReaction === '😂' ? styles.animate : ''}`}>
-                😂
-              </button>
-              <button onClick={() => handleReaction('😢')} className={`${styles.reactionButton} ${animateReaction === '😢' ? styles.animate : ''}`}>
-                😢
-              </button>
-              <button onClick={() => handleReaction('😡')} className={`${styles.reactionButton} ${animateReaction === '😡' ? styles.animate : ''}`}>
-                😡
-              </button>
+            <div className="absolute -top-16 left-0 bg-white rounded-full shadow-lg flex space-x-3 p-3 z-10 transition-all duration-300 opacity-100 transform translate-y-0 hover:bg-opacity-75">
+              {['👍', '❤️', '😂', '😢', '😡'].map((reaction) => (
+                <button
+                  key={reaction}
+                  onClick={() => handleReaction(reaction)}
+                  className={`text-3xl ${animateReaction === reaction ? 'animate-bounce' : ''} transition-transform transform hover:scale-110`}
+                >
+                  {reaction}
+                </button>
+              ))}
             </div>
           )}
         </div>
 
-        <div className={styles.commentIcon} onClick={toggleComments}>
+        <div className="text-4xl cursor-pointer transition-transform transform hover:scale-125" onClick={toggleComments}>
           💬
         </div>
       </div>
 
+      {/* Bình luận */}
       {commentsVisible && (
-        <div className={styles.commentsSection}>
-          <h3>Comments</h3>
+        <div className="mt-12">
+          <h3 className="text-2xl font-semibold mb-8">Comments</h3>
           {comments.map((comment) => (
-            <div key={comment.id} className={styles.comment}>
-              <Gravatar email={comment.email} className={styles.avatar} />
-              <div className={styles.commentContent}>
-                <p>
-                  <strong>{comment.name}</strong>
-                </p>
-                <p>{comment.content}</p>
-                <div className={styles.commentActions}>
+            <div key={comment.id} className="flex items-start mb-6 p-6 border-b border-gray-300 hover:bg-gray-50 rounded-lg shadow-sm">
+              <Gravatar email={comment.email} className="rounded-full w-14 h-14 mr-6" />
+              <div className="flex-grow">
+                <p className="font-semibold text-lg">{comment.name}</p>
+                <p className="text-gray-700">{comment.content}</p>
+                <div className="flex space-x-6 mt-4 text-lg text-gray-600">
                   <button onClick={() => handleLike(comment.id)}>
                     {comment.likes > 0 ? (
-                      <span className={styles.liked}>❤️ {comment.likes}</span>
+                      <span className="text-red-500 font-bold">❤️ {comment.likes}</span>
                     ) : (
                       <span>♡ Thích</span>
                     )}
@@ -209,24 +209,22 @@ const PostDetail = () => {
 
                 {comment.replies.length > 0 && (
                   <>
-                    <button className={styles.toggleRepliesButton} onClick={() => toggleReplies(comment.id)}>
+                    <button className="text-blue-600 mt-3" onClick={() => toggleReplies(comment.id)}>
                       {expandedReplies[comment.id] ? 'Ẩn câu trả lời' : `Hiện ${comment.replies.length} câu trả lời`}
                     </button>
 
                     {expandedReplies[comment.id] && (
-                      <div className={styles.replies}>
+                      <div className="ml-12 mt-4">
                         {comment.replies.map((reply) => (
-                          <div key={reply.id} className={styles.reply}>
-                            <Gravatar email={reply.email} className={styles.avatar} />
-                            <div className={styles.replyContent}>
-                              <p>
-                                <strong>{reply.name}</strong>
-                              </p>
-                              <p>{reply.content}</p>
-                              <div className={styles.commentActions}>
+                          <div key={reply.id} className="flex items-start mb-6 p-6 border-b border-gray-300 hover:bg-gray-50 rounded-lg shadow-sm">
+                            <Gravatar email={reply.email} className="rounded-full w-12 h-12 mr-6" />
+                            <div className="flex-grow">
+                              <p className="font-semibold text-lg">{reply.name}</p>
+                              <p className="text-gray-700">{reply.content}</p>
+                              <div className="flex space-x-6 mt-4 text-lg text-gray-600">
                                 <button onClick={() => handleLike(comment.id, reply.id)}>
                                   {reply.likes > 0 ? (
-                                    <span className={styles.liked}>❤️ {reply.likes}</span>
+                                    <span className="text-red-500 font-bold">❤️ {reply.likes}</span>
                                   ) : (
                                     <span>♡ Thích</span>
                                   )}
@@ -246,14 +244,15 @@ const PostDetail = () => {
         </div>
       )}
 
-      <div className={styles.relatedPosts}>
-        <h3>Bài viết liên quan</h3>
-        <div className={styles.relatedPostsGrid}>
+      {/* Bài viết liên quan */}
+      <div className="mt-12">
+        <h3 className="text-2xl font-semibold">Bài viết liên quan</h3>
+        <div className="flex space-x-8 mt-8">
           {relatedPosts.map((post) => (
-            <div key={post.id} className={styles.relatedPost}>
-              <img src={post.image} alt={post.title} className={styles.relatedPostImage} />
-              <p className={styles.relatedPostTitle}>{post.title}</p>
-              <p className={styles.relatedPostDescription}>{post.description}</p>
+            <div key={post.id} className="w-56 text-center hover:scale-105 transition-transform duration-300">
+              <img src={post.image} alt={post.title} className="w-full h-40 object-cover rounded-lg shadow-lg" />
+              <p className="mt-4 font-bold text-lg text-gray-800">{post.title}</p>
+              <p className="mt-3 text-sm text-gray-600">{post.description}</p>
             </div>
           ))}
         </div>
