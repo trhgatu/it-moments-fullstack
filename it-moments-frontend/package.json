@@ -28,6 +28,7 @@
     "firebase": "^10.13.2",
     "flatpickr": "^4.6.13",
     "headlessui": "^0.0.0",
+    "jsonwebtoken": "^9.0.2",
     "jsvectormap": "^1.5.3",
     "match-sorter": "^6.3.1",
     "moment": "^2.30.1",

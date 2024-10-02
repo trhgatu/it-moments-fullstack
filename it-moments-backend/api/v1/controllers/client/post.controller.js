@@ -28,7 +28,6 @@ const controller = {
             _id: id,
             deleted: false,
         })
-        console.log(post);
         res.json(post);
     }
 }

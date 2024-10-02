@@ -62,7 +62,6 @@ const controller = {
                 );
                 updatedBy.accountFullName = userUpdated.fullName;
             }
-            console.log(post);
         }
         res.json({
             success: true,
@@ -82,8 +81,11 @@ const controller = {
             _id: id,
             deleted: false,
         })
-        console.log(post);
-        res.json(post);
+        res.json({
+            success: true,
+            message: 'Lấy chi tiết bài viết thành công.',
+            data: post,
+        });
     },
     /* [PATCH] api/v1/admin/posts/change-status/:id */
     changeStatus: async (req, res) => {
@@ -153,6 +155,17 @@ const controller = {
 
     },
     createPost: async (req, res) => {
+        if(req.body.position == '' || isNaN(req.body.position)) {
+            const countPosts = await Post.countDocuments();
+            req.body.position = countPosts + 1;
+        } else {
+            req.body.position = parseInt(req.body.position);
+        }
+
+        req.body.createdBy = {
+            account_id: res.locals.user.id,
+        };
+
         try {
             const post = new Post(req.body);
             const data = await post.save();
@@ -160,13 +173,14 @@ const controller = {
             res.json({
                 code: 200,
                 message: "Tạo thành công",
-                data: data
-            })
-        } catch(error) {
+                data: data,
+            });
+        } catch (error) {
+            console.error("Lỗi khi tạo bài viết:", error);
             res.json({
                 code: 400,
-                message: "Lỗi",
-            })
+                message: "Lỗi khi tạo bài viết. Vui lòng thử lại.",
+            });
         }
     },
     editPatch: async (req, res) => {

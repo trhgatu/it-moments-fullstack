@@ -6,13 +6,15 @@ import cors from 'cors';
 import adminRoutes from './api/v1/routes/admin/index.route.js';
 import clientRouter from './api/v1/routes/client/index.route.js';
 import cookieParser from 'cookie-parser';
-import moment from 'moment';
-moment().format();
+import { prefixAdmin } from './config/system.js';
 dotenv.config();
 const app = express();
 const port = process.env.PORT || 3000;
 
-app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:5173',
+    credentials: true
+}));
 
 
 connectDatabase();
@@ -20,7 +22,8 @@ connectDatabase();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors());
+//Cấu hình prefixadmin
+app.locals.prefixAdmin = prefixAdmin;
 //Router api ver 1
 adminRoutes(app);
 clientRouter(app);

@@ -12,7 +12,7 @@ import PostDetail from "../pages/Posts/PostDetail";
 import Login from "../pages/Authentication/Login";
 import Register from "../pages/Authentication/Register";
 import Error from "../pages/Error";
-
+import Profile from "../pages/Profile";
 export const clientRoute = [
     {
         path: "/",
@@ -39,7 +39,7 @@ export const clientRoute = [
                         element: <PostsNew />
                     },
                     {
-                        path: ":id",
+                        path: "detail/:id",
                         element: <PostDetail />
                     },
                 ]
@@ -47,6 +47,10 @@ export const clientRoute = [
             {
                 path: "about",
                 element: <About />
+            },
+            {
+                path: "profile",
+                element: <Profile />
             },
             {
                 path: "academic",

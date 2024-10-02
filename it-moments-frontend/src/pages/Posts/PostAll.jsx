@@ -1,14 +1,19 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import axios from 'axios';
 
 export default function PostAll() {
     const [posts, setPosts] = useState([]);
 
     useEffect(() => {
-        fetch('https://dummyjson.com/posts')
-            .then(res => res.json())
-            .then(data => {
-                setPosts(data.posts);
+        // Gọi API bằng Axios
+        axios.get('http://localhost:3000/api/v1/posts')
+            .then(response => {
+                // Giả sử dữ liệu bài viết nằm trong response.data
+                setPosts(response.data);
+            })
+            .catch(error => {
+                console.error("Có lỗi xảy ra khi lấy dữ liệu bài viết:", error);
             });
     }, []);
 
@@ -19,13 +24,13 @@ export default function PostAll() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                     {posts.map(item => (
                         <div
-                            key={item.id}
+                            key={item._id} // Sử dụng _id làm key
                             className="border rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow duration-300 bg-white"
                         >
-                            <Link to={"/posts/" + item.id}>
+                            <Link to={`/posts/detail/${item._id}`}>
                                 <div className="mb-4">
                                     <img
-                                        src={`https://via.placeholder.com/300x200?text=${encodeURIComponent(item.title)}`}
+                                        src={item.thumbnail || 'https://via.placeholder.com/300x200?text=No+Image'} // Sử dụng thumbnail hoặc ảnh mặc định
                                         alt={item.title}
                                         className="w-full h-48 object-cover mb-4 rounded-md"
                                     />
@@ -36,14 +41,15 @@ export default function PostAll() {
 
                                 {/* Mô tả ngắn của bài viết */}
                                 <p className="text-gray-600 text-sm mb-4">
-                                    {item.body.length > 100 ? item.body.substring(0, 100) + '...' : item.body}
+                                    {item.description.length > 100
+                                        ? item.description.replace(/<[^>]+>/g, '').substring(0, 100) + '...' // Xóa HTML và rút ngắn mô tả
+                                        : item.description.replace(/<[^>]+>/g, '')}
                                 </p>
 
                                 {/* Hiển thị thông tin chi tiết về bài viết */}
                                 <div className="text-gray-600 text-sm mt-4">
-                                    <p className="mb-1">👁️ Lượt xem: {item.views}</p>
-                                    <p className="mb-1">👍 Thích: {item.reactions.likes} | 👎 Không thích: {item.reactions.dislikes}</p>
-                                    <p>🖋️ Người đăng: {item.userId}</p>
+                                    <p className="mb-1">🖋️ Người đăng: {item.createdBy.account_id}</p>
+                                    <p className="mb-1">📅 Ngày tạo: {new Date(item.createdAt).toLocaleDateString()}</p>
                                 </div>
 
                                 {/* Link tới chi tiết bài viết */}
