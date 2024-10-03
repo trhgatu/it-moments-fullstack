@@ -1,0 +1,86 @@
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    padding: 10px 0;
+    margin: 15px 0;
+    background-color: transparent;
+}
+
+.pageItem {
+    font-size: 14px;
+    font-weight: 400;
+    color: #b0b0b0; /* Màu xám nhạt cho các trang không được chọn */
+    cursor: pointer;
+    padding: 5px 8px;
+    border-radius: 6px;
+    transition: color 0.3s ease, transform 0.3s ease; /* Hiệu ứng mượt mà khi chuyển */
+}
+
+.pageItem:hover {
+    color: #000; /* Thay đổi màu khi hover */
+    transform: scale(1.1); /* Hiệu ứng phóng to nhẹ khi hover */
+}
+
+.activePage {
+    font-size: 14px;
+    font-weight: bold;
+    color: #000;
+    position: relative;
+    padding-bottom: 5px;
+    transition: color 0.3s ease, transform 0.3s ease; /* Hiệu ứng mượt mà khi chọn trang */
+}
+
+.activePage::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 2px;
+    background-color: #000;
+    width: 100%;
+    transition: background-color 0.3s ease;
+}
+
+.activePage:hover {
+    transform: scale(1.15); /* Hiệu ứng phóng to trang hiện tại khi hover */
+}
+
+/* Nút điều hướng */
+.navButton {
+    border: none;
+    background-color: transparent;
+    color: #007bff;
+    font-size: 16px;
+    padding: 5px;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    border-radius: 50%;
+}
+
+.navButton:disabled {
+    color: #ccc;
+    cursor: not-allowed;
+}
+
+.navButton:hover:not(:disabled) {
+    color: #0056b3;
+}
+
+@media (max-width: 768px) {
+    .pagination {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+    }
+
+    .pageItem {
+        font-size: 12px;
+        padding: 5px 6px;
+    }
+
+    .navButton {
+        font-size: 14px;
+    }
+}
