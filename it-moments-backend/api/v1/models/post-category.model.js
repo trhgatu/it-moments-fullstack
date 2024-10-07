@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const slug = require('mongoose-slug-updater');
+import mongoose from 'mongoose';
+import slug from "mongoose-slug-updater";
 mongoose.plugin(slug);
 
 const postCategorySchema = new mongoose.Schema({
@@ -11,15 +11,32 @@ const postCategorySchema = new mongoose.Schema({
     description: String,
     thumbnail: String,
     status: String,
-    deleted: {
-        type: Boolean,
-        default: false
-    },
     slug:{
         type: String,
         slug: "title",
         unique: true
     },
+    createdBy: {
+        account_id: String,
+        createdAt: {
+            type: Date,
+            default: Date.now
+        }
+    },
+    deleted: {
+        type: Boolean,
+        default: false
+    },
+    deletedBy: {
+        account_id: String,
+        deletedAt: Date
+    },
+    updatedBy: [
+        {
+            account_id: String,
+            updatedAt: Date
+        }
+    ],
     deletedAt: Date,
     position: Number,
 

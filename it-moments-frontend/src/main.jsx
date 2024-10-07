@@ -6,11 +6,13 @@ import GlobalStyles from './components/GlobalStyles/GlobalStyles';
 import App from './App';
 import "./firebase/config";
 import { BrowserRouter } from 'react-router-dom';
-
+import { UserProvider } from './context/UserContext';
 createRoot(document.getElementById('root')).render(
-    <BrowserRouter>
-        <GlobalStyles>
-            <App />
-        </GlobalStyles>
-    </BrowserRouter>
+    <UserProvider>
+        <BrowserRouter>
+            <GlobalStyles>
+                <App />
+            </GlobalStyles>
+        </BrowserRouter>
+    </UserProvider>
 );

@@ -151,11 +151,11 @@ function Sidenav({ color }) {
             >
               {tables}
             </span>
-            <span className="label">Posts</span>
+            <span className="label">Bài viết</span>
           </NavLink>
         </Menu.Item>
         <Menu.Item key="3">
-          <NavLink to="tables">
+          <NavLink to="post-categories">
             <span
               className="icon"
               style={{
@@ -164,20 +164,7 @@ function Sidenav({ color }) {
             >
               {tables}
             </span>
-            <span className="label">Tables</span>
-          </NavLink>
-        </Menu.Item>
-        <Menu.Item key="4">
-          <NavLink to="tables">
-            <span
-              className="icon"
-              style={{
-                background: page === "tables" ? color : "",
-              }}
-            >
-              {tables}
-            </span>
-            <span className="label">Tables</span>
+            <span className="label">Danh mục bài viết</span>
           </NavLink>
         </Menu.Item>
         <Menu.Item className="menu-item-header" key="5">

@@ -14,7 +14,6 @@ import PrivateRoutes from "../admin/components/PrivateRoutes";
 import 'antd/dist/reset.css';
 
 export const adminRoute = [
-    // Các route yêu cầu đăng nhập
     {
         path: "/admin",
         element: <PrivateRoutes />,
@@ -44,6 +43,7 @@ export const adminRoute = [
                             }
                         ]
                     },
+
                 ]
             }
         ]

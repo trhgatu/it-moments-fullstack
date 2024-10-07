@@ -4,7 +4,6 @@ import { prefixAdmin } from '../../../config/system.js';
 
 export const requireAuth = async (req, res, next) => {
     if(!req.cookies.token) {
-        console.log("Cookies:", req.cookies);
         res.redirect(`${prefixAdmin}/auth/login`);
     } else {
         const user = await User.findOne({

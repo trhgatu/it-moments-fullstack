@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Row, Col, Card, Radio, Table, Button, Avatar, Typography, Alert, Input } from "antd";
-import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import moment from 'moment';
+import { EyeOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
 import { getCookie } from '../../components/PrivateRoutes';
+import Pagination from '../../components/Pagination';
+import moment from 'moment';
+
 const { Title } = Typography;
 
 function PostsAll() {
@@ -12,13 +14,20 @@ function PostsAll() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalPage: 1,
+    pageSize: 6,
+    limitItems: 10,
+  });
+
   useEffect(() => {
     const fetchPosts = async () => {
       setLoading(true);
       setError(null);
-      const token = getCookie('token'); // Hàm lấy token từ cookie
+      const token = getCookie('token');
       try {
-        const response = await fetch('http://localhost:3000/api/v1/admin/posts', {
+        const response = await fetch(`http://localhost:3000/api/v1/admin/posts?page=${pagination.currentPage}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -26,32 +35,45 @@ function PostsAll() {
           },
           credentials: 'include',
         });
-        if(!response.ok) {
-          console.error('Error response:', response);
-          throw new Error('Network response was not ok');
-        }
+
         const data = await response.json();
-        if(!data || !data.data || !data.data.posts) {
+        console.log(data);  // Check the data returned from the backend
+
+        if (!data || !data.data || !data.data.posts) {
           throw new Error('Invalid data format');
         }
+
         setPosts(data.data.posts);
-      } catch(error) {
-        console.error('Lỗi khi gọi API:', error);
-        setError('Không thể lấy dữ liệu bài viết.');
+        setPagination((prev) => ({
+          ...prev,
+          totalPage: data.data.pagination.totalPage || 1,
+          currentPage: data.data.pagination.currentPage,
+          limitItems: data.data.pagination.limitItems || 10 // Ensure limitItems is set
+        }));
+      } catch (error) {
+        console.error('Error fetching API:', error);
+        setError('Unable to fetch post data.');
       } finally {
         setLoading(false);
       }
     };
-    fetchPosts();
-  }, []);
 
+    fetchPosts();
+  }, [pagination.currentPage]);
+
+  const handlePageChange = (page) => {
+    setPagination((prev) => ({
+      ...prev,
+      currentPage: page,
+    }));
+  };
 
   const columns = [
     {
       title: "STT",
       dataIndex: "index",
       key: "index",
-      render: (text, record, index) => index + 1,
+      render: (text, record, index) => (pagination.currentPage - 1) * pagination.pageSize + index + 1,
     },
     {
       title: "Tiêu đề",
@@ -65,6 +87,12 @@ function PostsAll() {
       render: (thumbnail) => (
         <Avatar shape="square" size={64} src={thumbnail} alt="Thumbnail" />
       ),
+    },
+    {
+      title: "Video",
+      dataIndex: "video",
+      key: "video",
+      render: (video) => (video ? <a href={video} target="_blank" rel="noopener noreferrer">Xem Video</a> : 'Không có video'),
     },
     {
       title: "Vị trí",
@@ -131,13 +159,22 @@ function PostsAll() {
       key: "action",
       render: (_, record) => (
         <>
-          <Button type="link" onClick={() => navigate(`/admin/posts/detail/${record._id}`)}>
-            Xem chi tiết
-          </Button>
-          <Button type="link" onClick={() => navigate(`/admin/posts/edit/${record._id}`)}>
-            Chỉnh sửa
-          </Button>
-          <Button type="link" danger onClick={() => handleDeletePost(record._id)}>Xóa</Button>
+          <Button
+            type="link"
+            icon={<EyeOutlined />}
+            onClick={() => navigate(`/admin/posts/detail/${record._id}`)}
+          />
+          <Button
+            type="link"
+            icon={<EditOutlined />}
+            onClick={() => navigate(`/admin/posts/edit/${record._id}`)}
+          />
+          <Button
+            type="link"
+            icon={<DeleteOutlined />}
+            danger
+            onClick={() => handleDeletePost(record._id)}
+          />
         </>
       ),
     },
@@ -175,6 +212,7 @@ function PostsAll() {
                 className="ant-border-space"
               />
             </div>
+            <Pagination pagination={pagination} onPageChange={handlePageChange} />
           </Card>
         </Col>
       </Row>

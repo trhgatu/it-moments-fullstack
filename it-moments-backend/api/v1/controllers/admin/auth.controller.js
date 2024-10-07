@@ -1,7 +1,8 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import User from "../../models/user.model.js";
-import { generateRandomString } from '../../../../helpers/generate.js';
+
+
 const controller = {
     login: async (req, res) => {
         try {
@@ -56,7 +57,7 @@ const controller = {
             });
         }
     },
-    register: async (req, res) => {
+    /* register: async (req, res) => {
         try {
             const hashedPassword = await bcrypt.hash(req.body.password, 10);
             const existEmail = await User.findOne({ email: req.body.email, deleted: false });
@@ -78,7 +79,7 @@ const controller = {
             console.error("Lỗi:", error);
             return res.status(500).json({ code: 500, message: 'Lỗi khi tạo tài khoản' });
         }
-    },
+    }, */
     verifyToken: async (req, res) => {
         const token = req.cookies.token || req.headers['authorization']?.split(' ')[1];
 
