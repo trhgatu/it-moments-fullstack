@@ -88,13 +88,23 @@ const controller = {
         }
 
         try {
+            // Xác thực token
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
-            return res.status(200).json({ message: "Token hợp lệ", user: decoded });
+
+            // Lấy thông tin đầy đủ của người dùng từ cơ sở dữ liệu dựa trên id
+            const user = await User.findById(decoded.id).select('-password -token'); // Loại trừ password và token khỏi kết quả
+
+            if (!user) {
+                return res.status(404).json({ message: "Người dùng không tồn tại" });
+            }
+
+            return res.status(200).json({ message: "Token hợp lệ", user: user });
         } catch(error) {
             console.error("Lỗi xác thực token:", error);
             return res.status(401).json({ message: "Token không hợp lệ" });
         }
     }
+
 
 };
 

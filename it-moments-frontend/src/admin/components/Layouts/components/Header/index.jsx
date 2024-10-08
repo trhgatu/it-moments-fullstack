@@ -43,12 +43,13 @@ function Header({ name, subName, onPress }) {
         method: "POST",
         credentials: "include",
       });
-      setUser(null); // Đặt lại thông tin người dùng
+      setUser(null);
       navigate("/sign-in");
-    } catch (error) {
+    } catch(error) {
       console.error("Lỗi khi đăng xuất:", error);
     }
   };
+  console.log(user);
 
   return (
     <Row gutter={[24, 0]}>
@@ -75,9 +76,6 @@ function Header({ name, subName, onPress }) {
           <div style={{ display: "flex", alignItems: "center" }}>
             {profileIcon}
             <span style={{ marginLeft: 8 }}>{user.fullName}</span> {/* Hiển thị tên người dùng */}
-            <Button type="link" onClick={handleLogout} style={{ marginLeft: 16 }}>
-              Đăng xuất
-            </Button>
           </div>
         ) : (
           <Link to="/sign-in" className="btn-sign-in">
@@ -85,6 +83,7 @@ function Header({ name, subName, onPress }) {
             <span>Đăng nhập</span>
           </Link>
         )}
+
         <Input className="header-search" placeholder="Type here..." prefix={<SearchOutlined />} />
       </Col>
     </Row>

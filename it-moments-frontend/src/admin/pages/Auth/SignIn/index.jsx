@@ -8,40 +8,38 @@ const { Title } = Typography;
 const { Content } = Layout;
 
 const SignIn = () => {
-  const { setUser } = useUser(); // Lấy setUser từ ngữ cảnh
+  const { setUser } = useUser();
   const navigate = useNavigate();
 
   const onFinish = async (values) => {
-    try {
-      const response = await fetch("http://localhost:3000/api/v1/admin/auth/login", {
+    const response = await fetch("http://localhost:3000/api/v1/admin/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(values),
+      credentials: "include",
+    });
+
+    const data = await response.json();
+    if(response.ok) {
+      message.success("Đăng nhập thành công!");
+      const tokenResponse = await fetch("http://localhost:3000/api/v1/admin/auth/verify-token", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(values),
         credentials: "include",
       });
-
-      const data = await response.json();
-      if (response.ok) {
-        console.log("Login successful:", data);
-        message.success("Đăng nhập thành công!");
-
-        // Cập nhật thông tin người dùng vào ngữ cảnh
-        setUser(data.user); // Giả sử data.user chứa thông tin người dùng
-
-        setTimeout(() => {
-          navigate("/admin/dashboard");
-        }, 500);
-      } else {
-        console.error("Login failed:", data);
-        message.error(data.message || "Đăng nhập thất bại!");
+      const userData = await tokenResponse.json();
+      if(tokenResponse.ok) {
+        setUser(userData.user);
       }
-    } catch (error) {
-      console.error("Error during login:", error);
-      message.error("Đã xảy ra lỗi. Vui lòng thử lại!");
+      setTimeout(() => {
+        navigate("/admin/dashboard");
+      }, 500);
+    } else {
+      message.error(data.message || "Đăng nhập thất bại!");
     }
   };
+
 
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
