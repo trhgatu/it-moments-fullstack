@@ -1,18 +1,16 @@
 const pagination = (objectPagination, query, countRecords) => {
-    if (query.page) {
+
+    if(query.page) {
         objectPagination.currentPage = parseInt(query.page);
     }
 
-    if (query.limit) {
+    if(query.limit){
         objectPagination.limitItems = parseInt(query.limit);
     }
 
     objectPagination.skip = (objectPagination.currentPage - 1) * objectPagination.limitItems;
 
-    const totalPage = Math.ceil(countRecords / objectPagination.limitItems);
-    objectPagination.totalPage = totalPage;
-
+    objectPagination.totalPage = Math.ceil(countRecords / objectPagination.limitItems);
     return objectPagination;
 }
-
 export default pagination;

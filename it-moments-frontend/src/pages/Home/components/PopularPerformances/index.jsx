@@ -25,7 +25,7 @@ const PopularPerformances = ({ performances }) => {
                     <SwiperNavigation onNext={handleNext} onPrev={handlePrev} />
                 </div>
             </div>
-            <SwiperComponent ref={swiperRef} items={performances} slidesPerView={4} autoPlay={false} />
+            <SwiperComponent ref={swiperRef} items={performances} slidesPerView={4} autoPlay={true} />
         </div>
     );
 };

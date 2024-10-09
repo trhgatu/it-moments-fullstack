@@ -11,6 +11,10 @@ import SignIn from '../admin/pages/Auth/SignIn';
 import { AdminDefaultLayout } from "../admin/components/Layouts";
 import AdminAuthLayout from "../admin/components/Layouts/AdminAuthLayout";
 import PrivateRoutes from "../admin/components/PrivateRoutes";
+import CategoriesAll from "../admin/pages/Categories/CategoriesAll";
+import CategoryDetail from "../admin/pages/Categories/CategoryDetail";
+import CreateCategory from "../admin/pages/Categories/CreateCategory";
+import Categories from "../admin/pages/Categories";
 import 'antd/dist/reset.css';
 
 export const adminRoute = [
@@ -43,6 +47,24 @@ export const adminRoute = [
                             }
                         ]
                     },
+                    {
+                        path: "post-categories",
+                        element: <Categories/>,
+                        children: [
+                            {
+                                index : true,
+                                element : <CategoriesAll/>
+                            },
+                            {
+                                path: "detail/:id",
+                                element : <CategoryDetail/>
+                            },
+                            {
+                                path: "create",
+                                element: <CreateCategory/>
+                            }
+                        ]
+                    }
 
                 ]
             }

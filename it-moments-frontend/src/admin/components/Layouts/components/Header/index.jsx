@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
-import { Row, Col, Breadcrumb, Button, Input } from "antd";
+import { Row, Col, Breadcrumb, Button, Input, Avatar, Dropdown, Menu } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
-import { NavLink, Link, useNavigate } from "react-router-dom";
+import { NavLink, Link, useNavigate, useLocation } from "react-router-dom";
 import { useUser } from "../../../../../context/UserContext";
+
 // Khai báo biểu tượng hồ sơ
 const profileIcon = (
   <svg
@@ -36,6 +36,7 @@ const togglerIcon = (
 function Header({ name, subName, onPress }) {
   const { user, setUser } = useUser();
   const navigate = useNavigate();
+  const location = useLocation(); // Lấy URL hiện tại
 
   const handleLogout = async () => {
     try {
@@ -45,45 +46,74 @@ function Header({ name, subName, onPress }) {
       });
       setUser(null);
       navigate("/sign-in");
-    } catch(error) {
+    } catch (error) {
       console.error("Lỗi khi đăng xuất:", error);
     }
   };
-  console.log(user);
+
+  // Cắt và xử lý URL để tạo breadcrumb
+  const breadcrumbItems = location.pathname
+    .split("/")
+    .filter((item) => item && item !== "admin");
+
+  // Xử lý hiển thị breadcrumb
+  const breadcrumbDisplay = breadcrumbItems.map((item, index) => {
+    const isDetailPage = item === "detail";
+    if (isDetailPage) {
+      return (
+        <Breadcrumb.Item key={index}>
+          <span>Detail</span>
+        </Breadcrumb.Item>
+      );
+    }
+    return (
+      <Breadcrumb.Item key={index}>
+        <NavLink to={`/admin/${item}`}>
+          {item.replace("-", " ").charAt(0).toUpperCase() + item.slice(1).replace("-", " ")}
+        </NavLink>
+      </Breadcrumb.Item>
+    );
+  });
+
+  const menu = (
+    <Menu>
+      <Menu.Item key="profile">
+        <Link to="/admin/profile">Profile</Link>
+      </Menu.Item>
+      <Menu.Item key="logout" onClick={handleLogout}>
+        Đăng xuất
+      </Menu.Item>
+    </Menu>
+  );
 
   return (
     <Row gutter={[24, 0]}>
       <Col span={24} md={6}>
         <Breadcrumb>
           <Breadcrumb.Item>
-            <NavLink to="/admin">Pages</NavLink>
+            <span>Pages</span>
           </Breadcrumb.Item>
-          <Breadcrumb.Item style={{ textTransform: "capitalize" }}>
-            {name.replace("admin/", "").charAt(0).toUpperCase() + name.replace("admin/", "").slice(1)}
-          </Breadcrumb.Item>
+          {breadcrumbDisplay}
         </Breadcrumb>
-        <div className="ant-page-header-heading">
-          <span className="ant-page-header-heading-title" style={{ textTransform: "capitalize" }}>
-            {subName.replace("admin/", "")}
-          </span>
-        </div>
       </Col>
       <Col span={24} md={18} className="header-control">
         <Button type="link" className="sidebar-toggler" onClick={onPress}>
           {togglerIcon}
         </Button>
         {user ? (
-          <div style={{ display: "flex", alignItems: "center" }}>
-            {profileIcon}
-            <span style={{ marginLeft: 8 }}>{user.fullName}</span> {/* Hiển thị tên người dùng */}
-          </div>
+          <Dropdown overlay={menu} trigger={["click"]}>
+            <Avatar
+              src={user.avatar}
+              alt="avatar"
+              style={{ cursor: "pointer" }} // Để cho thấy rằng avatar có thể nhấn vào
+            />
+          </Dropdown>
         ) : (
           <Link to="/sign-in" className="btn-sign-in">
             {profileIcon}
             <span>Đăng nhập</span>
           </Link>
         )}
-
         <Input className="header-search" placeholder="Type here..." prefix={<SearchOutlined />} />
       </Col>
     </Row>

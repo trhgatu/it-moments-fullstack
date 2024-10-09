@@ -4,7 +4,7 @@ import { Outlet, Navigate } from "react-router-dom";
 export const getCookie = (name) => {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(';')[0];
+    if(parts.length === 2) return parts.pop().split(';')[0];
     return null;
 };
 
@@ -12,7 +12,6 @@ export const getCookie = (name) => {
 const checkLogin = async () => {
     const token = getCookie('token');
     if(!token) {
-        console.log("No token found.");
         return false;
     }
 
@@ -25,20 +24,19 @@ const checkLogin = async () => {
             }
         });
 
-        const data = await response.json();
-        console.log("Response status:", response.status);
-        console.log("Response data:", data);
-
-        // Kiểm tra nếu response status là 200
         if(response.ok) {
+            const data = await response.json();
+            // Kiểm tra dữ liệu trả về nếu cần
+            console.log('Token valid:', data);
             return true;
         }
     } catch(error) {
-        console.error('Token verification failed:', error);
+        console.error('Xác thực token thất bại:', error);
     }
 
     return false;
 };
+
 
 export default function PrivateRoutes() {
     const [isLogin, setIsLogin] = useState(null);

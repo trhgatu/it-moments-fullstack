@@ -31,13 +31,15 @@ const controller = {
             req.query,
             countPosts
         );
-        const sort = {}
 
+        const sort = {};
         if(req.query.sortKey && req.query.sortValue) {
             sort[req.query.sortKey] = req.query.sortValue;
         } else {
             sort.position = "desc";
+            sort.createdAt = "desc";
         }
+
 
         //End Sort
 
@@ -48,7 +50,7 @@ const controller = {
             .lean();
 
         for(const post of posts) {
-            const user = await User.findOne({_id: post.createdBy.account_id});
+            const user = await User.findOne({ _id: post.createdBy.account_id });
 
             if(user) {
                 post.accountFullName = user.fullName;
@@ -122,11 +124,10 @@ const controller = {
                     }, {
                         status: value
                     });
-                    res.json({
+                    return res.status(200).json({
                         code: 200,
                         message: "Cập nhật trạng thái thành công"
                     });
-                    break;
                 case "delete":
                     await Post.updateMany({
                         _id: { $in: ids }
@@ -134,26 +135,25 @@ const controller = {
                         deleted: true,
                         deletedAt: new Date()
                     });
-                    res.json({
+                    return res.status(200).json({
                         code: 200,
                         message: "Xóa thành công"
                     });
-                    break;
                 default:
-                    res.json({
-                        code: 404,
+                    return res.status(400).json({
+                        code: 400,
                         message: "Không tồn tại"
                     });
-                    break;
             }
         } catch(error) {
-            res.json({
-                code: 404,
+            console.error(error);
+            return res.status(500).json({
+                code: 500,
                 message: "Cập nhật trạng thái thất bại"
             });
         }
-
     },
+
     createPost: async (req, res) => {
         if(req.body.position == '' || isNaN(req.body.position)) {
             const countPosts = await Post.countDocuments();
@@ -175,7 +175,7 @@ const controller = {
                 message: "Tạo thành công",
                 data: data,
             });
-        } catch (error) {
+        } catch(error) {
             console.error("Lỗi khi tạo bài viết:", error);
             res.json({
                 code: 400,

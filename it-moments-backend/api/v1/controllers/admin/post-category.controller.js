@@ -47,7 +47,7 @@ const controller = {
             .skip(objectPagination.skip)
             .lean();
 
-        for(const category of categories) {
+        /* for(const category of categories) {
             const user = await User.findOne({_id: category.createdBy.account_id});
 
             if(user) {
@@ -62,7 +62,7 @@ const controller = {
                 );
                 updatedBy.accountFullName = userUpdated.fullName;
             }
-        }
+        } */
         res.json({
             success: true,
             data: {
