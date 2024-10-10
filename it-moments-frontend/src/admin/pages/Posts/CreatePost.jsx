@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, Form, Input, Button, Select, Upload, message, Radio } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { UploadOutlined } from '@ant-design/icons';
 import axios from 'axios';
-
+import { getCookie } from '../../components/PrivateRoutes';
 const { Option } = Select;
 
 const CreatePost = () => {
@@ -12,6 +12,35 @@ const CreatePost = () => {
     const [thumbnailFileList, setThumbnailFileList] = useState([]);
     const [imageFileList, setImageFileList] = useState([]);
     const [videoURL, setVideoURL] = useState('');
+    const [categories, setCategories] = useState([]);
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            const token = getCookie('token');
+            try {
+                const response = await axios.get(`http://localhost:3000/api/v1/admin/post-categories`, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    withCredentials: true, // To send cookies with request
+                });
+
+                // Truy cập categories từ response.data
+                if(response.data && Array.isArray(response.data.data.categories)) {
+                    setCategories(response.data.data.categories);  // Lưu danh mục vào state
+                } else {
+                    console.error('Phản hồi không có danh mục:', response.data);
+                    message.error('Có lỗi xảy ra khi lấy danh mục.');
+                }
+            } catch(error) {
+                console.error('Lỗi khi lấy danh mục:', error);
+                message.error('Có lỗi xảy ra khi lấy danh mục.');
+            }
+        };
+        fetchCategories();
+    }, []);
+
 
     const handleThumbnailChange = (info) => {
         setThumbnailFileList(info.fileList);
@@ -28,7 +57,7 @@ const CreatePost = () => {
     const onFinish = async (values) => {
         const formData = new FormData();
         formData.append('title', values.title);
-        formData.append('post_category_id', values.post_category_id);
+        formData.append('post_category_id', values.post_category_id);  // Gửi ID danh mục
         formData.append('description', values.description);
 
         const positionValue = values.position ? parseInt(values.position) : '';
@@ -59,7 +88,6 @@ const CreatePost = () => {
         }
     };
 
-
     return (
         <div className="page-inner">
             <Card title="Tạo bài viết" bordered={false}>
@@ -68,13 +96,16 @@ const CreatePost = () => {
                         <Input placeholder="Nhập tiêu đề" />
                     </Form.Item>
 
-                    <Form.Item label="Danh mục" name="post_category_id">
+                    <Form.Item label="Danh mục" name="post_category_id" rules={[{ required: true, message: 'Vui lòng chọn danh mục!' }]}>
                         <Select placeholder="---- Chọn danh mục ----">
-                            {/* Option categories should be populated dynamically */}
-                            <Option value="category1">Danh mục 1</Option>
-                            <Option value="category2">Danh mục 2</Option>
+                            {categories.map(category => (
+                                <Option key={category._id} value={category._id}>
+                                    {category.title} {/* Sử dụng title thay vì name */}
+                                </Option>
+                            ))}
                         </Select>
                     </Form.Item>
+
 
                     <Form.Item label="Mô tả" name="description">
                         <Input.TextArea rows={5} placeholder="Nhập mô tả" />
@@ -114,7 +145,6 @@ const CreatePost = () => {
                     <Form.Item label="Vị trí" name="position">
                         <Input type="number" min={1} placeholder="Nhập vị trí" />
                     </Form.Item>
-
 
                     <Form.Item label="Trạng thái" name="status" initialValue="active">
                         <Radio.Group>

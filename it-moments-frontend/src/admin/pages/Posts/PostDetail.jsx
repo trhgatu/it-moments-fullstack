@@ -3,54 +3,67 @@ import { useParams } from 'react-router-dom';
 import { Card, Avatar, Typography, Alert, Image, Row, Col, Divider, Spin } from "antd";
 import axios from 'axios';
 import moment from 'moment';
+import { getCookie } from '../../../admin/components/PrivateRoutes';
 
 const { Title, Text } = Typography;
+
+const fetchData = async (id, token) => {
+    const postResponse = axios.get(`http://localhost:3000/api/v1/admin/posts/detail/${id}`, { withCredentials: true });
+    const categoriesResponse = axios.get('http://localhost:3000/api/v1/admin/post-categories', {
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        withCredentials: true
+    });
+
+    return Promise.all([postResponse, categoriesResponse]);
+};
 
 function PostDetail() {
     const { id } = useParams();
     const [post, setPost] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [categories, setCategories] = useState([]);
+    const [categoryTitle, setCategoryTitle] = useState('');
 
     useEffect(() => {
-        const fetchPostDetail = async () => {
-            setLoading(true);
-            setError(null);
+        const token = getCookie("token");
+        setLoading(true);
+        setError(null);
 
-            try {
-                const response = await axios.get(`http://localhost:3000/api/v1/admin/posts/detail/${id}`, {
-                    withCredentials: true,
-                });
-
-                // Kiểm tra phản hồi thành công
-                if (response.data && response.data.success) {
-                    setPost(response.data.data);
+        fetchData(id, token)
+            .then(([postResponse, categoriesResponse]) => {
+                if (postResponse.data?.success) {
+                    setPost(postResponse.data.data);
                 } else {
-                    // Ném lỗi nếu không thành công
-                    throw new Error(`API Error: ${response.data.message || 'Failed to fetch post data'}`);
+                    throw new Error(postResponse.data.message || 'Failed to fetch post data');
                 }
-            } catch (error) {
-                console.error('Error fetching post details:', error);
-                setError(`Unable to retrieve post data: ${error.message}`);
-            } finally {
-                setLoading(false);
-            }
-        };
 
-        fetchPostDetail();
+                if (categoriesResponse.data?.success) {
+                    setCategories(categoriesResponse.data.data.categories);
+                } else {
+                    throw new Error('Failed to fetch categories data');
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+                setError(`Unable to retrieve data: ${error.message}`);
+            })
+            .finally(() => setLoading(false));
     }, [id]);
 
-    if (loading) {
-        return <Spin tip="Loading..." />;
-    }
+    useEffect(() => {
+        if (post && categories.length) {
+            const foundCategory = categories.find(category => category._id === post.post_category_id);
+            setCategoryTitle(foundCategory ? foundCategory.title : 'Không tìm thấy danh mục');
+        }
+    }, [post, categories]);
 
-    if (error) {
-        return <Alert message={error} type="error" showIcon />;
-    }
-
-    if (!post) {
-        return <Alert message="Post not found." type="warning" showIcon />;
-    }
+    if (loading) return <Spin tip="Loading..." />;
+    if (error) return <Alert message={error} type="error" showIcon />;
+    if (!post) return <Alert message="Post not found." type="warning" showIcon />;
 
     const { title, description, thumbnail, video, status, images, createdAt, position } = post;
 
@@ -87,6 +100,15 @@ function PostDetail() {
                     </Col>
                     <Col xs={24} sm={12} md={8}>
                         <Text strong>Ngày tạo:</Text> <Text>{moment(createdAt).format('DD/MM/YYYY')}</Text>
+                    </Col>
+                </Row>
+
+                <Divider />
+
+                <Row gutter={16}>
+                    <Col xs={24}>
+                        <Text strong>Danh mục:</Text>
+                        <Text style={{ marginLeft: '10px' }}>{categoryTitle}</Text>
                     </Col>
                 </Row>
 

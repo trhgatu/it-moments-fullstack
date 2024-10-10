@@ -3,6 +3,7 @@ import pagination from '../../../../helpers/pagination.js';
 import search from '../../../../helpers/search.js';
 import filterStatus from '../../../../helpers/filterStatus.js';
 import User from '../../models/user.model.js';
+
 const controller = {
 
     /* [GET] api/v1/admin/post-categories */
@@ -87,115 +88,48 @@ const controller = {
             data: category,
         });
     },
-    /* [PATCH] api/v1/admin/post-categories/change-status/:id */
-    changeStatus: async (req, res) => {
+    /* [POST] api/v1/admin/post-categories/create */
+    createPost: async (req, res) => {
+
+        if(req.body.position == '') {
+            const count = await PostCategory.countDocuments();
+            req.body.position = count + 1;
+        } else {
+            req.body.position = parseInt(req.body.position);
+        }
+        req.body.createdBy = {
+            account_id: res.locals.user.id,
+        };
+
         try {
-            const id = req.params.id;
-
-            const status = req.body.status;
-
-            await PostCategory.updateOne({
-                _id: id
-            }, {
-                status: status
-            });
+            const category = new PostCategory(req.body);
+            const data = await category.save();
 
             res.json({
                 code: 200,
-                message: "Cập nhật trạng thái thành công"
+                message: "Tạo thành công",
+                data: data,
             });
         } catch(error) {
-            res.json({
-                code: 404,
-                message: "Cập nhật trạng thái thất bại"
-            });
-        }
-
-    },
-    changeMulti: async (req, res) => {
-        try {
-            const { ids, key, value } = req.body;
-            switch(key) {
-                case "status":
-                    await PostCategory.updateMany({
-                        _id: { $in: ids }
-                    }, {
-                        status: value
-                    });
-                    res.json({
-                        code: 200,
-                        message: "Cập nhật trạng thái thành công"
-                    });
-                    break;
-                case "delete":
-                    await PostCategory.updateMany({
-                        _id: { $in: ids }
-                    }, {
-                        deleted: true,
-                        deletedAt: new Date()
-                    });
-                    res.json({
-                        code: 200,
-                        message: "Xóa thành công"
-                    });
-                    break;
-                default:
-                    res.json({
-                        code: 404,
-                        message: "Không tồn tại"
-                    });
-                    break;
-            }
-        } catch(error) {
-            res.json({
-                code: 404,
-                message: "Cập nhật trạng thái thất bại"
-            });
-        }
-
-    },
-
-    editPatch: async (req, res) => {
-        try {
-            const id = req.params.id;
-            await PostCategory.updateOne({
-                _id: id,
-
-            },
-                req.body
-            );
-
-            res.json({
-                code: 200,
-                message: "Cập nhật thành công",
-            })
-        } catch(error) {
+            console.error("Lỗi khi tạo bài viết:", error);
             res.json({
                 code: 400,
-                message: "Lỗi",
-            })
-        }
-    },
-    delete: async (req, res) => {
-        try {
-            const id = req.params.id;
-            await PostCategory.updateOne({
-                _id: id,
-            }, {
-                deleted: true,
-                deletedAt: new Date()
+                message: "Lỗi khi tạo bài viết. Vui lòng thử lại.",
             });
-            res.json({
-                code: 200,
-                message: "Xóa thành công"
-            })
-        } catch(error) {
-            res.json({
-                code: 400,
-                message: "Lỗi"
-            })
         }
-    },
 
+
+        res.status(201).json({
+            success: true,
+            message: 'Tạo danh mục bài viết thành công.',
+            data: newCategory,
+        });
+
+        res.status(500).json({
+            success: false,
+            message: 'Có lỗi xảy ra khi tạo danh mục.',
+            error: error.message,
+        });
+    }
 }
 export default controller;

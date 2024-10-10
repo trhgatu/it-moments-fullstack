@@ -2,7 +2,7 @@ import "../admin/assets/styles/main.css";
 import "../admin/assets/styles/responsive.css";
 import Dashboard from '../admin/pages/Dashboard';
 import PostDetail from "../admin/pages/Posts/PostDetail.jsx";
-import PostAll from "../admin/pages/Posts/PostAll";
+import PostAll from "../admin/pages/Posts/components/PostAll";
 import Posts from '../admin/pages/Posts';
 import CreatePost from '../admin/pages/Posts/CreatePost';
 import Profile from '../admin/pages/Profile';
