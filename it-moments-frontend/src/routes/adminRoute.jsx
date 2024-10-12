@@ -16,7 +16,12 @@ import CategoryDetail from "../admin/pages/Categories/CategoryDetail";
 import CreateCategory from "../admin/pages/Categories/CreateCategory";
 import Categories from "../admin/pages/Categories";
 import 'antd/dist/reset.css';
-
+import Users from "../admin/pages/Users";
+import UsersAll from "../admin/pages/Users/components/UsersAll";
+import Roles from "../admin/pages/Roles";
+import RolesAll from "../admin/pages/Roles/components/RolesAll";
+import CreateRole from "../admin/pages/Roles/CreateRole";
+import PermissionForm from "../admin/pages/Roles/PermissionForm";
 export const adminRoute = [
     {
         path: "/admin",
@@ -62,6 +67,46 @@ export const adminRoute = [
                             {
                                 path: "create",
                                 element: <CreateCategory/>
+                            }
+                        ]
+                    },
+                    {
+                        path: "users",
+                        element: <Users/>,
+                        children: [
+                            {
+                                index : true,
+                                element : <UsersAll/>
+                            },
+                            /* {
+                                path: "detail/:id",
+                                element : <UserDetail/>
+                            },
+                            {
+                                path: "create",
+                                element: <CreateUser/>
+                            } */
+                        ]
+                    },
+                    {
+                        path: "roles",
+                        element: <Roles/>,
+                        children: [
+                            {
+                                index : true,
+                                element : <RolesAll/>
+                            },
+                            /* {
+                                path: "detail/:id",
+                                element : <UserDetail/>
+                            },*/
+                            {
+                                path: "create",
+                                element: <CreateRole/>
+                            },
+                            {
+                                path: "permissions",
+                                element: <PermissionForm/>
                             }
                         ]
                     }

@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import User from "../../models/user.model.js";
-
+import Role from '../../models/role.model.js';
 
 const controller = {
     login: async (req, res) => {
@@ -32,9 +32,13 @@ const controller = {
 
 
             const token = jwt.sign(
-                { id: user._id, email: user.email },
+                {
+                    id: user._id, email: user.email
+                },
                 process.env.JWT_SECRET,
-                { expiresIn: "1h" }
+                {
+                    expiresIn: "1h"
+                }
             );
             user.token = token;
             await user.save();
@@ -43,11 +47,13 @@ const controller = {
                 sameSite: "Lax",
                 secure: false
             });
-
+            const role = await Role.findById(user.role_id);
+            res.locals.role = role;
             return res.status(200).json({
                 code: 200,
                 message: 'Đăng nhập thành công',
                 token: token,
+                role: role
             });
         } catch(error) {
             console.error(error);
@@ -88,24 +94,27 @@ const controller = {
         }
 
         try {
-            // Xác thực token
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-            // Lấy thông tin đầy đủ của người dùng từ cơ sở dữ liệu dựa trên id
-            const user = await User.findById(decoded.id).select('-password -token'); // Loại trừ password và token khỏi kết quả
+            const user = await User.findById(decoded.id)
+                .select('-password -token')
 
-            if (!user) {
+            if(!user) {
                 return res.status(404).json({ message: "Người dùng không tồn tại" });
             }
+            const role = await Role.findById(user.role_id)
+            .select("title permissions");
 
-            return res.status(200).json({ message: "Token hợp lệ", user: user });
+            return res.status(200).json({
+                message: "Token hợp lệ",
+                user: user,
+                role: role
+            });
         } catch(error) {
             console.error("Lỗi xác thực token:", error);
             return res.status(401).json({ message: "Token không hợp lệ" });
         }
-    }
-
-
+    },
 };
 
 export default controller;

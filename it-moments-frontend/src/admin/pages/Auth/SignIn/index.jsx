@@ -32,7 +32,6 @@ const SignIn = () => {
       if(tokenResponse.ok) {
         setUser(userData.user);
       }
-      console.log(userData);
       setTimeout(() => {
         navigate("/admin/dashboard");
       }, 500);

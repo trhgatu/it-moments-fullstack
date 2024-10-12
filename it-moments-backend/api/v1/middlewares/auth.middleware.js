@@ -10,14 +10,15 @@ export const requireAuth = async (req, res, next) => {
             token: req.cookies.token
         }).select("-password");
         if(!user) {
-            res.redirect(`${prefixAdmin}/auth/login`);
+            return res.status(401).redirect(`${prefixAdmin}/auth/login`);
         } else {
             const role = await Role.findOne({
                 _id: user.role_id
             }).select("title permissions");
             res.locals.user = user;
             res.locals.role = role;
-            next();
+            console.log("res.locals:", res.locals);
+            return next();
         }
     }
 };

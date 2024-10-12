@@ -1,10 +1,11 @@
-
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { Layout, Drawer, Affix } from "antd";
 import Sidenav from "../Sidenav";
 import Header from "../Header";
 import Footer from "../Footer";
+import { useUser } from "../../../../../context/UserContext"; // Import UserContext
+
 const { Header: AntHeader, Content, Sider } = Layout;
 
 function Main({ children }) {
@@ -13,6 +14,8 @@ function Main({ children }) {
   const [sidenavColor, setSidenavColor] = useState("#1890ff");
   const [sidenavType, setSidenavType] = useState("transparent");
   const [fixed, setFixed] = useState(false);
+
+  const { role } = useUser(); // Lấy thông tin vai trò từ UserContext
 
   const openDrawer = () => setVisible(!visible);
   const handleSidenavType = (type) => setSidenavType(type);
@@ -32,9 +35,7 @@ function Main({ children }) {
 
   return (
     <Layout
-      className={`layout-dashboard ${
-        pathname === "profile" ? "layout-profile" : ""
-      } ${pathname === "rtl" ? "layout-dashboard-rtl" : ""}`}
+      className={`layout-dashboard ${pathname === "profile" ? "layout-profile" : ""} ${pathname === "rtl" ? "layout-dashboard-rtl" : ""}`}
     >
       <Drawer
         title={false}
@@ -44,28 +45,21 @@ function Main({ children }) {
         visible={visible}
         key={placement === "right" ? "left" : "right"}
         width={250}
-        className={`drawer-sidebar ${
-          pathname === "rtl" ? "drawer-sidebar-rtl" : ""
-        } `}
+        className={`drawer-sidebar ${pathname === "rtl" ? "drawer-sidebar-rtl" : ""}`}
       >
-        <Layout
-          className={`layout-dashboard ${
-            pathname === "rtl" ? "layout-dashboard-rtl" : ""
-          }`}
-        >
+        <Layout className={`layout-dashboard ${pathname === "rtl" ? "layout-dashboard-rtl" : ""}`}>
           <Sider
             trigger={null}
             width={250}
             theme="light"
-            className={`sider-primary ant-layout-sider-primary ${
-              sidenavType === "#fff" ? "active-route" : ""
-            }`}
+            className={`sider-primary ant-layout-sider-primary ${sidenavType === "#fff" ? "active-route" : ""}`}
             style={{ background: sidenavType }}
           >
-            <Sidenav color={sidenavColor} />
+            <Sidenav color={sidenavColor} /> {/* Truyền color cho Sidenav */}
           </Sider>
         </Layout>
       </Drawer>
+
       <Sider
         breakpoint="lg"
         collapsedWidth="0"
@@ -75,13 +69,12 @@ function Main({ children }) {
         trigger={null}
         width={250}
         theme="light"
-        className={`sider-primary ant-layout-sider-primary ${
-          sidenavType === "#fff" ? "active-route" : ""
-        }`}
+        className={`sider-primary ant-layout-sider-primary ${sidenavType === "#fff" ? "active-route" : ""}`}
         style={{ background: sidenavType }}
       >
-        <Sidenav color={sidenavColor} />
+        <Sidenav color={sidenavColor} /> {/* Truyền color cho Sidenav */}
       </Sider>
+
       <Layout>
         {fixed ? (
           <Affix>
