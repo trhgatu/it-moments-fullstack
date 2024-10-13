@@ -47,6 +47,7 @@ const controller = {
             .sort(sort)
             .limit(objectPagination.limitItems)
             .skip(objectPagination.skip)
+            .populate('post_category_id', 'title')
             .lean();
 
         for(const post of posts) {
@@ -82,7 +83,7 @@ const controller = {
         const post = await Post.findOne({
             _id: id,
             deleted: false,
-        })
+        }).populate('post_category_id', 'title');
         res.json({
             success: true,
             message: 'Lấy chi tiết bài viết thành công.',

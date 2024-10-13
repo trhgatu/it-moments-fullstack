@@ -159,7 +159,7 @@ function PostsAll() {
       <Row gutter={[24, 0]}>
         <Col xs="24" xl={24}>
           <PostsCard
-            posts={filteredPosts} // Sử dụng bài viết đã lọc
+            posts={filteredPosts}
             loading={loading}
             error={error}
             selectedRowKeys={selectedRowKeys}

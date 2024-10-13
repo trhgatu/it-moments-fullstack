@@ -11,27 +11,27 @@ const CreateCategory = () => {
     const navigate = useNavigate();
     const [form] = Form.useForm();
     const [thumbnailFileList, setThumbnailFileList] = useState([]);
-    const [parentCategories, setParentCategories] = useState([]);
+    const [allCategories, setAllCategories] = useState([]);
 
-    const fetchParentCategories = async () => {
+    const fetchCategories = async () => {
         const token = getCookie('token');
         try {
             const response = await axios.get(`http://localhost:3000/api/v1/admin/post-categories`, {
                 headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': `Bearer ${token}`
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 },
                 withCredentials: true,
-              });
-            setParentCategories(response.data.data.categories);
+            });
+            setAllCategories(response.data.data.categories);
         } catch (error) {
-            console.error('Lỗi khi lấy danh mục cha:', error);
-            message.error('Có lỗi xảy ra khi lấy danh mục cha.');
+            console.error('Lỗi khi lấy danh mục:', error);
+            message.error('Có lỗi xảy ra khi lấy danh mục.');
         }
     };
 
     useEffect(() => {
-        fetchParentCategories(); // Gọi hàm để lấy danh mục cha khi component mount
+        fetchCategories(); // Gọi hàm để lấy danh mục khi component mount
     }, []);
 
     const handleThumbnailChange = (info) => {
@@ -46,7 +46,6 @@ const CreateCategory = () => {
 
         const positionValue = values.position ? parseInt(values.position) : '';
         formData.append('position', positionValue);
-
         formData.append('status', values.status);
 
         if (thumbnailFileList.length > 0) {
@@ -61,11 +60,16 @@ const CreateCategory = () => {
                 withCredentials: true,
             });
             message.success('Danh mục đã được tạo thành công!');
-            navigate('/admin/posts-categories');
+            navigate('/admin/post-categories');
         } catch (error) {
             console.error('Lỗi khi tạo danh mục:', error);
             message.error('Có lỗi xảy ra khi tạo danh mục.');
         }
+    };
+
+    // Hàm để xây dựng tên hiển thị cho danh mục
+    const renderCategoryLabel = (category) => {
+        return category.parent_id ? `-- ${category.title}` : category.title;
     };
 
     return (
@@ -79,9 +83,9 @@ const CreateCategory = () => {
                     <Form.Item label="Danh mục cha" name="parent_id">
                         <Select placeholder="---- Chọn danh mục cha ----">
                             <Option value="">Không có danh mục cha</Option>
-                            {parentCategories.map(category => (
+                            {allCategories.map(category => (
                                 <Option key={category._id} value={category._id}>
-                                    {category.title}
+                                    {renderCategoryLabel(category)}
                                 </Option>
                             ))}
                         </Select>

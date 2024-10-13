@@ -26,7 +26,6 @@ const CreatePost = () => {
                     withCredentials: true, // To send cookies with request
                 });
 
-                // Truy cập categories từ response.data
                 if(response.data && Array.isArray(response.data.data.categories)) {
                     setCategories(response.data.data.categories);  // Lưu danh mục vào state
                 } else {

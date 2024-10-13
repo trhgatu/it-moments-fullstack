@@ -19,7 +19,7 @@ const fetchCategoriesData = async (currentPage) => {
     credentials: 'include',
   });
 
-  if (!response.ok) {
+  if(!response.ok) {
     throw new Error('Failed to fetch categories data');
   }
 
@@ -35,6 +35,7 @@ function CategoriesAll() {
     currentPage: 1,
     totalPage: 1,
     pageSize: 6,
+    limitItems: 10
   });
 
   useEffect(() => {
@@ -43,17 +44,19 @@ function CategoriesAll() {
       setError(null);
       try {
         const data = await fetchCategoriesData(pagination.currentPage);
-        if (data?.data?.categories) {
+        if(data?.data?.categories) {
           setCategories(data.data.categories);
           setPagination((prev) => ({
             ...prev,
             totalPage: data.data.pagination.totalPage || 1,
-            currentPage: data.data.pagination.currentPage,
+            currentPage: data.data.pagination.currentPage || 1,
+            pageSize: data.data.pagination.limitItems || prev.pageSize,
+            limitItems: data.data.limitItems || 10
           }));
         } else {
           throw new Error('Invalid data format');
         }
-      } catch (error) {
+      } catch(error) {
         console.error('Error fetching categories:', error);
         setError('Cannot retrieve categories data.');
       } finally {
@@ -79,15 +82,15 @@ function CategoriesAll() {
       render: (_, __, index) => (pagination.currentPage - 1) * pagination.pageSize + index + 1,
     },
     {
-      title: "Tiêu đề",
-      dataIndex: "title",
-      key: "title",
-    },
-    {
       title: "Ảnh bìa",
       dataIndex: "thumbnail",
       key: "thumbnail",
       render: (thumbnail) => <Avatar shape="square" size={64} src={thumbnail} alt="Thumbnail" />,
+    },
+    {
+      title: "Tiêu đề",
+      dataIndex: "title",
+      key: "title",
     },
     {
       title: "Trạng thái",
@@ -102,6 +105,14 @@ function CategoriesAll() {
         </Button>
       ),
     },
+    {
+      title: "Người tạo",
+      dataIndex: "accountFullName",
+      key: "accountFullName",
+      render: (accountFullName) => <strong>{accountFullName}</strong>,
+    },
+
+
     {
       title: "Ngày tạo",
       dataIndex: "createdAt",
@@ -134,6 +145,7 @@ function CategoriesAll() {
     },
   ];
 
+
   return (
     <div className="tabled">
       <Row gutter={[24, 0]}>
@@ -144,7 +156,7 @@ function CategoriesAll() {
             title="Danh sách danh mục bài viết"
             extra={
               <Button type="primary" onClick={() => navigate('/admin/post-categories/create')}>
-                Tạo bài viết
+                Tạo danh mục mới
               </Button>
             }
           >

@@ -53,7 +53,6 @@ const controller = {
                 code: 200,
                 message: 'Đăng nhập thành công',
                 token: token,
-                role: role
             });
         } catch(error) {
             console.error(error);
@@ -104,7 +103,6 @@ const controller = {
             }
             const role = await Role.findById(user.role_id)
             .select("title permissions");
-
             return res.status(200).json({
                 message: "Token hợp lệ",
                 user: user,

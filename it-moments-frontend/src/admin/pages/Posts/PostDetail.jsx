@@ -8,16 +8,14 @@ import { getCookie } from '../../../admin/components/PrivateRoutes';
 const { Title, Text } = Typography;
 
 const fetchData = async (id, token) => {
-    const postResponse = axios.get(`http://localhost:3000/api/v1/admin/posts/detail/${id}`, { withCredentials: true });
-    const categoriesResponse = axios.get('http://localhost:3000/api/v1/admin/post-categories', {
+    const postResponse = await axios.get(`http://localhost:3000/api/v1/admin/posts/detail/${id}`, {
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
         },
         withCredentials: true
     });
-
-    return Promise.all([postResponse, categoriesResponse]);
+    return postResponse;
 };
 
 function PostDetail() {
@@ -25,8 +23,6 @@ function PostDetail() {
     const [post, setPost] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [categories, setCategories] = useState([]);
-    const [categoryTitle, setCategoryTitle] = useState('');
 
     useEffect(() => {
         const token = getCookie("token");
@@ -34,17 +30,11 @@ function PostDetail() {
         setError(null);
 
         fetchData(id, token)
-            .then(([postResponse, categoriesResponse]) => {
+            .then(postResponse => {
                 if (postResponse.data?.success) {
                     setPost(postResponse.data.data);
                 } else {
                     throw new Error(postResponse.data.message || 'Failed to fetch post data');
-                }
-
-                if (categoriesResponse.data?.success) {
-                    setCategories(categoriesResponse.data.data.categories);
-                } else {
-                    throw new Error('Failed to fetch categories data');
                 }
             })
             .catch(error => {
@@ -54,18 +44,11 @@ function PostDetail() {
             .finally(() => setLoading(false));
     }, [id]);
 
-    useEffect(() => {
-        if (post && categories.length) {
-            const foundCategory = categories.find(category => category._id === post.post_category_id);
-            setCategoryTitle(foundCategory ? foundCategory.title : 'Không tìm thấy danh mục');
-        }
-    }, [post, categories]);
-
     if (loading) return <Spin tip="Loading..." />;
     if (error) return <Alert message={error} type="error" showIcon />;
     if (!post) return <Alert message="Post not found." type="warning" showIcon />;
 
-    const { title, description, thumbnail, video, status, images, createdAt, position } = post;
+    const { title, description, thumbnail, video, status, images, createdAt, position, post_category_id } = post;
 
     return (
         <div style={{ padding: '20px', background: '#f0f2f5' }}>
@@ -108,7 +91,9 @@ function PostDetail() {
                 <Row gutter={16}>
                     <Col xs={24}>
                         <Text strong>Danh mục:</Text>
-                        <Text style={{ marginLeft: '10px' }}>{categoryTitle}</Text>
+                        <Text style={{ marginLeft: '10px' }}>
+                            {post_category_id?.title ? post_category_id.title : 'Không tìm thấy danh mục'}
+                        </Text>
                     </Col>
                 </Row>
 

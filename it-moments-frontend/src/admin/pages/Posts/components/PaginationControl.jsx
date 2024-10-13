@@ -1,5 +1,5 @@
 import React from 'react';
-import Pagination from '../../../components/Pagination'; // Assuming this is a custom pagination component
+import Pagination from '../../../components/Pagination';
 
 const PaginationControl = ({ pagination, onPageChange }) => {
   return (

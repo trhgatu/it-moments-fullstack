@@ -5,8 +5,8 @@ mongoose.plugin(slug);
 const postSchema = new mongoose.Schema({
     title: String,
     post_category_id: {
-        type: String,
-        default: ""
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'PostCategory',
     },
     description: String,
     thumbnail: String,

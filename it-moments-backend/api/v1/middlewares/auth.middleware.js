@@ -17,7 +17,6 @@ export const requireAuth = async (req, res, next) => {
             }).select("title permissions");
             res.locals.user = user;
             res.locals.role = role;
-            console.log("res.locals:", res.locals);
             return next();
         }
     }

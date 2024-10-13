@@ -38,6 +38,7 @@ const controller = {
             sort[req.query.sortKey] = req.query.sortValue;
         } else {
             sort.position = "desc";
+            sort.createdAt = "desc";
         }
 
         //End Sort
@@ -48,8 +49,12 @@ const controller = {
             .skip(objectPagination.skip)
             .lean();
 
-        /* for(const category of categories) {
-            const user = await User.findOne({_id: category.createdBy.account_id});
+        for(const category of categories) {
+            const user = await User.findOne(
+                {
+                    _id: category.createdBy.account_id
+                }
+            );
 
             if(user) {
                 category.accountFullName = user.fullName;
@@ -63,7 +68,7 @@ const controller = {
                 );
                 updatedBy.accountFullName = userUpdated.fullName;
             }
-        } */
+        }
         res.json({
             success: true,
             data: {
@@ -90,46 +95,40 @@ const controller = {
     },
     /* [POST] api/v1/admin/post-categories/create */
     createPost: async (req, res) => {
-
-        if(req.body.position == '') {
+        // Xử lý vị trí
+        if(req.body.position === '') {
             const count = await PostCategory.countDocuments();
-            req.body.position = count + 1;
+            req.body.position = count + 1; // Gán vị trí nếu không có giá trị
         } else {
-            req.body.position = parseInt(req.body.position);
+            req.body.position = parseInt(req.body.position); // Chuyển đổi vị trí sang số nguyên
         }
+
+        // Gán thông tin người tạo
         req.body.createdBy = {
             account_id: res.locals.user.id,
         };
 
         try {
-            const category = new PostCategory(req.body);
-            const data = await category.save();
+            const category = new PostCategory(req.body); // Tạo mới danh mục
+            const data = await category.save(); // Lưu danh mục vào cơ sở dữ liệu
 
-            res.json({
-                code: 200,
-                message: "Tạo thành công",
-                data: data,
+            // Phản hồi thành công
+            return res.status(201).json({
+                success: true,
+                message: "Tạo danh mục bài viết thành công.",
+                data: data, // Trả về dữ liệu danh mục vừa tạo
             });
         } catch(error) {
-            console.error("Lỗi khi tạo bài viết:", error);
-            res.json({
-                code: 400,
-                message: "Lỗi khi tạo bài viết. Vui lòng thử lại.",
+            console.error("Lỗi khi tạo danh mục:", error); // Ghi log lỗi
+
+            // Phản hồi lỗi
+            return res.status(400).json({
+                success: false,
+                message: "Lỗi khi tạo danh mục. Vui lòng thử lại.",
+                error: error.message, // Gửi thông tin lỗi
             });
         }
-
-
-        res.status(201).json({
-            success: true,
-            message: 'Tạo danh mục bài viết thành công.',
-            data: newCategory,
-        });
-
-        res.status(500).json({
-            success: false,
-            message: 'Có lỗi xảy ra khi tạo danh mục.',
-            error: error.message,
-        });
     }
+
 }
 export default controller;
