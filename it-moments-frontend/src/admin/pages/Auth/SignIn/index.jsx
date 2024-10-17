@@ -8,37 +8,48 @@ const { Title } = Typography;
 const { Content } = Layout;
 
 const SignIn = () => {
-  const { setUser } = useUser();
+  const { setUser, setRole } = useUser();
   const navigate = useNavigate();
 
   const onFinish = async (values) => {
-    const response = await fetch("http://localhost:3000/api/v1/admin/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(values),
-      credentials: "include",
-    });
-
-    const data = await response.json();
-    if(response.ok) {
-      message.success("Đăng nhập thành công!");
-      const tokenResponse = await fetch("http://localhost:3000/api/v1/admin/auth/verify-token", {
+    try {
+      const response = await fetch("http://localhost:3000/api/v1/admin/auth/login", {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
         credentials: "include",
       });
-      const userData = await tokenResponse.json();
-      if(tokenResponse.ok) {
-        setUser(userData.user);
+
+      const data = await response.json();
+
+      if(response.ok) {
+        message.success("Đăng nhập thành công!");
+
+        const tokenResponse = await fetch("http://localhost:3000/api/v1/admin/auth/verify-token", {
+          method: "POST",
+          credentials: "include",
+        });
+        const userData = await tokenResponse.json();
+
+        if(tokenResponse.ok) {
+          setUser(userData.user);
+          setRole(userData.role);
+
+          setTimeout(() => {
+            navigate("/admin/dashboard");
+          }, 500);
+        }
+      } else {
+        message.error(data.message || "Đăng nhập thất bại!");
       }
-      setTimeout(() => {
-        navigate("/admin/dashboard");
-      }, 500);
-    } else {
-      message.error(data.message || "Đăng nhập thất bại!");
+    } catch(error) {
+      message.error("Đã xảy ra lỗi khi đăng nhập.");
+      console.error("Login error:", error);
     }
   };
+
 
 
   const onFinishFailed = (errorInfo) => {

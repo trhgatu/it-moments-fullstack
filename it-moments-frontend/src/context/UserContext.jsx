@@ -7,32 +7,28 @@ export const UserProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [role, setRole] = useState(null);
 
-    const getTokenFromCookie = () => {
-        const match = document.cookie.match(new RegExp('(^| )token=([^;]+)'));
-        return match ? match[2] : null;
-    };
-
     useEffect(() => {
-        const token = getTokenFromCookie();
-        if (token) {
-            const fetchUser = async () => {
-                try {
-                    const response = await fetch("http://localhost:3000/api/v1/admin/auth/verify-token", {
-                        method: "POST",
-                        credentials: "include",
-                    });
+        const fetchUser = async () => {
+            try {
+                const response = await fetch("http://localhost:3000/api/v1/admin/auth/verify-token", {
+                    method: "POST",
+                    credentials: "include",
+                });
+                if (response.ok) {
                     const data = await response.json();
-                    if (response.ok) {
-                        setUser(data.user);
-                        setRole(data.role);
-                    }
-                } catch (error) {
-                    console.error("Lỗi xác thực người dùng:", error);
+                    setUser(data.user);
+                    setRole(data.role);
+                } else {
+                    setUser(null);
                 }
-            };
-            fetchUser();
-        }
+            } catch (error) {
+                console.error("Lỗi xác thực người dùng:", error);
+                setUser(null);
+            }
+        };
+        fetchUser();
     }, []);
+
 
     return (
         <UserContext.Provider value={{ user, role, setUser, setRole }}>

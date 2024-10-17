@@ -1,11 +1,14 @@
-import React from "react";
+import React, {useEffect} from "react";
 import { Menu } from "antd";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation} from "react-router-dom";
 import { useUser } from "../../../../../context/UserContext";
 
 function Sidenav({ color }) {
   const { pathname } = useLocation();
   const { role: userRole } = useUser();
+  useEffect(() => {
+    console.log("User role has changed:", userRole);
+  }, [userRole]);
 
   const menuItems = [
     { key: "dashboard", label: "Dashboard", path: "dashboard" },

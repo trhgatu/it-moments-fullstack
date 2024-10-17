@@ -36,6 +36,7 @@ function UsersAll() {
         currentPage: 1,
         totalPage: 1,
         pageSize: 6,
+        limitItems: 10
     });
 
     useEffect(() => {
@@ -48,8 +49,9 @@ function UsersAll() {
                     setUsers(data.data.users);
                     setPagination((prev) => ({
                         ...prev,
-                        totalPage: data?.data?.pagination?.totalPage || 1,  // Provide fallback of 1 if totalPage is undefined
-                        currentPage: data?.data?.pagination?.currentPage || 1,  // Provide fallback of 1 if currentPage is undefined
+                        totalPage: data?.data?.pagination?.totalPage || 1,
+                        currentPage: data?.data?.pagination?.currentPage || 1,
+                        limitItems: data?.data?.pagination?.limitItems || 10
                     }));
                 } else {
                     throw new Error('Invalid data format');

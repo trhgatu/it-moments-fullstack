@@ -46,7 +46,7 @@ function Header({ name, subName, onPress }) {
       });
       setUser(null);
       navigate("/sign-in");
-    } catch (error) {
+    } catch(error) {
       console.error("Lỗi khi đăng xuất:", error);
     }
   };
@@ -59,7 +59,7 @@ function Header({ name, subName, onPress }) {
   // Xử lý hiển thị breadcrumb
   const breadcrumbDisplay = breadcrumbItems.map((item, index) => {
     const isDetailPage = item === "detail";
-    if (isDetailPage) {
+    if(isDetailPage) {
       return (
         <Breadcrumb.Item key={index}>
           <span>Detail</span>
@@ -103,9 +103,9 @@ function Header({ name, subName, onPress }) {
         {user ? (
           <Dropdown overlay={menu} trigger={["click"]}>
             <Avatar
-              src={user.avatar}
+              src={user.avatar || "https://example.com/default-avatar.png"}
               alt="avatar"
-              style={{ cursor: "pointer" }} // Để cho thấy rằng avatar có thể nhấn vào
+              style={{ cursor: "pointer" }}
             />
           </Dropdown>
         ) : (
@@ -114,6 +114,7 @@ function Header({ name, subName, onPress }) {
             <span>Đăng nhập</span>
           </Link>
         )}
+
         <Input className="header-search" placeholder="Type here..." prefix={<SearchOutlined />} />
       </Col>
     </Row>

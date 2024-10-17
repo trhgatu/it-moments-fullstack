@@ -10,17 +10,17 @@ export const getCookie = (name) => {
 
 
 const checkLogin = async () => {
-    const token = getCookie('token');
+    /* const token = getCookie('token');
     if(!token) {
         return false;
-    }
+    } */
 
     try {
         const response = await fetch('http://localhost:3000/api/v1/admin/auth/verify-token', {
             method: 'POST',
+            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
             }
         });
 

@@ -4,6 +4,7 @@ import User from "../../models/user.model.js";
 import Role from '../../models/role.model.js';
 
 const controller = {
+    /* [POST] /api/v1/admin/auth/login */
     login: async (req, res) => {
         try {
             const email = req.body.email;
@@ -43,9 +44,9 @@ const controller = {
             user.token = token;
             await user.save();
             res.cookie("token", token, {
-                httpOnly: false,
+                httpOnly: true,
                 sameSite: "Lax",
-                secure: false
+                secure: true
             });
             const role = await Role.findById(user.role_id);
             res.locals.role = role;
@@ -86,7 +87,7 @@ const controller = {
         }
     }, */
     verifyToken: async (req, res) => {
-        const token = req.cookies.token || req.headers['authorization']?.split(' ')[1];
+        const token = req.cookies.token;
 
         if(!token) {
             return res.status(401).json({ message: "Token không hợp lệ" });
