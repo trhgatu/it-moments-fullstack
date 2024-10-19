@@ -1,33 +1,15 @@
-.activityListContainer { 
+.activityListContainer {
+    padding-top: 80px;
     width: 100%;
     max-width: 1200px;  /* Giảm chiều rộng */
-    min-width: 320px;   
-    min-height: 100vh;  
-    padding: 15px;  /* Giảm padding */
-    margin: 0 auto;  
+    min-width: 320px;
+    min-height: 100vh;
+    margin: 0 auto;
     background-color: #f9f9f9;
     padding-bottom: 100px;  /* Giảm padding dưới */
     box-sizing: border-box;
-    overflow-y: auto; 
-    overflow-x: hidden;  
 }
 
-/* Tùy chỉnh thanh cuộn */
-.activityListContainer::-webkit-scrollbar {
-    width: 12px; 
-}
-
-.activityListContainer::-webkit-scrollbar-thumb {
-    background-color: #007bff;  
-    border-radius: 10px;  
-    border: 2px solid #f9f9f9;  
-    background-clip: padding-box;  
-}
-
-.activityListContainer::-webkit-scrollbar-track {
-    background-color: #e0e0e0;  
-    border-radius: 10px;
-}
 
 /* Đường breadcrumb */
 .breadcrumb {
@@ -36,10 +18,11 @@
     margin-bottom: 15px;  /* Giảm khoảng cách */
     background-color: #d9d9d9;
     padding: 10px 15px;  /* Giảm padding */
-    border-radius: 5px;
     width: 100%;
     height: 50px;  /* Giảm chiều cao */
     line-height: 50px;  /* Điều chỉnh chiều cao chữ */
+    display: flex;
+    align-items: center;
 }
 
 /* Container cho bộ lọc */
@@ -65,18 +48,19 @@
 
 .posts {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);  /* Giảm số cột */
-    gap: 15px;  /* Giảm khoảng cách giữa các bài viết */
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
     width: 100%;
     padding-right: 10px;
     flex: 3;
     box-sizing: border-box;
-    max-width: 1000px;  /* Giảm chiều rộng */
+    max-width: 1000px;
     margin: 0 auto;
     max-height: calc(100vh - 150px);
-    overflow-y: auto;  
-    scrollbar-width: thin;
-    scrollbar-color: #007bff #e0e0e0;
+    overflow-y: auto; /* Cho phép cuộn dọc */
+}
+.posts::-webkit-scrollbar {
+    display: none; /* Ẩn thanh cuộn */
 }
 
 /* Sidebar danh mục */
@@ -94,20 +78,20 @@
 
 @media (max-width: 1024px) {
     .posts {
-        grid-template-columns: repeat(2, 1fr);  
+        grid-template-columns: repeat(2, 1fr);
     }
 
     .category {
-        width: 100%;  
+        width: 100%;
     }
 }
 
 @media (max-width: 768px) {
     .posts {
-        grid-template-columns: 1fr;  
+        grid-template-columns: 1fr;
     }
 
     .category {
-        width: 100%;  
+        width: 100%;
     }
 }

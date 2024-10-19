@@ -3,7 +3,6 @@
     max-width: 250px;  /* Giới hạn chiều rộng tối đa */
     background-color: #f9f9f9;
     padding: 15px;
-    border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     margin-bottom: 20px;
     text-align: left;
@@ -34,7 +33,6 @@
     position: relative;
     gap: 10px;
     color: #605e5e;
-    border-radius: 8px;  /* Thêm bo góc cho mục */
 }
 
 .categoryItem:hover {
@@ -56,7 +54,6 @@
 .categoryCount {
     background-color: #ff5733;
     color: white;
-    border-radius: 50%;
     padding: 5px 10px;
     font-size: 12px;
     min-width: 30px;

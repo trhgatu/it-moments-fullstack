@@ -8,7 +8,7 @@ import Event from "../pages/Event";
 import PostsNew from "../pages/Posts/PostsNew";
 import PostAll from "../pages/Posts/PostAll";
 import InfoUser from "../pages/InfoUser";
-import PostDetail from "../pages/Posts/PostDetail";
+import PostDetail from "../pages/PostDetail/PostDetail";
 import Login from "../pages/Authentication/Login";
 import Register from "../pages/Authentication/Register";
 import Error from "../pages/Error";

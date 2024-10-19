@@ -44,7 +44,7 @@ export default function PrivateRoutes() {
     useEffect(() => {
         const verifyLogin = async () => {
             const loggedIn = await checkLogin();
-            console.log('Logged In:', loggedIn); // Log trạng thái đăng nhập
+            console.log('Logged In:', loggedIn);
             setIsLogin(loggedIn);
         };
         verifyLogin();

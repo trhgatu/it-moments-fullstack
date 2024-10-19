@@ -32,8 +32,8 @@ const controller = {
             if(req.query.sortKey && req.query.sortValue) {
                 sort[req.query.sortKey] = req.query.sortValue;
             } else {
-                sort.position = "desc"; // Nên sử dụng "createdAt" thay vì "createAt"
-                sort.createdAt = "desc"; // Chỉnh sửa chính tả
+                sort.position = "desc";
+                sort.createdAt = "desc";
             }
 
             const users = await User.find(find)

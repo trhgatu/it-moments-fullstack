@@ -33,7 +33,7 @@ function PostsAll() {
   const fetchPosts = async () => {
     setLoading(true);
     setError(null);
-    const token = getCookie('token');
+    const token = getCookie('admin_token');
     try {
       const response = await axios.get(`http://localhost:3000/api/v1/admin/posts?page=${pagination.currentPage}`, {
         headers: {

@@ -116,7 +116,7 @@ export const Header = () => {
                         })
                     }
                 >
-                    Hoạt động
+                    Văn nghệ
                 </NavLink>
                 <NavLink
                     to="academic"

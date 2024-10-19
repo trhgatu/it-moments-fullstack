@@ -30,11 +30,12 @@ const controller = {
                     message: "Sai mật khẩu!",
                 });
             }
-
-
+            const role = await Role.findById(user.role_id);
             const token = jwt.sign(
                 {
-                    id: user._id, email: user.email
+                    id: user._id,
+                    email: user.email,
+                    role: role.title
                 },
                 process.env.JWT_SECRET,
                 {
@@ -43,12 +44,12 @@ const controller = {
             );
             user.token = token;
             await user.save();
-            res.cookie("token", token, {
+            res.cookie("admin_token", token, {
                 httpOnly: true,
                 sameSite: "Lax",
                 secure: true
             });
-            const role = await Role.findById(user.role_id);
+
             res.locals.role = role;
             return res.status(200).json({
                 code: 200,
@@ -87,7 +88,7 @@ const controller = {
         }
     }, */
     verifyToken: async (req, res) => {
-        const token = req.cookies.token;
+        const token = req.cookies.admin_token;
 
         if(!token) {
             return res.status(401).json({ message: "Token không hợp lệ" });

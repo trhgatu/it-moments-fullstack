@@ -1,21 +1,20 @@
-.postItem { 
+.postItem {
     font-family: 'Roboto', sans-serif;
     border: none;
-    border-radius: 12px;
     overflow: hidden;
     background-color: white;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     cursor: pointer;
     margin-bottom: 20px;
     box-sizing: border-box;
     text-overflow: ellipsis;
-    max-width: 100%; 
+    max-width: 100%;
 }
 
 .postItem:hover {
-    transform: translateY(-5px); 
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);  
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
 .postImage {
@@ -25,13 +24,12 @@
 .postImage img {
     width: 100%;
     height: 180px;
-    object-fit: cover; 
-    border-radius: 12px 12px 0 0;
-    transition: transform 0.3s ease; 
+    object-fit: cover;
+    transition: transform 0.3s ease;
 }
 
 .postItem:hover .postImage img {
-    transform: scale(1.05); 
+    transform: scale(1.05);
 }
 
 /* Cải tiến huy hiệu danh mục */
@@ -44,7 +42,6 @@
     font-weight: 600;
     background: linear-gradient(135deg, #6C63FF, #8E79FF); /* Sử dụng gradient */
     color: white;
-    border-radius: 12px; /* Bo góc mềm mại hơn */
     transition: all 0.3s ease;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Thêm shadow nhẹ */
 }
@@ -69,13 +66,13 @@
     font-size: 18px;
     font-weight: bold;
     margin-bottom: 8px;
-    color: #007bff; 
+    color: #007bff;
     line-height: 1.4;
-    transition: color 0.3s ease; 
+    transition: color 0.3s ease;
 }
 
 .postItem:hover .postTitle {
-    color: #ff5733; 
+    color: #ff5733;
 }
 
 .postDescription {
@@ -86,11 +83,11 @@
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
-    display: box; 
-    -webkit-line-clamp: 3;  
+    display: box;
+    -webkit-line-clamp: 3;
     line-clamp: 3;
     -webkit-box-orient: vertical;
-    box-orient: vertical; 
+    box-orient: vertical;
     line-height: 1.4;
 }
 
@@ -116,7 +113,7 @@
 
     .postDescription {
         max-height: 80px;
-        -webkit-line-clamp: 4; 
+        -webkit-line-clamp: 4;
         line-clamp: 4;
     }
 

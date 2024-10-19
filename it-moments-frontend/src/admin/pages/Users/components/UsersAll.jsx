@@ -21,6 +21,7 @@ const fetchUsersData = async (currentPage) => {
 
     try {
         const response = await axios.get(`http://localhost:3000/api/v1/admin/users?page=${currentPage}`, config);
+        console.log(response.data);
         return response.data;
     } catch(error) {
         throw new Error('Failed to fetch users data');
