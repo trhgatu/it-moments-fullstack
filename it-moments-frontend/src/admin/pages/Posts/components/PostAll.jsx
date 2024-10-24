@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { Row, Col, notification, Modal } from "antd";
-import { getCookie } from '../../../components/PrivateRoutes';
-import PostsCard from './PostsCard'; // Import the new PostsCard component
+import PostsCard from './PostsCard';
 import { useNavigate } from 'react-router-dom';
+import { useUser } from '../../../../context/UserContext';
 import axios from 'axios';
 
 function PostsAll() {
+  const { user, loading: userLoading } = useUser();
   const navigate = useNavigate();
   const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loadingPosts, setLoadingPosts] = useState(false);
   const [error, setError] = useState(null);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [actionType, setActionType] = useState('');
-  const [filterValue, setFilterValue] = useState(''); // Thêm state cho bộ lọc
+  const [filterValue, setFilterValue] = useState('');
 
   const [pagination, setPagination] = useState({
     currentPage: 1,
@@ -21,8 +22,8 @@ function PostsAll() {
     limitItems: 10,
   });
 
-  const openNotification = (message, description) => {
-    notification.success({
+  const showNotification = (type, message, description) => {
+    notification[type]({
       message,
       description,
       duration: 5,
@@ -30,10 +31,25 @@ function PostsAll() {
     });
   };
 
+  const getToken = () => {
+    const token = user?.token;
+    console.log(token);
+    if (!token) {
+      setError('Token không hợp lệ.');
+      return null;
+    }
+    return token;
+  };
+
   const fetchPosts = async () => {
-    setLoading(true);
+    setLoadingPosts(true);
     setError(null);
-    const token = getCookie('admin_token');
+    const token = getToken();
+    if (!token) {
+      setLoadingPosts(false);
+      return;
+    }
+
     try {
       const response = await axios.get(`http://localhost:3000/api/v1/admin/posts?page=${pagination.currentPage}`, {
         headers: {
@@ -44,8 +60,7 @@ function PostsAll() {
       });
 
       const data = response.data;
-
-      if (!data || !data.data || !data.data.posts) {
+      if (!data?.data?.posts) {
         throw new Error('Invalid data format');
       }
 
@@ -59,15 +74,17 @@ function PostsAll() {
     } catch (error) {
       console.error('Error fetching API:', error);
       setError('Unable to fetch post data.');
+      showNotification('error', 'Lỗi', 'Không thể lấy dữ liệu bài viết.');
     } finally {
-      setLoading(false);
+      setLoadingPosts(false);
     }
   };
 
   useEffect(() => {
-    fetchPosts();
-  }, [pagination.currentPage]);
-
+    if (!userLoading && user) {
+      fetchPosts();
+    }
+  }, [pagination.currentPage, userLoading, user]);
 
   const filteredPosts = posts.filter(post => {
     if (filterValue === '') return true;
@@ -87,7 +104,8 @@ function PostsAll() {
 
   const handleActionSubmit = async (e) => {
     e.preventDefault();
-    const token = getCookie('token');
+    const token = getToken();
+    if (!token) return;
 
     if (selectedRowKeys.length === 0) {
       setError('Vui lòng chọn ít nhất một bài viết.');
@@ -100,7 +118,7 @@ function PostsAll() {
     }
 
     try {
-      const response = await axios.patch('http://localhost:3000/api/v1/admin/posts/change-status-multi', {
+      await axios.patch('http://localhost:3000/api/v1/admin/posts/change-status-multi', {
         ids: selectedRowKeys,
         key: 'status',
         value: actionType
@@ -114,10 +132,9 @@ function PostsAll() {
 
       setSelectedRowKeys([]);
       setActionType('');
-
       await fetchPosts();
 
-      openNotification('Thành công!', `${selectedRowKeys.length} bài viết đã được thay đổi trạng thái thành công.`);
+      showNotification('success', 'Thành công!', `${selectedRowKeys.length} bài viết đã được thay đổi trạng thái thành công.`);
     } catch (error) {
       console.error('Error performing batch action:', error);
       setError('Unable to perform the action.');
@@ -125,9 +142,11 @@ function PostsAll() {
   };
 
   const handleDeletePost = async (postId) => {
-    const token = getCookie('token');
+    const token = getToken();
+    if (!token) return;
+
     try {
-      const response = await axios.delete(`http://localhost:3000/api/v1/admin/posts/delete/${postId}`, {
+      await axios.delete(`http://localhost:3000/api/v1/admin/posts/delete/${postId}`, {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
@@ -135,7 +154,7 @@ function PostsAll() {
         withCredentials: true
       });
 
-      openNotification('Thành công!', 'Bài viết đã được xóa thành công.');
+      showNotification('success', 'Thành công!', 'Bài viết đã được xóa thành công.');
       await fetchPosts();
     } catch (error) {
       console.error('Error deleting post:', error);
@@ -158,22 +177,27 @@ function PostsAll() {
     <div className="tabled">
       <Row gutter={[24, 0]}>
         <Col xs="24" xl={24}>
-          <PostsCard
-            posts={filteredPosts}
-            loading={loading}
-            error={error}
-            selectedRowKeys={selectedRowKeys}
-            handleSelectChange={handleSelectChange}
-            handleDeleteConfirm={handleDeleteConfirm}
-            navigate={navigate}
-            pagination={pagination}
-            actionType={actionType}
-            setActionType={setActionType}
-            handleActionSubmit={handleActionSubmit}
-            handlePageChange={handlePageChange}
-            filterValue={filterValue}
-            setFilterValue={setFilterValue}
-          />
+          {/* Hiển thị trạng thái loading hoặc thông tin bài viết */}
+          {loadingPosts || userLoading ? (
+            <div style={{ textAlign: 'center', padding: '20px' }}>Đang tải dữ liệu...</div> // Thay thế spinner bằng thông báo đơn giản
+          ) : (
+            <PostsCard
+              posts={filteredPosts}
+              loading={loadingPosts}
+              error={error}
+              selectedRowKeys={selectedRowKeys}
+              handleSelectChange={handleSelectChange}
+              handleDeleteConfirm={handleDeleteConfirm}
+              navigate={navigate}
+              pagination={pagination}
+              actionType={actionType}
+              setActionType={setActionType}
+              handleActionSubmit={handleActionSubmit}
+              handlePageChange={handlePageChange}
+              filterValue={filterValue}
+              setFilterValue={setFilterValue}
+            />
+          )}
         </Col>
       </Row>
     </div>

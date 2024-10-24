@@ -3,7 +3,6 @@ import { SearchOutlined } from "@ant-design/icons";
 import { NavLink, Link, useNavigate, useLocation } from "react-router-dom";
 import { useUser } from "../../../../../context/UserContext";
 
-// Khai báo biểu tượng hồ sơ
 const profileIcon = (
   <svg
     width="20"
@@ -36,7 +35,7 @@ const togglerIcon = (
 function Header({ name, subName, onPress }) {
   const { user, setUser } = useUser();
   const navigate = useNavigate();
-  const location = useLocation(); // Lấy URL hiện tại
+  const location = useLocation();
 
   const handleLogout = async () => {
     try {
@@ -51,12 +50,10 @@ function Header({ name, subName, onPress }) {
     }
   };
 
-  // Cắt và xử lý URL để tạo breadcrumb
   const breadcrumbItems = location.pathname
     .split("/")
     .filter((item) => item && item !== "admin");
 
-  // Xử lý hiển thị breadcrumb
   const breadcrumbDisplay = breadcrumbItems.map((item, index) => {
     const isDetailPage = item === "detail";
     if(isDetailPage) {

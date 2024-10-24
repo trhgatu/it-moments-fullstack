@@ -26,7 +26,7 @@ const Pagination = ({ totalPages }) => {
                         onClick={() => handlePageClick(page)}
                         className={currentPage === page ? styles.activePage : styles.pageItem}
                     >
-                        {page < 10 ? `0${page}` : page} {/* Hiển thị số định dạng 01, 02, 03 */}
+                        {page < 10 ? `${page}` : page}
                     </div>
                 );
             })}

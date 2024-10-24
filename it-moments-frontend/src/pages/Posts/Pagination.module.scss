@@ -11,41 +11,34 @@
 .pageItem {
     font-size: 14px;
     font-weight: 400;
-    color: #b0b0b0; /* Màu xám nhạt cho các trang không được chọn */
+    color: #b0b0b0;
     cursor: pointer;
-    padding: 5px 8px;
-    border-radius: 6px;
-    transition: color 0.3s ease, transform 0.3s ease; /* Hiệu ứng mượt mà khi chuyển */
+    padding: 3px 10px;
+    transition: color 0.3s ease, transform 0.3s ease;
+    border: 1px solid;
 }
 
 .pageItem:hover {
-    color: #000; /* Thay đổi màu khi hover */
-    transform: scale(1.1); /* Hiệu ứng phóng to nhẹ khi hover */
+    background-color: var(--primary);
+    color: var(--white);
 }
-
+.postImage:hover {
+    transform: scale(1.15);
+}
 .activePage {
     font-size: 14px;
     font-weight: bold;
-    color: #000;
+    background-color: var(--primary);
     position: relative;
-    padding-bottom: 5px;
-    transition: color 0.3s ease, transform 0.3s ease; /* Hiệu ứng mượt mà khi chọn trang */
-}
-
-.activePage::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 2px;
-    background-color: #000;
-    width: 100%;
-    transition: background-color 0.3s ease;
+    transition: color 0.3s ease, transform 0.3s ease;
+    padding: 3px 10px;
+    color: var(--white);
+    border: 1px solid;
 }
 
 .activePage:hover {
-    transform: scale(1.15); /* Hiệu ứng phóng to trang hiện tại khi hover */
+    /* transform: scale(1.15); */
+    color: var(--white);
 }
 
 /* Nút điều hướng */
@@ -78,6 +71,7 @@
     .pageItem {
         font-size: 12px;
         padding: 5px 6px;
+        color: var(--black);
     }
 
     .navButton {

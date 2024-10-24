@@ -1,10 +1,9 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import User from "../../models/user.model.js";
-import Role from '../../models/role.model.js';
 
 const controller = {
-    /* [POST] /api/v1/admin/auth/login */
+    /* [POST] /api/v1/auth/login */
     login: async (req, res) => {
         try {
             const email = req.body.email;
@@ -14,9 +13,7 @@ const controller = {
                     email: email,
                     deleted: false
                 }
-            )
-            .select('-refreshToken')
-            .populate('role_id', 'title permissions isAdmin');
+            );
 
             if(!user) {
                 return res.status(400).json({
@@ -32,8 +29,7 @@ const controller = {
                     message: "Sai mật khẩu!",
                 });
             }
-            user.password = undefined;
-            const token = jwt.sign(
+            const accessToken = jwt.sign(
                 {
                     id: user._id,
                     email: user.email,
@@ -43,17 +39,23 @@ const controller = {
                     expiresIn: "1h"
                 }
             );
-            user.token = token;
-            res.cookie("admin_token", token, {
-                httpOnly: true,
-                sameSite: "Lax",
-                secure: false
-            });
+            const refreshToken = jwt.sign(
+                {
+                    id: user._id,
+                    email: user.email
+                },
+                process.env.JWT_SECRET,
+                {
+                    expiresIn: "7d"
+                }
+            )
+            user.refreshToken = refreshToken;
+            await user.save();
+            res.cookie("client_token", accessToken, { httpOnly: true, sameSite: "Lax", secure: true });
+            res.cookie("refresh_token", refreshToken, { httpOnly: true, sameSite: "Lax", secure: true });
             return res.status(200).json({
                 code: 200,
                 message: 'Đăng nhập thành công',
-                token: token,
-                user: user
             });
         } catch(error) {
             console.error(error);
@@ -63,7 +65,7 @@ const controller = {
             });
         }
     },
-    /* register: async (req, res) => {
+    register: async (req, res) => {
         try {
             const hashedPassword = await bcrypt.hash(req.body.password, 10);
             const existEmail = await User.findOne({ email: req.body.email, deleted: false });
@@ -85,19 +87,33 @@ const controller = {
             console.error("Lỗi:", error);
             return res.status(500).json({ code: 500, message: 'Lỗi khi tạo tài khoản' });
         }
-    }, */
-    me : async (req, res) => {
-        try {
-            const user = res.locals.user;
-            if (!user) {
-                return res.status(404).json({ message: "Người dùng không tồn tại" });
-            }
-            const token = req.cookies.admin_token;
-            return res.status(200).json({ user , token});
-        } catch (error) {
-            return res.status(500).json({ message: "Lỗi khi lấy thông tin người dùng" });
+    },
+    /* [POST] /api/v1/auth/refresh-token */
+    refreshToken: async (req, res) => {
+        const refreshToken = req.cookies.refresh_token;
+
+        if(!refreshToken) {
+            return res.status(401).json({ message: "Token không hợp lệ" });
         }
-    }
+
+        try {
+            const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
+
+            const user = await User.findById(decoded.id).select('-password');
+
+            if(!user || user.refreshToken !== refreshToken) {
+                return res.status(403).json({ message: "Refresh token không hợp lệ" });
+            }
+
+            const newAccessToken = jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECRET, { expiresIn: "1h" });
+
+            res.cookie("client_token", newAccessToken, { httpOnly: true, sameSite: "Lax", secure: true });
+            return res.status(200).json({ accessToken: newAccessToken });
+        } catch(error) {
+            console.error("Lỗi xác thực refresh token:", error);
+            return res.status(401).json({ message: "Refresh token không hợp lệ" });
+        }
+    },
 };
 
 export default controller;

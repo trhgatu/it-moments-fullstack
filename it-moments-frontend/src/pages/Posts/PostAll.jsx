@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import styles from './ActivityList.module.scss';
-import Filter from './Filter';
 import Category from './Category';
 import PostItem from './PostItem';
 import Pagination from './Pagination';
@@ -14,7 +13,9 @@ const ActivityList = () => {
         const fetchPosts = async () => {
             try {
                 const response = await axios.get('http://localhost:3000/api/v1/posts');
-                setPosts(response.data);
+                const postsData = response.data.data.posts;
+                setPosts(postsData);
+                console.log(postsData)
                 setLoading(false);
             } catch(error) {
                 console.error('Error fetching posts:', error);
@@ -42,20 +43,15 @@ const ActivityList = () => {
                 </a>
             </div>
 
-            <div className={styles.activityFilterContainer}>
-                <Filter />
-            </div>
-
             <div className={styles.activityList}>
                 <div className={styles.posts}>
                     {posts.map((post) => (
                         <PostItem
                             key={post._id}
                             title={post.title}
-                            author={post.createdBy.account_id}
+                            author={post.accountFullName}
                             date={new Date(post.createdAt).toLocaleDateString()}
                             imageUrl={post.thumbnail || 'https://via.placeholder.com/150'}
-                            category="Danh mục 1"
                             id={post._id}
                         />
                     ))}

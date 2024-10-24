@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Button, Table, Checkbox, Form, message } from 'antd';
 import axios from 'axios';
-import { getCookie } from '../../../admin/components/PrivateRoutes';
+import { useUser } from '../../../context/UserContext';
 
 const PermissionForm = ({ role }) => {
+    const { user } = useUser();
     const [records, setRecords] = useState([]);
     const [form] = Form.useForm();
 
     useEffect(() => {
-        const token = getCookie('token');
+        const token = user?.token;
         const config = {
             headers: {
                 'Content-Type': 'application/json',
@@ -52,7 +53,7 @@ const PermissionForm = ({ role }) => {
         };
 
         fetchRecords();
-    }, [form]);
+    }, [form, user]);
 
 
 
@@ -81,7 +82,7 @@ const PermissionForm = ({ role }) => {
         }));
 
         try {
-            const token = getCookie("token");
+            const token = user?.token;
             const config = {
                 headers: {
                     'Content-Type': 'application/json',

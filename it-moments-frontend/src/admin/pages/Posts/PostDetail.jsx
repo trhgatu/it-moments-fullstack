@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { Card, Avatar, Typography, Alert, Image, Row, Col, Divider, Spin } from "antd";
 import axios from 'axios';
 import moment from 'moment';
-import { getCookie } from '../../../admin/components/PrivateRoutes';
+import { useUser } from '../../../context/UserContext';
 
 const { Title, Text } = Typography;
 
@@ -19,19 +19,24 @@ const fetchData = async (id, token) => {
 };
 
 function PostDetail() {
+    const { user } = useUser();
     const { id } = useParams();
     const [post, setPost] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const token = getCookie("token");
+        const token = user?.token;
+        if (!token) {
+            setError('Không tìm thấy token.');
+            return;
+        }
         setLoading(true);
         setError(null);
 
         fetchData(id, token)
             .then(postResponse => {
-                if (postResponse.data?.success) {
+                if(postResponse.data?.success) {
                     setPost(postResponse.data.data);
                 } else {
                     throw new Error(postResponse.data.message || 'Failed to fetch post data');
@@ -42,11 +47,11 @@ function PostDetail() {
                 setError(`Unable to retrieve data: ${error.message}`);
             })
             .finally(() => setLoading(false));
-    }, [id]);
+    }, [id, user]);
 
-    if (loading) return <Spin tip="Loading..." />;
-    if (error) return <Alert message={error} type="error" showIcon />;
-    if (!post) return <Alert message="Post not found." type="warning" showIcon />;
+    if(loading) return <Spin tip="Loading..." />;
+    if(error) return <Alert message={error} type="error" showIcon />;
+    if(!post) return <Alert message="Post not found." type="warning" showIcon />;
 
     const { title, description, thumbnail, video, status, images, createdAt, position, post_category_id } = post;
 

@@ -3,10 +3,11 @@ import { Card, Form, Input, Button, Select, Upload, message, Radio } from 'antd'
 import { useNavigate } from 'react-router-dom';
 import { UploadOutlined } from '@ant-design/icons';
 import axios from 'axios';
-import { getCookie } from '../../components/PrivateRoutes';
+import { useUser } from '../../../context/UserContext';
 const { Option } = Select;
 
 const CreatePost = () => {
+    const { user, token } = useUser();
     const navigate = useNavigate();
     const [form] = Form.useForm();
     const [thumbnailFileList, setThumbnailFileList] = useState([]);
@@ -16,14 +17,14 @@ const CreatePost = () => {
 
     useEffect(() => {
         const fetchCategories = async () => {
-            const token = getCookie('token');
+            const token = user?.token;
+
             try {
                 const response = await axios.get(`http://localhost:3000/api/v1/admin/post-categories`, {
                     headers: {
-                        'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
                     },
-                    withCredentials: true, // To send cookies with request
+                    withCredentials: true,
                 });
 
                 if(response.data && Array.isArray(response.data.data.categories)) {
@@ -38,7 +39,7 @@ const CreatePost = () => {
             }
         };
         fetchCategories();
-    }, []);
+    }, [user]);
 
 
     const handleThumbnailChange = (info) => {
@@ -56,7 +57,7 @@ const CreatePost = () => {
     const onFinish = async (values) => {
         const formData = new FormData();
         formData.append('title', values.title);
-        formData.append('post_category_id', values.post_category_id);  // Gửi ID danh mục
+        formData.append('post_category_id', values.post_category_id);
         formData.append('description', values.description);
 
         const positionValue = values.position ? parseInt(values.position) : '';
@@ -73,9 +74,16 @@ const CreatePost = () => {
         });
 
         try {
+            const token = user?.token;
+            if(!token) {
+                message.error('Token không hợp lệ.');
+                console.error('Token:', token);  // Log token
+                return;
+            }
             await axios.post(`http://localhost:3000/api/v1/admin/posts/create`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${token}`
                 },
                 withCredentials: true,
             });
@@ -84,8 +92,12 @@ const CreatePost = () => {
         } catch(error) {
             console.error('Lỗi khi tạo bài viết:', error);
             message.error('Có lỗi xảy ra khi tạo bài viết.');
+            if(error.response) {
+                console.error('Lỗi từ máy chủ:', error.response.data);
+            }
         }
     };
+
 
     return (
         <div className="page-inner">

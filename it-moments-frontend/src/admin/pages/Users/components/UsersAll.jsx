@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Card, Table, Button, Avatar, Typography, Alert } from "antd";
+import { Row, Col, Card, Table, Button, Avatar, Typography, Alert, Modal } from "antd";
 import { EyeOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import { getCookie } from '../../../components/PrivateRoutes';
+import { useUser } from '../../../../context/UserContext'; // Nhập UserContext
 import Pagination from '../../../components/Pagination';
 import moment from 'moment';
 import axios from 'axios';
 
 const { Title } = Typography;
 
-const fetchUsersData = async (currentPage) => {
-    const token = getCookie('token');
+const fetchUsersData = async (currentPage, token) => {
     const config = {
         headers: {
             'Content-Type': 'application/json',
@@ -21,15 +20,15 @@ const fetchUsersData = async (currentPage) => {
 
     try {
         const response = await axios.get(`http://localhost:3000/api/v1/admin/users?page=${currentPage}`, config);
-        console.log(response.data);
         return response.data;
-    } catch(error) {
+    } catch (error) {
         throw new Error('Failed to fetch users data');
     }
 };
 
 function UsersAll() {
     const navigate = useNavigate();
+    const { user } = useUser(); // Lấy user từ context
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -39,14 +38,22 @@ function UsersAll() {
         pageSize: 6,
         limitItems: 10
     });
+    const [deletingUserId, setDeletingUserId] = useState(null);
 
     useEffect(() => {
         const fetchUsers = async () => {
             setLoading(true);
             setError(null);
+            const token = user?.token;
+            if (!token) {
+                setError('Token không hợp lệ.');
+                setLoading(false);
+                return;
+            }
+
             try {
-                const data = await fetchUsersData(pagination.currentPage);
-                if(data?.data?.users) {
+                const data = await fetchUsersData(pagination.currentPage, token);
+                if (data?.data?.users) {
                     setUsers(data.data.users);
                     setPagination((prev) => ({
                         ...prev,
@@ -57,7 +64,7 @@ function UsersAll() {
                 } else {
                     throw new Error('Invalid data format');
                 }
-            } catch(error) {
+            } catch (error) {
                 console.error('Error fetching users:', error);
                 setError('Cannot retrieve users data.');
             } finally {
@@ -66,8 +73,7 @@ function UsersAll() {
         };
 
         fetchUsers();
-    }, [pagination.currentPage]);
-
+    }, [pagination.currentPage, user]);
 
     const handlePageChange = (page) => {
         setPagination((prev) => ({
@@ -77,8 +83,31 @@ function UsersAll() {
     };
 
     const handleDeleteUser = (userId) => {
-        // Logic to delete user
-        console.log(`Delete user with ID: ${userId}`);
+        setDeletingUserId(userId);
+    };
+
+    const confirmDeleteUser = async () => {
+        if (!deletingUserId) return;
+
+        const token = user?.token;
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+            withCredentials: true,
+        };
+
+        try {
+            await axios.delete(`http://localhost:3000/api/v1/admin/users/${deletingUserId}`, config);
+            message.success('Người dùng đã được xóa thành công.');
+            setUsers((prev) => prev.filter(user => user._id !== deletingUserId));
+        } catch (error) {
+            console.error('Error deleting user:', error);
+            message.error('Không thể xóa người dùng.');
+        } finally {
+            setDeletingUserId(null);
+        }
     };
 
     const columns = [
@@ -194,6 +223,17 @@ function UsersAll() {
                     </Card>
                 </Col>
             </Row>
+
+            <Modal
+                title="Xác nhận xóa"
+                visible={!!deletingUserId}
+                onOk={confirmDeleteUser}
+                onCancel={() => setDeletingUserId(null)}
+                okText="Xóa"
+                cancelText="Hủy"
+            >
+                <p>Bạn có chắc chắn muốn xóa người dùng này không?</p>
+            </Modal>
         </div>
     );
 }

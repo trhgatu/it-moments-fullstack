@@ -13,6 +13,7 @@ const PostDetail = () => {
       try {
         const response = await axios.get(`http://localhost:3000/api/v1/posts/detail/${id}`); // Fetch post data by ID
         setPost(response.data); // Set the fetched post data
+        console.log(response.data);
         setLoading(false); // Stop loading
       } catch(error) {
         console.error('Error fetching post details:', error);
@@ -32,7 +33,7 @@ const PostDetail = () => {
   }
 
   return (
-    <div className="max-w-screen-lg mx-auto p-6 bg-white h-screen overflow-y-scroll">
+    <div className="max-w-screen-lg mx-auto p-6 bg-white h-screen pt-40">
       <div className="cursor-pointer">
         <img
           src={post.thumbnail || 'https://via.placeholder.com/150'}
@@ -51,7 +52,7 @@ const PostDetail = () => {
               {new Date(post.createdAt).toLocaleDateString()}
             </span>
           </div>
-          <span className="bg-blue-600 text-white text-sm px-4 py-2 rounded">Category ID: {post.post_category_id}</span>
+          <span className="bg-blue-600 text-white px-4 py-2 rounded">Danh mục: {post.post_category_id?.title || "Không có danh mục"}</span>
         </div>
 
         <p className="text-lg">{post.description}</p>

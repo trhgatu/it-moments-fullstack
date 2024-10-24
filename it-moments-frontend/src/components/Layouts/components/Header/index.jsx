@@ -2,8 +2,10 @@ import { useEffect, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom'; // Import thêm useLocation
 import cx from 'classnames'; // Import classnames
 import styles from './Header.module.scss';
+import { useUser } from '../../../../context/UserContext';
 
 export const Header = () => {
+    const { user, setUser } = useUser();
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const location = useLocation(); // Lấy pathname từ location
@@ -145,34 +147,40 @@ export const Header = () => {
             </nav>
 
             <div className="hidden md:flex gap-4 items-center">
-                <NavLink
-                    className={cx(
-                        'px-2 md:px-4 py-1 transition-all duration-300',
-                        {
-                            'bg-[var(--primary)] text-white border border-[#2E6C7B] hover:bg-[#2E6C7B] hover:text-white':
-                                isScrolled || location.pathname !== '/',
-                            'bg-transparent text-white border border-white hover:bg-[var(--primary)] hover:text-white':
-                                !isScrolled && location.pathname === '/'
-                        }
-                    )}
-                    to="/login"
-                >
-                    Đăng nhập
-                </NavLink>
-                <NavLink
-                    className={cx(
-                        'px-2 md:px-4 py-1 transition-all duration-300',
-                        {
-                            'bg-white text-[var(--primary)] border border-white hover:bg-white':
-                                isScrolled || location.pathname !== '/',
-                            'bg-transparent text-[var(--primary)] border border-[var(--primary)] hover:bg-white hover:text-[var(--primary)]':
-                                !isScrolled && location.pathname === '/'
-                        }
-                    )}
-                    to="/register"
-                >
-                    Đăng ký
-                </NavLink>
+                {user ? (
+                    <span className="text-[var(--primary)]">Xin chào, {user.fullName}</span> // Hiển thị tên người dùng
+                ) : (
+                    <>
+                        <NavLink
+                            className={cx(
+                                'px-2 md:px-4 py-1 transition-all duration-300',
+                                {
+                                    'bg-[var(--primary)] text-white border border-[#2E6C7B] hover:bg-[#2E6C7B] hover:text-white':
+                                        isScrolled || location.pathname !== '/',
+                                    'bg-transparent text-white border border-white hover:bg-[var(--primary)] hover:text-white':
+                                        !isScrolled && location.pathname === '/'
+                                }
+                            )}
+                            to="/login"
+                        >
+                            Đăng nhập
+                        </NavLink>
+                        <NavLink
+                            className={cx(
+                                'px-2 md:px-4 py-1 transition-all duration-300',
+                                {
+                                    'bg-white text-[var(--primary)] border border-white hover:bg-white':
+                                        isScrolled || location.pathname !== '/',
+                                    'bg-transparent text-[var(--primary)] border border-[var(--primary)] hover:bg-white hover:text-[var(--primary)]':
+                                        !isScrolled && location.pathname === '/'
+                                }
+                            )}
+                            to="/register"
+                        >
+                            Đăng ký
+                        </NavLink>
+                    </>
+                )}
             </div>
 
             {/* Menu di động khi mở */}

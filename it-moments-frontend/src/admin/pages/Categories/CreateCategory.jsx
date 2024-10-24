@@ -3,7 +3,7 @@ import { Card, Form, Input, Button, Select, Upload, message, Radio } from 'antd'
 import { useNavigate } from 'react-router-dom';
 import { UploadOutlined } from '@ant-design/icons';
 import axios from 'axios';
-import { getCookie } from '../../../admin/components/PrivateRoutes';
+import { useUser } from '../../../context/UserContext'; // Nhập UserContext
 
 const { Option } = Select;
 
@@ -12,9 +12,15 @@ const CreateCategory = () => {
     const [form] = Form.useForm();
     const [thumbnailFileList, setThumbnailFileList] = useState([]);
     const [allCategories, setAllCategories] = useState([]);
+    const { user } = useUser(); // Lấy user từ context
 
     const fetchCategories = async () => {
-        const token = getCookie('token');
+        const token = user?.token;
+        if (!token) {
+            message.error('Token không hợp lệ.');
+            return;
+        }
+
         try {
             const response = await axios.get(`http://localhost:3000/api/v1/admin/post-categories`, {
                 headers: {
@@ -32,10 +38,33 @@ const CreateCategory = () => {
 
     useEffect(() => {
         fetchCategories(); // Gọi hàm để lấy danh mục khi component mount
-    }, []);
+    }, [user]);
 
     const handleThumbnailChange = (info) => {
         setThumbnailFileList(info.fileList);
+    };
+
+    const uploadThumbnail = async (formData) => {
+        try {
+            const token = user?.token;
+            if (!token) {
+                message.error('Token không hợp lệ.');
+                return;
+            }
+
+            await axios.post(`http://localhost:3000/api/v1/admin/post-categories/create`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${token}`
+                },
+                withCredentials: true,
+            });
+            message.success('Danh mục đã được tạo thành công!');
+            navigate('/admin/post-categories');
+        } catch (error) {
+            console.error('Lỗi khi tạo danh mục:', error);
+            message.error('Có lỗi xảy ra khi tạo danh mục.');
+        }
     };
 
     const onFinish = async (values) => {
@@ -52,19 +81,7 @@ const CreateCategory = () => {
             formData.append('thumbnail', thumbnailFileList[0].originFileObj);
         }
 
-        try {
-            await axios.post(`http://localhost:3000/api/v1/admin/post-categories/create`, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-                withCredentials: true,
-            });
-            message.success('Danh mục đã được tạo thành công!');
-            navigate('/admin/post-categories');
-        } catch (error) {
-            console.error('Lỗi khi tạo danh mục:', error);
-            message.error('Có lỗi xảy ra khi tạo danh mục.');
-        }
+        await uploadThumbnail(formData);
     };
 
     // Hàm để xây dựng tên hiển thị cho danh mục

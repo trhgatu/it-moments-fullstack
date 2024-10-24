@@ -8,6 +8,10 @@ const postSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'PostCategory',
     },
+    event_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Event',
+    },
     description: String,
     thumbnail: String,
     video: String,

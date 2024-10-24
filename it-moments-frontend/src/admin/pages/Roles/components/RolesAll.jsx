@@ -1,15 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { Row, Col, Card, Table, Button, Typography, Alert } from "antd";
+import React, { useState, useEffect, useContext } from 'react';
+import { Row, Col, Card, Table, Button, Typography, Alert, Modal, message } from "antd";
 import { EyeOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import moment from 'moment';
-import { getCookie } from '../../../../admin/components/PrivateRoutes';
+import { useUser } from '../../../../context/UserContext'; // Import UserContext
+
 const { Title } = Typography;
 
-// Hàm fetch dữ liệu roles từ API
-const fetchRolesData = async () => {
-    const token = getCookie('token');
+const fetchRolesData = async (token) => {
     const config = {
         headers: {
             'Content-Type': 'application/json',
@@ -20,29 +19,32 @@ const fetchRolesData = async () => {
     try {
         const response = await axios.get('http://localhost:3000/api/v1/admin/roles', config);
         return response.data;
-    } catch(error) {
+    } catch (error) {
         throw new Error('Failed to fetch roles data');
     }
 };
 
 function RolesAll() {
+    const { user } = useUser(); // Lấy user từ context
+    const token = user?.token; // Lấy token từ thông tin người dùng
     const navigate = useNavigate();
     const [roles, setRoles] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [deletingRoleId, setDeletingRoleId] = useState(null);
 
     useEffect(() => {
         const fetchRoles = async () => {
             setLoading(true);
             setError(null);
             try {
-                const data = await fetchRolesData();
-                if(data?.records) {
+                const data = await fetchRolesData(token);
+                if (data?.records) {
                     setRoles(data.records);
                 } else {
                     throw new Error('Invalid data format');
                 }
-            } catch(error) {
+            } catch (error) {
                 console.error('Error fetching roles:', error);
                 setError('Cannot retrieve roles data.');
             } finally {
@@ -50,15 +52,36 @@ function RolesAll() {
             }
         };
 
-        fetchRoles();
-    }, []);
+        if (token) { // Kiểm tra token trước khi gọi API
+            fetchRoles();
+        }
+    }, [token]);
 
     const handleDeleteRole = (roleId) => {
-        // Logic để xóa nhóm quyền
-        console.log(`Delete role with ID: ${roleId}`);
+        setDeletingRoleId(roleId);
     };
 
-    // Định nghĩa cột cho bảng roles
+    const confirmDeleteRole = async () => {
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+            withCredentials: true,
+        };
+
+        try {
+            await axios.delete(`http://localhost:3000/api/v1/admin/roles/${deletingRoleId}`, config);
+            message.success('Nhóm quyền đã được xóa thành công.');
+            setRoles((prev) => prev.filter(role => role._id !== deletingRoleId));
+        } catch (error) {
+            console.error('Error deleting role:', error);
+            message.error('Không thể xóa nhóm quyền.');
+        } finally {
+            setDeletingRoleId(null);
+        }
+    };
+
     const columns = [
         {
             title: "STT",
@@ -135,13 +158,24 @@ function RolesAll() {
                                 dataSource={roles}
                                 loading={loading}
                                 rowKey="_id"
-                                pagination={false}  // Không cần phân trang
+                                pagination={false} // Không cần phân trang
                                 className="ant-border-space"
                             />
                         </div>
                     </Card>
                 </Col>
             </Row>
+
+            <Modal
+                title="Xóa nhóm quyền"
+                visible={!!deletingRoleId}
+                onOk={confirmDeleteRole}
+                onCancel={() => setDeletingRoleId(null)}
+                okText="Xóa"
+                cancelText="Hủy"
+            >
+                <p>Bạn có chắc chắn muốn xóa nhóm quyền này không?</p>
+            </Modal>
         </div>
     );
 }

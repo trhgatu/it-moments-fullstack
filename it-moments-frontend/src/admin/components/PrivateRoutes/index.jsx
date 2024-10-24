@@ -1,61 +1,18 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { Outlet, Navigate } from "react-router-dom";
-
-export const getCookie = (name) => {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if(parts.length === 2) return parts.pop().split(';')[0];
-    return null;
-};
-
-
-const checkLogin = async () => {
-    /* const token = getCookie('token');
-    if(!token) {
-        return false;
-    } */
-
-    try {
-        const response = await fetch('http://localhost:3000/api/v1/admin/auth/verify-token', {
-            method: 'POST',
-            credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json',
-            }
-        });
-
-        if(response.ok) {
-            const data = await response.json();
-            // Kiểm tra dữ liệu trả về nếu cần
-            console.log('Token valid:', data);
-            return true;
-        }
-    } catch(error) {
-        console.error('Xác thực token thất bại:', error);
-    }
-
-    return false;
-};
-
+import { useUser } from "../../../context/UserContext";
 
 export default function PrivateRoutes() {
-    const [isLogin, setIsLogin] = useState(null);
+    const { user, loading } = useUser();
 
     useEffect(() => {
-        const verifyLogin = async () => {
-            const loggedIn = await checkLogin();
-            console.log('Logged In:', loggedIn);
-            setIsLogin(loggedIn);
-        };
-        verifyLogin();
-    }, []);
+        console.log("User state in PrivateRoutes:", user);
+        console.log("Loading state in PrivateRoutes:", loading);
+    }, [user, loading]);
 
-    if(isLogin === null) {
+    if (loading) {
         return <div>Loading...</div>;
     }
-    return (
-        <>
-            {isLogin ? <Outlet /> : <Navigate to="/admin/auth/login" />}
-        </>
-    );
+
+    return user ? <Outlet /> : <Navigate to="/admin/auth/login" />;
 }
