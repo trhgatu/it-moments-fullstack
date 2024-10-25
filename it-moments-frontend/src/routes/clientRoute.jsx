@@ -1,7 +1,6 @@
 import About from "../pages/About";
 import { DefaultLayout } from "../components/Layouts";
 import Academic from "../pages/Academic";
-import PrivateRoutes from "../components/PrivateRoutes";
 import Posts from "../pages/Posts";
 import Home from "../pages/Home";
 import Event from "../pages/Event";
@@ -13,6 +12,7 @@ import Login from "../pages/Authentication/Login";
 import Register from "../pages/Authentication/Register";
 import Error from "../pages/Error";
 import Profile from "../pages/Profile";
+import PrivateRoutes from "../components/PrivateRoutes";
 export const clientRoute = [
     {
         path: "/",
@@ -61,7 +61,7 @@ export const clientRoute = [
                 element: <Error />
             },
             {
-                path: "*",
+                path: "/profile",
                 element: <PrivateRoutes />,
                 children: [
                     {

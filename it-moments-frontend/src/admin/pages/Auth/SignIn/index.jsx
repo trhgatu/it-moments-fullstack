@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Layout, Button, Row, Col, Typography, Form, Input, message } from "antd";
 import signinbg from "../../../assets/images/img-signin.jpg";
 import { useUser } from '../../../../context/UserContext';
@@ -10,11 +10,15 @@ const { Content } = Layout;
 const SignIn = () => {
     const { user, setUser, setRole } = useUser();
     const navigate = useNavigate();
+
+    // Kiểm tra nếu người dùng đã đăng nhập và chuyển hướng
     useEffect(() => {
-        if(user){
+        if (user) {
             navigate('/admin/dashboard');
         }
     }, [user, navigate]);
+
+    // Hàm xử lý khi form được submit
     const onFinish = async (values) => {
         try {
             const response = await fetch("http://localhost:3000/api/v1/admin/auth/login", {
@@ -28,16 +32,18 @@ const SignIn = () => {
 
             const data = await response.json();
 
+            // Kiểm tra nếu response ok
             if (response.ok) {
                 message.success("Đăng nhập thành công!");
-
                 setUser(data.user);
                 setRole(data.user.role_id);
                 navigate("/admin/dashboard");
             } else {
+                // Hiển thị thông báo lỗi từ server
                 message.error(data.message || "Đăng nhập thất bại!");
             }
         } catch (error) {
+            // Xử lý lỗi khi không kết nối được tới server
             message.error("Đã xảy ra lỗi khi đăng nhập.");
             console.error("Lỗi đăng nhập:", error);
         }

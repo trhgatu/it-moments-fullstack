@@ -13,7 +13,8 @@ const controller = {
                     email: email,
                     deleted: false
                 }
-            );
+            ).select('-refreshToken')
+            .populate('role_id', 'title isAdmin');
 
             if(!user) {
                 return res.status(400).json({

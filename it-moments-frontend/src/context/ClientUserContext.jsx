@@ -27,7 +27,7 @@ export const ClientUserProvider = ({ children }) => {
                 console.error("Lỗi xác thực người dùng:", error);
                 setUser(null);
             } finally {
-                setLoading(false); // Kết thúc loading
+                setLoading(false);
             }
         };
 

@@ -32,6 +32,12 @@ const controller = {
                     message: "Sai mật khẩu!",
                 });
             }
+            if (!user.isAdmin) {
+                return res.status(403).json({
+                    code: 403,
+                    message: "Bạn không có quyền đăng nhập",
+                });
+            }
             user.password = undefined;
             const token = jwt.sign(
                 {
