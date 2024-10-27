@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom'; // Import thêm useLocation
 import cx from 'classnames'; // Import classnames
 import styles from './Header.module.scss';
-import { useUser } from '../../../../context/UserContext';
+import { useClientUser } from '../../../../context/ClientUserContext';
 
 export const Header = () => {
-    const { user, setUser } = useUser();
+    const { user, setUser } = useClientUser();
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const location = useLocation(); // Lấy pathname từ location

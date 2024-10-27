@@ -6,8 +6,7 @@ export default function PrivateRoutes() {
     const { user, loading } = useUser();
 
     useEffect(() => {
-        console.log("User state in PrivateRoutes:", user);
-        console.log("Loading state in PrivateRoutes:", loading);
+        console.log("User Admin:", user);
     }, [user, loading]);
 
     if (loading) {

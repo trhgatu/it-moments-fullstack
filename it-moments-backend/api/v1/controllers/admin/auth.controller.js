@@ -15,8 +15,8 @@ const controller = {
                     deleted: false
                 }
             )
-            .select('-refreshToken')
-            .populate('role_id', 'title permissions isAdmin');
+                .select('-refreshToken')
+                .populate('role_id', 'title permissions isAdmin');
 
             if(!user) {
                 return res.status(400).json({
@@ -32,7 +32,7 @@ const controller = {
                     message: "Sai mật khẩu!",
                 });
             }
-            if (!user.isAdmin) {
+            if(!user.isAdmin) {
                 return res.status(403).json({
                     code: 403,
                     message: "Bạn không có quyền đăng nhập",
@@ -92,15 +92,15 @@ const controller = {
             return res.status(500).json({ code: 500, message: 'Lỗi khi tạo tài khoản' });
         }
     }, */
-    me : async (req, res) => {
+    me: async (req, res) => {
         try {
             const user = res.locals.user;
-            if (!user) {
+            if(!user) {
                 return res.status(404).json({ message: "Người dùng không tồn tại" });
             }
             const token = req.cookies.admin_token;
-            return res.status(200).json({ user , token});
-        } catch (error) {
+            return res.status(200).json({ user, token });
+        } catch(error) {
             return res.status(500).json({ message: "Lỗi khi lấy thông tin người dùng" });
         }
     }

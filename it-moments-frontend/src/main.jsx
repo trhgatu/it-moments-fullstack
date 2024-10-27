@@ -7,12 +7,15 @@ import App from './App';
 import "./firebase/config";
 import { BrowserRouter } from 'react-router-dom';
 import { UserProvider } from './context/UserContext';
+import { ClientUserProvider } from './context/ClientUserContext';
 createRoot(document.getElementById('root')).render(
     <UserProvider>
-        <BrowserRouter>
-            <GlobalStyles>
-                <App />
-            </GlobalStyles>
-        </BrowserRouter>
+        <ClientUserProvider>
+            <BrowserRouter>
+                <GlobalStyles>
+                    <App />
+                </GlobalStyles>
+            </BrowserRouter>
+        </ClientUserProvider>
     </UserProvider>
 );

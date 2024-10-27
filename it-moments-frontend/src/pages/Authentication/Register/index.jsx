@@ -1,4 +1,4 @@
-import  { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import styles from './Register.module.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope, faUser, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
@@ -28,10 +28,10 @@ function Register() {
     return (
         <div className={styles.registerBackground}>
             <div className={styles.registerContainer}>
-            <div className={styles.registerForm}>
+                <div className={styles.registerForm}>
                     <h1>Đăng ký</h1>
                     <form>
-                    <div className={styles.inputIcon}>
+                        <div className={styles.inputIcon}>
                             <input type="text" placeholder="Họ tên" required />
                             <span className={styles.icon}>
                                 <FontAwesomeIcon icon={faUser} /></span>
@@ -40,7 +40,7 @@ function Register() {
                         <div className={styles.inputIcon}>
                             <input type="email" placeholder="Email" required />
                             <span className={styles.icon}>
-<FontAwesomeIcon icon={faEnvelope} /></span>
+                                <FontAwesomeIcon icon={faEnvelope} /></span>
                         </div>
 
                         <div className={styles.inputIcon}>
@@ -50,7 +50,7 @@ function Register() {
                                 required
                             />
                             <span className={styles.icon}
-                            onClick={togglePasswordVisibility}>
+                                onClick={togglePasswordVisibility}>
                                 <FontAwesomeIcon icon={passwordShown ? faEyeSlash : faEye} />
                             </span>
                         </div>

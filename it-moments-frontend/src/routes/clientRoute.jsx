@@ -13,6 +13,8 @@ import Register from "../pages/Authentication/Register";
 import Error from "../pages/Error";
 import Profile from "../pages/Profile";
 import PrivateRoutes from "../components/PrivateRoutes";
+import VerifyEmail from "../pages/VerifyEmail";
+import { elements } from "chart.js";
 export const clientRoute = [
     {
         path: "/",
@@ -80,4 +82,8 @@ export const clientRoute = [
         path: "register",
         element: <Register />
     },
+    {
+        path: "verify",
+        element: <VerifyEmail/>
+    }
 ];

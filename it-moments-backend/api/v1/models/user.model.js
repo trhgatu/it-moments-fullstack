@@ -7,6 +7,8 @@ const userSchema = new mongoose.Schema({
     password: String,
     token: String,
     refreshToken: String,
+    verificationToken: String,
+    isVerified: { type: Boolean, default: false },
     phone: String,
     avatar: String,
     deleted: {

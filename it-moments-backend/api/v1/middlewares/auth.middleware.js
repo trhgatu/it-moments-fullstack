@@ -15,9 +15,30 @@ export const requireAuth = async (req, res, next) => {
         if(!user) {
             return res.status(401).json({ message: "Người dùng không tồn tại" });
         }
-        console.log(user);
         res.locals.user = user;
         res.locals.role = user.role_id;
+
+        next();
+    } catch(error) {
+        console.error("Token verification error:", error);
+        return res.status(401).json({ message: "Token không hợp lệ" });
+    }
+};
+export const requireClientAuth = async (req, res, next) => {
+    const token = req.cookies.client_token;
+
+    if(!token) {
+        return res.status(401).json({ message: "Token không hợp lệ hoặc đã hết hạn" });
+    }
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const user = await User.findById(decoded.id).select("-password -token");
+
+        if(!user) {
+            return res.status(401).json({ message: "Người dùng không tồn tại" });
+        }
+        res.locals.user = user;
 
         next();
     } catch(error) {

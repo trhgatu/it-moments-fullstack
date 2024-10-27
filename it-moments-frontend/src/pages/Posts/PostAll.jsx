@@ -15,7 +15,6 @@ const ActivityList = () => {
                 const response = await axios.get('http://localhost:3000/api/v1/posts');
                 const postsData = response.data.data.posts;
                 setPosts(postsData);
-                console.log(postsData)
                 setLoading(false);
             } catch(error) {
                 console.error('Error fetching posts:', error);
@@ -49,6 +48,7 @@ const ActivityList = () => {
                         <PostItem
                             key={post._id}
                             title={post.title}
+                            description={post.description}
                             author={post.accountFullName}
                             date={new Date(post.createdAt).toLocaleDateString()}
                             imageUrl={post.thumbnail || 'https://via.placeholder.com/150'}

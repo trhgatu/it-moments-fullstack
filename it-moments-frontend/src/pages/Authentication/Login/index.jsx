@@ -1,9 +1,8 @@
 import { useState } from 'react';
-import axios from 'axios'; // Import axios
 import { Button, Typography } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
-import { useUser } from '../../../context/UserContext';
+import { useClientUser } from '../../../context/ClientUserContext';
 import { useNavigate } from 'react-router-dom';
 import styles from './Login.module.scss';
 
@@ -12,8 +11,8 @@ export default function Login() {
     const [password, setPassword] = useState("");
     const [passwordShown, setPasswordShown] = useState(false);
     const [error, setError] = useState("");
-    const [loading, setLoading] = useState(false); // Thêm trạng thái loading
-    const { setUser } = useUser();
+    const [loading, setLoading] = useState(false);
+    const { setUser } = useClientUser();
     const navigate = useNavigate();
 
     const togglePasswordVisibility = () => {
@@ -23,52 +22,33 @@ export default function Login() {
     const handleLogin = async (e) => {
         e.preventDefault();
         setError("");
-        setLoading(true); // Bắt đầu quá trình đăng nhập
+        setLoading(true);
+
         try {
-            const response = await axios.post(
-                'http://localhost:3000/api/v1/auth/login',
-                {
-                    email: email,
-                    password: password
+            const response = await fetch("http://localhost:3000/api/v1/auth/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
                 },
-                {
-                    withCredentials: true,
-                }
-            );
+                body: JSON.stringify({ email, password }),
+                credentials: "include",
+            });
 
-            if (response.status === 200) {
-                console.log("Đăng nhập thành công:", response.data);
-                const tokenResponse = await axios.post(
-                    "http://localhost:3000/api/v1/auth/verify-token",
-                    {},
-                    {
-                        withCredentials: true,
-                    }
-                );
+            const data = await response.json();
 
-                if (tokenResponse.status === 200) {
-                    setUser(tokenResponse.data.user);
-                    console.log(tokenResponse.data.user);
+            if (response.ok) {
+                setUser(data.user);
+                console.log("Đăng nhập thành công:", data.message);
+                navigate("/");
+            } else {
 
-                    setTimeout(() => {
-                        navigate("/");
-                    }, 500);
-                }
+                setError(data.message || "Đăng nhập thất bại!");
             }
         } catch (error) {
-            if (error.response) {
-                if (error.response.status === 401) {
-                    setError('Đăng nhập không thành công. Vui lòng kiểm tra lại email và mật khẩu.');
-                } else if (error.response.data && error.response.data.message) {
-                    setError(error.response.data.message);
-                } else {
-                    setError('Có lỗi xảy ra. Vui lòng thử lại.');
-                }
-            } else {
-                setError('Có lỗi xảy ra, vui lòng thử lại sau.');
-            }
+            setError("Đã xảy ra lỗi khi đăng nhập.");
+            console.error("Lỗi đăng nhập:", error);
         } finally {
-            setLoading(false); // Kết thúc quá trình đăng nhập
+            setLoading(false);
         }
     };
 
