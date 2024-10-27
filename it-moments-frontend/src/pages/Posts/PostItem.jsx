@@ -5,11 +5,11 @@ import { useNavigate } from 'react-router-dom';
 import styles from './PostItem.module.scss';
 import { FaRegCalendarAlt } from "react-icons/fa";
 import { IoPersonOutline } from "react-icons/io5";
-const PostItem = ({ title, description, author, date, imageUrl, id }) => {
+const PostItem = ({ title, description, author, date, imageUrl, slug }) => {
     const navigate = useNavigate();
 
     const handlePostItemClick = () => {
-        navigate(`/posts/detail/${id}`);
+        navigate(`/posts/performances/detail/${slug}`);
     };
 
 
@@ -17,6 +17,7 @@ const PostItem = ({ title, description, author, date, imageUrl, id }) => {
         <div className={styles.postItem} onClick={handlePostItemClick}>
             <div className={styles.postImage}>
                 <img src={imageUrl} alt={title} loading="lazy" />
+                <div className={styles.overlay}></div>
             </div>
             <div className={styles.postContent}>
 
@@ -40,7 +41,7 @@ PostItem.propTypes = {
     date: PropTypes.string.isRequired,
     imageUrl: PropTypes.string.isRequired,
     category: PropTypes.string.isRequired,
-    id: PropTypes.string.isRequired,
+    slug: PropTypes.string.isRequired
 };
 
 export default PostItem;

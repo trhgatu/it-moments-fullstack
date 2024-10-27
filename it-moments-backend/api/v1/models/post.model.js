@@ -13,6 +13,10 @@ const postSchema = new mongoose.Schema({
         ref: 'Event',
     },
     description: String,
+    views: {
+        type: Number,
+        default: 0
+    },
     thumbnail: String,
     video: String,
     status: String,

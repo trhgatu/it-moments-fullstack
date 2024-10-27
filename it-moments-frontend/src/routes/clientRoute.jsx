@@ -14,7 +14,6 @@ import Error from "../pages/Error";
 import Profile from "../pages/Profile";
 import PrivateRoutes from "../components/PrivateRoutes";
 import VerifyEmail from "../pages/VerifyEmail";
-import { elements } from "chart.js";
 export const clientRoute = [
     {
         path: "/",
@@ -24,12 +23,9 @@ export const clientRoute = [
                 path: "/",
                 element: <Home />
             },
+
             {
-                path: "event",
-                element: <Event />
-            },
-            {
-                path: "posts",
+                path: "posts/performances",
                 element: <Posts />,
                 children: [
                     {
@@ -41,10 +37,14 @@ export const clientRoute = [
                         element: <PostsNew />
                     },
                     {
-                        path: "detail/:id",
+                        path: "detail/:slug",
                         element: <PostDetail />
                     },
                 ]
+            },
+            {
+                path: "posts/event",
+                element: <Event />
             },
             {
                 path: "about",
@@ -55,7 +55,7 @@ export const clientRoute = [
                 element: <Profile />
             },
             {
-                path: "academic",
+                path: "posts/academic",
                 element: <Academic />
             },
             {

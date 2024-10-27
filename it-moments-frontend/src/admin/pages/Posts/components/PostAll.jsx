@@ -177,7 +177,6 @@ function PostsAll() {
     <div className="tabled">
       <Row gutter={[24, 0]}>
         <Col xs="24" xl={24}>
-          {/* Hiển thị trạng thái loading hoặc thông tin bài viết */}
           {loadingPosts || userLoading ? (
             <div style={{ textAlign: 'center', padding: '20px' }}>Đang tải dữ liệu...</div> // Thay thế spinner bằng thông báo đơn giản
           ) : (

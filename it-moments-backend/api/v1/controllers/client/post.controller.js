@@ -79,11 +79,11 @@ const controller = {
         });
     },
 
-    /* [GET] api/v1/posts/detail/:id */
+    /* [GET] api/v1/posts/detail/:slug */
     detail: async (req, res) => {
-        const id = req.params.id;
+        const slug = req.params.slug;
         const find = {
-            _id: id,
+            slug: slug,
             deleted: false,
         }
         const post = await Post.findOne(find)

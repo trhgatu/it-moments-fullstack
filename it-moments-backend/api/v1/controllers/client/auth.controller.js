@@ -19,7 +19,12 @@ const controller = {
                     message: 'Email không tồn tại',
                 });
             }
-
+            if(!user.isVerified){
+                return res.status(400).json({
+                    code: 400,
+                    message: 'Tài khoản chưa được xác thực!',
+                });
+            }
             const isPasswordValid = await bcrypt.compare(password, user.password);
             if (!isPasswordValid) {
                 return res.status(400).json({

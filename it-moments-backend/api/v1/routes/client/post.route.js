@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.get('/', controller.index);
 
-router.get('/detail/:id', controller.detail);
+router.get('/detail/:slug', controller.detail);
 
 
 export default router;

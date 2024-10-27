@@ -1,28 +1,27 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom'; // To get the post ID from the URL
-import Gravatar from 'react-gravatar';
+import { useParams } from 'react-router-dom';
 
 const PostDetail = () => {
-  const { id } = useParams(); // Get the post ID from the route
-  const [post, setPost] = useState(null); // State to store the post data
-  const [loading, setLoading] = useState(true); // State to manage loading state
+  const { slug } = useParams();
+  const [post, setPost] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchPost = async () => {
       try {
-        const response = await axios.get(`http://localhost:3000/api/v1/posts/detail/${id}`); // Fetch post data by ID
-        setPost(response.data); // Set the fetched post data
+        const response = await axios.get(`http://localhost:3000/api/v1/posts/detail/${slug}`);
+        setPost(response.data);
         console.log(response.data);
-        setLoading(false); // Stop loading
+        setLoading(false);
       } catch(error) {
         console.error('Error fetching post details:', error);
-        setLoading(false); // Stop loading even if there's an error
+        setLoading(false);
       }
     };
 
-    fetchPost(); // Fetch the post details when the component mounts
-  }, [id]);
+    fetchPost();
+  }, [slug]);
 
   if(loading) {
     return <div>Loading...</div>;
@@ -96,8 +95,6 @@ const PostDetail = () => {
           </div>
         </div>
       )}
-
-
 
       {/* Related Posts Section */}
       <div className="mt-12">

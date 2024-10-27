@@ -3,20 +3,20 @@ import mongoose from "mongoose";
 const eventSchema = new mongoose.Schema({
     title: String,
     description: String,
-    start_time: {
+    startTime: {
         type: Date,
         required: true
     },
-    end_time: {
+    endTime: {
         type: Date,
-        required: true,
+        required: true
     },
     location: String,
     status: String,
-    voting_start_time : {
+    votingStartTime : {
         type: Date
     },
-    voting_end_time: {
+    votingEndTime: {
         type: Date
     },
     createdBy: {

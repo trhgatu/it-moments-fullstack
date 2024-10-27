@@ -8,6 +8,16 @@
     justify-content: center;
     align-items: center;
 }
+.success {
+    color: #2ecc71;
+    background-color: #eafaf1;
+    border: 1px solid #b3e6c3;
+    padding: 8px;
+    border-radius: 5px;
+    text-align: center;
+    margin-bottom: 15px;
+    font-size: 14px;
+}
 
 .spinner {
     border: 4px solid rgba(255, 255, 255, 0.3);

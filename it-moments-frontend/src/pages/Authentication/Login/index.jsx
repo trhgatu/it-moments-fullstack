@@ -4,6 +4,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { useClientUser } from '../../../context/ClientUserContext';
 import { useNavigate } from 'react-router-dom';
+import { notification } from 'antd';
+
 import styles from './Login.module.scss';
 
 export default function Login() {
@@ -12,9 +14,17 @@ export default function Login() {
     const [passwordShown, setPasswordShown] = useState(false);
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
+    const [success, setSuccess] = useState("");
     const { setUser } = useClientUser();
     const navigate = useNavigate();
-
+    const showNotification = (type, message, description) => {
+        notification[type]({
+            message,
+            description,
+            duration: 5,
+            placement: 'topRight',
+        });
+    };
     const togglePasswordVisibility = () => {
         setPasswordShown(!passwordShown);
     };
@@ -36,16 +46,20 @@ export default function Login() {
 
             const data = await response.json();
 
-            if (response.ok) {
+            if(response.ok) {
                 setUser(data.user);
-                console.log("Đăng nhập thành công:", data.message);
-                navigate("/");
-            } else {
+                setError("");
+                showNotification("success", "Đăng nhập thành công!", "Bạn sẽ được chuyển hướng trong giây lát.");
 
-                setError(data.message || "Đăng nhập thất bại!");
+                setTimeout(() => {
+                    notification.destroy();
+                    navigate("/");
+                }, 3000);
+            } else {
+                showNotification("error", "Đăng nhập thất bại!", data.message || "Đã có lỗi xảy ra.");
             }
-        } catch (error) {
-            setError("Đã xảy ra lỗi khi đăng nhập.");
+        } catch(error) {
+            showNotification("error", "Đăng nhập thất bại!", "Đã xảy ra lỗi khi đăng nhập.");
             console.error("Lỗi đăng nhập:", error);
         } finally {
             setLoading(false);
@@ -58,6 +72,10 @@ export default function Login() {
                 <div className={styles.loginForm}>
                     <Typography variant="h3">Đăng nhập</Typography>
                     <p>Vui lòng nhập thông tin chi tiết của bạn.</p>
+
+                    {/* Hiển thị thông báo đăng nhập thành công */}
+                    {success && <p className={styles.success}>{success}</p>}
+
                     <form onSubmit={handleLogin}>
                         <div className={styles.inputIcon}>
                             <input
@@ -109,4 +127,5 @@ export default function Login() {
             </div>
         </div>
     );
+
 }

@@ -52,7 +52,7 @@ const ActivityList = () => {
                             author={post.accountFullName}
                             date={new Date(post.createdAt).toLocaleDateString()}
                             imageUrl={post.thumbnail || 'https://via.placeholder.com/150'}
-                            id={post._id}
+                            slug={post.slug}
                         />
                     ))}
                 </div>
