@@ -11,9 +11,8 @@ const controller = {
     /* [GET] api/v1/posts */
     index: async (req, res) => {
         const filterStatusList = filterStatus(req.query);
-        const find = {
-            deleted: false
-        }
+        const find = { deleted: false };
+
         if(req.query.status) {
             find.status = req.query.status;
         }
@@ -21,6 +20,22 @@ const controller = {
 
         if(req.query.keyword) {
             find.title = objectSearch.regex;
+        }
+
+        if(req.query.category) {
+            const category = await PostCategory.findOne(
+                {
+                    slug: req.query.category
+                }
+            );
+            if(category) {
+                find.post_category_id = category._id;
+            } else {
+                return res.status(404).json({
+                    success: false,
+                    message: `Danh mục ${req.query.category} không tồn tại`,
+                });
+            }
         }
 
         // Pagination
@@ -35,6 +50,7 @@ const controller = {
             countPosts
         );
 
+        // Sort
         const sort = {};
         if(req.query.sortKey && req.query.sortValue) {
             sort[req.query.sortKey] = req.query.sortValue;
@@ -43,7 +59,7 @@ const controller = {
             sort.createdAt = "desc";
         }
 
-        //End Sort
+        // Fetch posts with applied filters
         const posts = await Post.find(find)
             .sort(sort)
             .limit(objectPagination.limitItems)
@@ -51,23 +67,19 @@ const controller = {
             .populate('post_category_id', 'title')
             .populate('event_id', 'title')
             .lean();
+
         for(const post of posts) {
-            const user = await User.findOne(
-                { _id: post.createdBy.account_id }
-            );
+            const user = await User.findOne({ _id: post.createdBy.account_id });
             if(user) {
                 post.accountFullName = user.isAdmin ? "Admin" : user.fullName;
             }
             const updatedBy = post.updatedBy.slice(-1)[0];
             if(updatedBy) {
-                const userUpdated = await User.findOne(
-                    {
-                        _id: updatedBy.account_id
-                    }
-                );
+                const userUpdated = await User.findOne({ _id: updatedBy.account_id });
                 updatedBy.accountFullName = userUpdated.fullName;
             }
         }
+
         res.json({
             success: true,
             data: {
@@ -78,7 +90,6 @@ const controller = {
             },
         });
     },
-
     /* [GET] api/v1/posts/detail/:slug */
     detail: async (req, res) => {
         const slug = req.params.slug;

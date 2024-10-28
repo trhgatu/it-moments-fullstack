@@ -39,7 +39,7 @@ const controller = {
                     email: user.email,
                 },
                 process.env.JWT_SECRET,
-                { expiresIn: "1h" }
+                { expiresIn: "7d" }
             );
             res.cookie("client_token", token, {
                 httpOnly: true,

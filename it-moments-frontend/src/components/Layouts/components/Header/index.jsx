@@ -97,7 +97,7 @@ export const Header = () => {
                     Trang chủ
                 </NavLink>
                 <NavLink
-                    to="/posts/event"
+                    to="/posts/su-kien"
                     className={({ isActive }) =>
                         cx(styles.navLink, 'transition-colors duration-300', {
                             'text-black': (isScrolled || location.pathname !== '/') && !isActive,
@@ -109,7 +109,7 @@ export const Header = () => {
                     Sự kiện
                 </NavLink>
                 <NavLink
-                    to="/posts/performances"
+                    to="/posts/van-nghe"
                     className={({ isActive }) =>
                         cx(styles.navLink, 'transition-colors duration-300', {
                             'text-black': (isScrolled || location.pathname !== '/') && !isActive,

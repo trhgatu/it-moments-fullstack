@@ -46,7 +46,7 @@ const controller = {
                 },
                 process.env.JWT_SECRET,
                 {
-                    expiresIn: "1h"
+                    expiresIn: "7d"
                 }
             );
             user.token = token;

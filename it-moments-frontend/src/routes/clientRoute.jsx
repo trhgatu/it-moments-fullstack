@@ -4,8 +4,6 @@ import Academic from "../pages/Academic";
 import Posts from "../pages/Posts";
 import Home from "../pages/Home";
 import Event from "../pages/Event";
-import PostsNew from "../pages/Posts/PostsNew";
-import PostAll from "../pages/Posts/PostAll";
 import InfoUser from "../pages/InfoUser";
 import PostDetail from "../pages/PostDetail/PostDetail";
 import Login from "../pages/Authentication/Login";
@@ -14,6 +12,9 @@ import Error from "../pages/Error";
 import Profile from "../pages/Profile";
 import PrivateRoutes from "../components/PrivateRoutes";
 import VerifyEmail from "../pages/VerifyEmail";
+import ActivityList from "../pages/Posts/ActivityList";
+import EventList from "../pages/Event/EventList";
+
 export const clientRoute = [
     {
         path: "/",
@@ -25,17 +26,9 @@ export const clientRoute = [
             },
 
             {
-                path: "posts/performances",
+                path: "posts/:category",
                 element: <Posts />,
                 children: [
-                    {
-                        index: true,
-                        element: <PostAll />
-                    },
-                    {
-                        path: "news",
-                        element: <PostsNew />
-                    },
                     {
                         path: "detail/:slug",
                         element: <PostDetail />

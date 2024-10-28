@@ -1,0 +1,15 @@
+.eventListContainer {
+    padding: 20px;
+}
+
+.eventList {
+    display: flex; /* Sử dụng flexbox để sắp xếp các bài viết */
+    flex-wrap: wrap; /* Cho phép các bài viết tràn xuống dòng mới khi không đủ chỗ */
+    gap: 20px; /* Khoảng cách giữa các bài viết */
+}
+
+.postsContainer {
+    display: flex; /* Bố trí hàng ngang */
+    flex-wrap: wrap; /* Cho phép tràn dòng */
+    gap: 20px; /* Khoảng cách giữa các bài viết */
+}

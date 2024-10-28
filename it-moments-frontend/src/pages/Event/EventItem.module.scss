@@ -1,0 +1,38 @@
+.eventItem {
+    display: flex; /* Hiển thị theo hàng ngang */
+    border: 1px solid #e0e0e0; /* Viền cho bài viết */
+    border-radius: 8px; /* Bo góc */
+    overflow: hidden; /* Đảm bảo không bị tràn */
+    transition: transform 0.2s; /* Hiệu ứng khi hover */
+    width: 300px; /* Độ rộng của mỗi bài viết */
+
+    &:hover {
+        transform: scale(1.05); /* Hiệu ứng phóng to khi hover */
+    }
+}
+
+.image {
+    width: 100px; /* Độ rộng hình ảnh */
+    height: auto; /* Đảm bảo giữ tỷ lệ */
+}
+
+.content {
+    padding: 10px;
+}
+
+.title {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.description {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.footer {
+    display: flex;
+    justify-content: space-between; /* Đặt tác giả và ngày ở 2 bên */
+    font-size: 0.8rem;
+    color: #999;
+}

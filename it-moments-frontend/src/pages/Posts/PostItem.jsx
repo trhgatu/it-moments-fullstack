@@ -5,11 +5,11 @@ import { useNavigate } from 'react-router-dom';
 import styles from './PostItem.module.scss';
 import { FaRegCalendarAlt } from "react-icons/fa";
 import { IoPersonOutline } from "react-icons/io5";
-const PostItem = ({ title, description, author, date, imageUrl, slug }) => {
+const PostItem = ({ title, description, author, date, imageUrl, slug}) => {
     const navigate = useNavigate();
 
     const handlePostItemClick = () => {
-        navigate(`/posts/performances/detail/${slug}`);
+        navigate(`/posts/detail/${slug}`);
     };
 
 
@@ -40,7 +40,6 @@ PostItem.propTypes = {
     author: PropTypes.string.isRequired,
     date: PropTypes.string.isRequired,
     imageUrl: PropTypes.string.isRequired,
-    category: PropTypes.string.isRequired,
     slug: PropTypes.string.isRequired
 };
 
