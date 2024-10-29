@@ -7,7 +7,7 @@ import PostItem from './PostItem';
 import Pagination from './Pagination';
 import { ChevronRightIcon } from '@heroicons/react/24/solid';
 
-const ActivityList = ({posts = []}) => {
+const ActivityList = ({ posts = [], category }) => {
     return (
         <div className={styles.activityListContainer}>
             <div className={`${styles.breadcrumb} bg-gray-100 text-gray-700 p-3 shadow`}>
@@ -15,7 +15,7 @@ const ActivityList = ({posts = []}) => {
                     Trang chủ
                 </a>
                 <ChevronRightIcon className="w-4 h-4 mx-2" aria-hidden="true" />
-                <a href="/posts" className="hover:text-blue-600 transition-colors duration-200">
+                <a href={`/posts/${category}`} className="hover:text-blue-600 transition-colors duration-200">
                     Văn nghệ
                 </a>
             </div>
@@ -31,6 +31,7 @@ const ActivityList = ({posts = []}) => {
                             date={new Date(post.createdAt).toLocaleDateString()}
                             imageUrl={post.thumbnail || 'https://via.placeholder.com/150'}
                             slug={post.slug}
+                            category={category}
                         />
                     ))}
                 </div>

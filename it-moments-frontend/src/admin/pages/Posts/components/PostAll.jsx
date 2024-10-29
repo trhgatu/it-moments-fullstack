@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, notification, Modal } from "antd";
+import { Row, Col, notification, Modal, Spin } from "antd";
 import PostsCard from './PostsCard';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../../../../context/UserContext';
@@ -178,7 +178,9 @@ function PostsAll() {
       <Row gutter={[24, 0]}>
         <Col xs="24" xl={24}>
           {loadingPosts || userLoading ? (
-            <div style={{ textAlign: 'center', padding: '20px' }}>Đang tải dữ liệu...</div> // Thay thế spinner bằng thông báo đơn giản
+            <div style={{ textAlign: 'center', padding: '20px' }}>
+              <Spin tip="Đang tải dữ liệu..." />
+            </div>
           ) : (
             <PostsCard
               posts={filteredPosts}

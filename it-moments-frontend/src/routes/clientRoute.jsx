@@ -30,7 +30,7 @@ export const clientRoute = [
                 element: <Posts />,
                 children: [
                     {
-                        path: "detail/:slug",
+                        path: ":slug",
                         element: <PostDetail />
                     },
                 ]

@@ -16,7 +16,7 @@ const controller = {
                 }
             )
                 .select('-refreshToken')
-                .populate('role_id', 'title permissions isAdmin');
+                .populate('role_id', 'title permissions description isAdmin');
 
             if(!user) {
                 return res.status(400).json({

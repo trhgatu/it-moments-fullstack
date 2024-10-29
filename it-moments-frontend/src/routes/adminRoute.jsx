@@ -5,7 +5,6 @@ import PostDetail from "../admin/pages/Posts/PostDetail.jsx";
 import PostAll from "../admin/pages/Posts/components/PostAll";
 import Posts from '../admin/pages/Posts';
 import CreatePost from '../admin/pages/Posts/CreatePost';
-import Profile from '../admin/pages/Profile';
 import SignUp from '../admin/pages/Auth/SignUp';
 import SignIn from '../admin/pages/Auth/SignIn';
 import { AdminDefaultLayout } from "../admin/components/Layouts";
@@ -22,6 +21,7 @@ import Roles from "../admin/pages/Roles";
 import RolesAll from "../admin/pages/Roles/components/RolesAll";
 import CreateRole from "../admin/pages/Roles/CreateRole";
 import PermissionForm from "../admin/pages/Roles/PermissionForm";
+import Profile from "../admin/pages/Profile";
 export const adminRoute = [
     {
         path: "/admin",
@@ -54,29 +54,29 @@ export const adminRoute = [
                     },
                     {
                         path: "post-categories",
-                        element: <Categories/>,
+                        element: <Categories />,
                         children: [
                             {
-                                index : true,
-                                element : <CategoriesAll/>
+                                index: true,
+                                element: <CategoriesAll />
                             },
                             {
                                 path: "detail/:id",
-                                element : <CategoryDetail/>
+                                element: <CategoryDetail />
                             },
                             {
                                 path: "create",
-                                element: <CreateCategory/>
+                                element: <CreateCategory />
                             }
                         ]
                     },
                     {
                         path: "users",
-                        element: <Users/>,
+                        element: <Users />,
                         children: [
                             {
-                                index : true,
-                                element : <UsersAll/>
+                                index: true,
+                                element: <UsersAll />
                             },
                             /* {
                                 path: "detail/:id",
@@ -90,11 +90,11 @@ export const adminRoute = [
                     },
                     {
                         path: "roles",
-                        element: <Roles/>,
+                        element: <Roles />,
                         children: [
                             {
-                                index : true,
-                                element : <RolesAll/>
+                                index: true,
+                                element: <RolesAll />
                             },
                             /* {
                                 path: "detail/:id",
@@ -102,13 +102,18 @@ export const adminRoute = [
                             },*/
                             {
                                 path: "create",
-                                element: <CreateRole/>
+                                element: <CreateRole />
                             },
                             {
                                 path: "permissions",
-                                element: <PermissionForm/>
-                            }
+                                element: <PermissionForm />
+                            },
+
                         ]
+                    },
+                    {
+                        path: "profile",
+                        element: <Profile />
                     }
 
                 ]

@@ -18,9 +18,6 @@ function Sidenav({ color }) {
         { key: "users", label: "Người dùng", path: "users", permission: "accounts_view" },
         { key: "roles", label: "Nhóm quyền", path: "roles", permission: "roles_view" },
         { key: "roles-permissions", label: "Phân quyền", path: "roles/permissions", permission: "roles_view" },
-        { key: "profile", label: "Profile", path: "profile" },
-        { key: "sign-in", label: "Đăng Nhập", path: "sign-in" },
-        { key: "sign-up", label: "Đăng Ký", path: "sign-up" },
     ];
 
     return (

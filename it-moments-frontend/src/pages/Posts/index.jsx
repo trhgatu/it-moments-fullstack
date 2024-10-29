@@ -6,7 +6,7 @@ import EventList from '../Event/EventList';
 import Spinner from '../../components/Spinner'; // Import spinner
 
 export default function Posts() {
-    const { category } = useParams();
+    const { category, slug } = useParams();
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [cachedPosts, setCachedPosts] = useState({});
@@ -42,8 +42,11 @@ export default function Posts() {
 
     return (
         <div>
-            <RenderList posts={posts} />
-            <Outlet />
+            {!slug ? (
+                <RenderList posts={posts} category={category} />
+            ) : (
+                <Outlet /> // Nếu có slug, chỉ hiển thị PostDetail
+            )}
         </div>
     );
 }
