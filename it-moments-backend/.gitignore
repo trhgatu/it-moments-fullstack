@@ -13,3 +13,4 @@ node_modules/
 
 # Bỏ qua tệp cấu hình cá nhân
 *.env
+.vercel
