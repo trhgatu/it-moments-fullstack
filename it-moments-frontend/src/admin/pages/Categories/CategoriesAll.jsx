@@ -6,12 +6,12 @@ import { useUser } from '../../../context/UserContext'; // Nhập UserContext
 import Pagination from '../../components/Pagination';
 import moment from 'moment';
 import axios from 'axios';
-import Cookies from 'js-cookie'; // Thêm import cho Cookies
+import {API_URL} from '../../../config/config'
 
 const { Title } = Typography;
 
 const fetchCategoriesData = async (currentPage, token) => {
-    const response = await axios.get(`http://localhost:3000/api/v1/admin/post-categories?page=${currentPage}`, {
+    const response = await axios.get(`${API_URL}/admin/post-categories?page=${currentPage}`, {
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`,
@@ -28,7 +28,7 @@ const fetchCategoriesData = async (currentPage, token) => {
 
 function CategoriesAll() {
     const navigate = useNavigate();
-    const { user } = useUser(); // Lấy user từ context
+    const { user } = useUser();
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -90,7 +90,7 @@ function CategoriesAll() {
         }
 
         try {
-            await axios.delete(`http://localhost:3000/api/v1/admin/post-categories/${id}`, {
+            await axios.delete(`${API_URL}/admin/post-categories/${id}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 },

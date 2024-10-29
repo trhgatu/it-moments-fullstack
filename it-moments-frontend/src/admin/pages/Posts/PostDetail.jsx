@@ -4,11 +4,11 @@ import { Card, Avatar, Typography, Alert, Image, Row, Col, Divider, Spin } from 
 import axios from 'axios';
 import moment from 'moment';
 import { useUser } from '../../../context/UserContext';
-
+import {API_URL} from '../../../config/config'
 const { Title, Text } = Typography;
 
 const fetchData = async (id, token) => {
-    const postResponse = await axios.get(`http://localhost:3000/api/v1/admin/posts/detail/${id}`, {
+    const postResponse = await axios.get(`${API_URL}/admin/posts/detail/${id}`, {
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`

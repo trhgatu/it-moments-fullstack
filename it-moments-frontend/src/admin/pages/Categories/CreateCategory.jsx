@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { UploadOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import { useUser } from '../../../context/UserContext'; // Nhập UserContext
-
+import { API_URL } from '../../../config/config'
 const { Option } = Select;
 
 const CreateCategory = () => {
@@ -16,13 +16,13 @@ const CreateCategory = () => {
 
     const fetchCategories = async () => {
         const token = user?.token;
-        if (!token) {
+        if(!token) {
             message.error('Token không hợp lệ.');
             return;
         }
 
         try {
-            const response = await axios.get(`http://localhost:3000/api/v1/admin/post-categories`, {
+            const response = await axios.get(`${API_URL}/admin/post-categories`, {
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
@@ -30,7 +30,7 @@ const CreateCategory = () => {
                 withCredentials: true,
             });
             setAllCategories(response.data.data.categories);
-        } catch (error) {
+        } catch(error) {
             console.error('Lỗi khi lấy danh mục:', error);
             message.error('Có lỗi xảy ra khi lấy danh mục.');
         }
@@ -47,12 +47,12 @@ const CreateCategory = () => {
     const uploadThumbnail = async (formData) => {
         try {
             const token = user?.token;
-            if (!token) {
+            if(!token) {
                 message.error('Token không hợp lệ.');
                 return;
             }
 
-            await axios.post(`http://localhost:3000/api/v1/admin/post-categories/create`, formData, {
+            await axios.post(`${API_URL}/admin/post-categories/create`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     'Authorization': `Bearer ${token}`
@@ -61,7 +61,7 @@ const CreateCategory = () => {
             });
             message.success('Danh mục đã được tạo thành công!');
             navigate('/admin/post-categories');
-        } catch (error) {
+        } catch(error) {
             console.error('Lỗi khi tạo danh mục:', error);
             message.error('Có lỗi xảy ra khi tạo danh mục.');
         }
@@ -77,7 +77,7 @@ const CreateCategory = () => {
         formData.append('position', positionValue);
         formData.append('status', values.status);
 
-        if (thumbnailFileList.length > 0) {
+        if(thumbnailFileList.length > 0) {
             formData.append('thumbnail', thumbnailFileList[0].originFileObj);
         }
 

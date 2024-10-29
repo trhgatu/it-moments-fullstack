@@ -1,5 +1,6 @@
 import "../admin/assets/styles/main.css";
 import "../admin/assets/styles/responsive.css";
+import { Navigate } from "react-router-dom";
 import Dashboard from '../admin/pages/Dashboard';
 import PostDetail from "../admin/pages/Posts/PostDetail.jsx";
 import PostAll from "../admin/pages/Posts/components/PostAll";
@@ -30,6 +31,10 @@ export const adminRoute = [
             {
                 element: <AdminDefaultLayout />,
                 children: [
+                    {
+                        index: true,
+                        element: <Navigate to="/admin/dashboard" replace />
+                    },
                     {
                         path: "dashboard",
                         element: <Dashboard />

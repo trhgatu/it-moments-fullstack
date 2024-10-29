@@ -3,7 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { Layout, Button, Row, Col, Typography, Form, Input, message } from "antd";
 import signinbg from "../../../assets/images/img-signin.jpg";
 import { useUser } from '../../../../context/UserContext';
+import axios from "axios";
 import { API_URL } from "../../../../config/config";
+
 const { Title } = Typography;
 const { Content } = Layout;
 
@@ -19,28 +21,22 @@ const SignIn = () => {
 
     const onFinish = async (values) => {
         try {
-            const response = await fetch(`${API_URL}/admin/auth/login`, {
-                method: "POST",
+            const response = await axios.post(`${API_URL}/admin/auth/login`, values, {
+                withCredentials: true,
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify(values),
-                credentials: "include",
             });
 
-            const data = await response.json();
-
-            if (response.ok) {
+            if (response.status === 200) {
                 message.success("Đăng nhập thành công!");
-                setUser(data.user);
-                setRole(data.user.role_id);
+                setUser(response.data.user);
+                setRole(response.data.user.role_id);
                 navigate("/admin/dashboard");
-            } else {
-
-                message.error(data.message || "Đăng nhập thất bại!");
             }
         } catch (error) {
-            message.error("Đã xảy ra lỗi khi đăng nhập.");
+            const errorMessage = error.response?.data?.message || "Đăng nhập thất bại!";
+            message.error(errorMessage);
             console.error("Lỗi đăng nhập:", error);
         }
     };

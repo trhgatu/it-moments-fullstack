@@ -4,8 +4,8 @@ import { EyeOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import moment from 'moment';
-import { useUser } from '../../../../context/UserContext'; // Import UserContext
-
+import { useUser } from '../../../../context/UserContext';
+import { API_URL } from '../../../../config/config';
 const { Title } = Typography;
 
 const fetchRolesData = async (token) => {
@@ -17,7 +17,7 @@ const fetchRolesData = async (token) => {
         withCredentials: true,
     };
     try {
-        const response = await axios.get('http://localhost:3000/api/v1/admin/roles', config);
+        const response = await axios.get(`${API_URL}/admin/roles`, config);
         return response.data;
     } catch (error) {
         throw new Error('Failed to fetch roles data');
@@ -25,8 +25,8 @@ const fetchRolesData = async (token) => {
 };
 
 function RolesAll() {
-    const { user } = useUser(); // Lấy user từ context
-    const token = user?.token; // Lấy token từ thông tin người dùng
+    const { user } = useUser();
+    const token = user?.token;
     const navigate = useNavigate();
     const [roles, setRoles] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -52,7 +52,7 @@ function RolesAll() {
             }
         };
 
-        if (token) { // Kiểm tra token trước khi gọi API
+        if (token) {
             fetchRoles();
         }
     }, [token]);

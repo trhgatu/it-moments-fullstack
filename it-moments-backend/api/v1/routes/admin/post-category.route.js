@@ -16,14 +16,14 @@ router.post('/create',
     upload,
     controller.createPost
 );
-/* router.patch('/change-status/:id', controller.changeStatus);
+ router.patch('/change-status/:id', controller.changeStatus);
 
 router.patch('/change-status-multi', controller.changeMulti);
- */
 
-/*
+
+
 router.patch('/edit/:id', controller.editPatch);
 
-router.delete('/delete/:id', controller.delete); */
+router.delete('/delete/:id', controller.delete);
 
 export default router;

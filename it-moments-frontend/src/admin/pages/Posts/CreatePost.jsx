@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { UploadOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import { useUser } from '../../../context/UserContext';
+import {API_URL} from '../../../config/config'
 const { Option } = Select;
 
 const CreatePost = () => {
@@ -20,7 +21,7 @@ const CreatePost = () => {
             const token = user?.token;
 
             try {
-                const response = await axios.get(`http://localhost:3000/api/v1/admin/post-categories`, {
+                const response = await axios.get(`${API_URL}/admin/post-categories`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     },
@@ -80,7 +81,7 @@ const CreatePost = () => {
                 console.error('Token:', token);  // Log token
                 return;
             }
-            await axios.post(`http://localhost:3000/api/v1/admin/posts/create`, formData, {
+            await axios.post(`${API_URL}/admin/posts/create`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     'Authorization': `Bearer ${token}`

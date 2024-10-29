@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, Button, Table, Checkbox, Form, message } from 'antd';
 import axios from 'axios';
 import { useUser } from '../../../context/UserContext';
-
+import { API_URL } from '../../../config/config'
 const PermissionForm = ({ role }) => {
     const { user } = useUser();
     const [records, setRecords] = useState([]);
@@ -20,7 +20,7 @@ const PermissionForm = ({ role }) => {
 
         const fetchRecords = async () => {
             try {
-                const response = await axios.get('http://localhost:3000/api/v1/admin/roles/permissions', config);
+                const response = await axios.get(`${API_URL}/admin/roles/permissions`, config);
                 setRecords(response.data.records);
 
                 const initialValues = {};
@@ -142,7 +142,7 @@ const PermissionForm = ({ role }) => {
             render: (text, recordData) => {
                 const itemPrefix = featureToPrefixMap[recordData.feature];
 
-                if (!itemPrefix) return null;
+                if(!itemPrefix) return null;
 
                 return renderCheckboxes(itemPrefix, record._id);
             },

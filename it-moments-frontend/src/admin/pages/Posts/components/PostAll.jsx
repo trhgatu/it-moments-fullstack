@@ -34,7 +34,6 @@ function PostsAll() {
 
   const getToken = () => {
     const token = user?.token;
-    console.log(token);
     if (!token) {
       setError('Token không hợp lệ.');
       return null;

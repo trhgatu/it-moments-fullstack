@@ -52,8 +52,8 @@ const controller = {
             user.token = token;
             res.cookie("admin_token", token, {
                 httpOnly: true,
-                sameSite: "Strict",
-                secure: process.env.NODE_ENV === "production"
+                sameSite: "None",
+                secure: true
             });
             return res.status(200).json({
                 code: 200,
@@ -69,29 +69,6 @@ const controller = {
             });
         }
     },
-    /* register: async (req, res) => {
-        try {
-            const hashedPassword = await bcrypt.hash(req.body.password, 10);
-            const existEmail = await User.findOne({ email: req.body.email, deleted: false });
-
-            if(existEmail) {
-                return res.status(400).json({ code: 400, message: 'Email đã tồn tại' });
-            }
-
-            const user = new User({
-                fullName: req.body.fullName,
-                email: req.body.email,
-                password: hashedPassword,
-            });
-
-
-            await user.save();
-            return res.status(200).json({ code: 200, message: "Tạo tài khoản thành công!" });
-        } catch(error) {
-            console.error("Lỗi:", error);
-            return res.status(500).json({ code: 500, message: 'Lỗi khi tạo tài khoản' });
-        }
-    }, */
     me: async (req, res) => {
         try {
             const user = res.locals.user;

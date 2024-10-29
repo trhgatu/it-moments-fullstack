@@ -1,33 +1,48 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, Form, Input, Button, message } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { API_URL } from '../../../config/config';
+import { useUser } from '../../../context/UserContext'; // Nhập useUser để lấy thông tin người dùng
 
 const CreateRole = () => {
     const navigate = useNavigate();
     const [form] = Form.useForm();
+    const { user } = useUser(); // Lấy thông tin người dùng từ context
+
     const onFinish = async (values) => {
         const formData = new FormData();
         formData.append('title', values.title);
-        formData.append('description', values.description);
+        formData.append('description', values.description || '');
+
+        const token = user?.token; // Lấy token từ context
+        if (!token) {
+            message.error('Token không hợp lệ. Vui lòng đăng nhập lại.');
+            return; // Ngăn không cho tiếp tục nếu token không hợp lệ
+        }
 
         try {
-            const response = await axios.post(`http://localhost:3000/api/v1/admin/roles/create`, formData, {
+            const response = await axios.post(`${API_URL}/admin/roles/create`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${token}` // Gửi token trong header
                 },
                 withCredentials: true,
             });
 
-            if (response.data.success) {
+            // Kiểm tra phản hồi từ API
+            if (response.data.success) { // Chỉnh sửa để kiểm tra success
                 message.success('Nhóm quyền đã được tạo thành công!');
                 navigate('/admin/roles');
             } else {
-                message.error('Có lỗi xảy ra khi tạo Nhóm quyền.');
+                message.error(response.data.message || 'Có lỗi xảy ra khi tạo Nhóm quyền.');
             }
         } catch (error) {
             console.error('Lỗi khi tạo Nhóm quyền:', error);
             message.error('Có lỗi xảy ra khi tạo Nhóm quyền.');
+            if (error.response) {
+                console.error('Lỗi từ máy chủ:', error.response.data);
+            }
         }
     };
 

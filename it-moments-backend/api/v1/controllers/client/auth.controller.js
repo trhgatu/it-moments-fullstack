@@ -43,10 +43,10 @@ const controller = {
             );
             res.cookie("client_token", token, {
                 httpOnly: true,
-                sameSite: "Lax",
-                secure: false,
+                sameSite: "None",
+                secure: true,
             });
-
+            console.log('Setting cookie:', res.get('Set-Cookie'));
             user.password = undefined;
             return res.status(200).json({
                 code: 200,

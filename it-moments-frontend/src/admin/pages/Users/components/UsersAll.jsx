@@ -6,7 +6,7 @@ import { useUser } from '../../../../context/UserContext'; // Nhập UserContext
 import Pagination from '../../../components/Pagination';
 import moment from 'moment';
 import axios from 'axios';
-
+import { API_URL } from '../../../../config/config'
 const { Title } = Typography;
 
 const fetchUsersData = async (currentPage, token) => {
@@ -19,9 +19,9 @@ const fetchUsersData = async (currentPage, token) => {
     };
 
     try {
-        const response = await axios.get(`http://localhost:3000/api/v1/admin/users?page=${currentPage}`, config);
+        const response = await axios.get(`${API_URL}/admin/users?page=${currentPage}`, config);
         return response.data;
-    } catch (error) {
+    } catch(error) {
         throw new Error('Failed to fetch users data');
     }
 };
@@ -45,7 +45,7 @@ function UsersAll() {
             setLoading(true);
             setError(null);
             const token = user?.token;
-            if (!token) {
+            if(!token) {
                 setError('Token không hợp lệ.');
                 setLoading(false);
                 return;
@@ -53,7 +53,7 @@ function UsersAll() {
 
             try {
                 const data = await fetchUsersData(pagination.currentPage, token);
-                if (data?.data?.users) {
+                if(data?.data?.users) {
                     setUsers(data.data.users);
                     setPagination((prev) => ({
                         ...prev,
@@ -64,7 +64,7 @@ function UsersAll() {
                 } else {
                     throw new Error('Invalid data format');
                 }
-            } catch (error) {
+            } catch(error) {
                 console.error('Error fetching users:', error);
                 setError('Cannot retrieve users data.');
             } finally {
@@ -87,7 +87,7 @@ function UsersAll() {
     };
 
     const confirmDeleteUser = async () => {
-        if (!deletingUserId) return;
+        if(!deletingUserId) return;
 
         const token = user?.token;
         const config = {
@@ -102,7 +102,7 @@ function UsersAll() {
             await axios.delete(`http://localhost:3000/api/v1/admin/users/${deletingUserId}`, config);
             message.success('Người dùng đã được xóa thành công.');
             setUsers((prev) => prev.filter(user => user._id !== deletingUserId));
-        } catch (error) {
+        } catch(error) {
             console.error('Error deleting user:', error);
             message.error('Không thể xóa người dùng.');
         } finally {
