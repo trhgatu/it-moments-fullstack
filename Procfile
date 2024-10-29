@@ -1,1 +1,1 @@
-web: cd it-moments-backend && npm install && npm start
+web: cd it-moments-backend && npm start
