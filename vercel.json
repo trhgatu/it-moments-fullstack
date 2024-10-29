@@ -6,7 +6,8 @@
       },
       {
         "src": "it-moments-frontend/package.json",
-        "use": "@vercel/static-build"
+        "use": "@vercel/static-build",
+        "config": { "distDir": "it-moments-frontend/dist" }
       }
     ],
     "routes": [
