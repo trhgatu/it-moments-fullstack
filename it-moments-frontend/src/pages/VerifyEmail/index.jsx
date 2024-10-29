@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useLocation, useNavigate } from 'react-router-dom';
-
+import { API_URL } from '../../config/config';
 const VerifyEmail = () => {
     const [status, setStatus] = useState('Đang xử lý...');
     const location = useLocation();
@@ -15,8 +15,8 @@ const VerifyEmail = () => {
     useEffect(() => {
         const token = getTokenFromUrl();
 
-        if (token) {
-            axios.get(`http://localhost:3000/api/v1/auth/verify?token=${token}`)
+        if(token) {
+            axios.get(`${API_URL}/auth/verify?token=${token}`)
                 .then(response => {
                     setStatus(response.data.message);
                     setTimeout(() => {

@@ -2,6 +2,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import User from "../../models/user.model.js";
 import { sendEmail } from '../../../../helpers/sendMail.js';
+import { FRONT_END_DOMAIN } from '../../../../config/system.js';
 import crypto from 'crypto';
 const controller = {
     /* [POST] /api/v1/auth/login */
@@ -13,20 +14,20 @@ const controller = {
                 .select('-refreshToken')
                 .populate('role_id', 'title permissions');
 
-            if (!user) {
+            if(!user) {
                 return res.status(400).json({
                     code: 400,
                     message: 'Email không tồn tại',
                 });
             }
-            if(!user.isVerified){
+            if(!user.isVerified) {
                 return res.status(400).json({
                     code: 400,
                     message: 'Tài khoản chưa được xác thực!',
                 });
             }
             const isPasswordValid = await bcrypt.compare(password, user.password);
-            if (!isPasswordValid) {
+            if(!isPasswordValid) {
                 return res.status(400).json({
                     code: 400,
                     message: "Sai mật khẩu!",
@@ -54,7 +55,7 @@ const controller = {
                 token,
                 user,
             });
-        } catch (error) {
+        } catch(error) {
             console.error(error);
             return res.status(500).json({
                 code: 500,
@@ -67,7 +68,7 @@ const controller = {
             const { fullName, email, password } = req.body;
             const existingUser = await User.findOne({ email, deleted: false });
 
-            if (existingUser) {
+            if(existingUser) {
                 return res.status(400).json({
                     code: 400,
                     message: 'Email đã tồn tại',
@@ -88,7 +89,7 @@ const controller = {
 
             await newUser.save();
 
-            const verificationLink = `http://localhost:5173/verify?token=${verificationToken}`;
+            const verificationLink = `${FRONT_END_DOMAIN}/verify?token=${verificationToken}`;
 
             await sendEmail(
                 email,
@@ -99,7 +100,7 @@ const controller = {
                 code: 200,
                 message: 'Tạo tài khoản thành công! Vui lòng kiểm tra email để xác thực tài khoản.',
             });
-        } catch (error) {
+        } catch(error) {
             console.error("Lỗi:", error);
             return res.status(500).json({
                 code: 500,
@@ -112,7 +113,7 @@ const controller = {
             const { token } = req.query;
 
             const user = await User.findOne({ verificationToken: token });
-            if (!user) {
+            if(!user) {
                 return res.status(400).json({
                     code: 400,
                     message: 'Token không hợp lệ hoặc đã hết hạn',
@@ -126,7 +127,7 @@ const controller = {
                 code: 200,
                 message: 'Tài khoản đã được xác thực thành công!',
             });
-        } catch (error) {
+        } catch(error) {
             console.error("Lỗi:", error);
             return res.status(500).json({
                 code: 500,
@@ -163,12 +164,12 @@ const controller = {
     me: async (req, res) => {
         try {
             const user = res.locals.user;
-            if (!user) {
+            if(!user) {
                 return res.status(404).json({ message: "Người dùng không tồn tại" });
             }
             const token = req.cookies.client_token;
             return res.status(200).json({ user, token });
-        } catch (error) {
+        } catch(error) {
             console.error("Lỗi khi lấy thông tin người dùng:", error);
             return res.status(500).json({ message: "Lỗi khi lấy thông tin người dùng" });
         }
