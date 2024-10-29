@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom'; // To get the post ID from the URL
 import Gravatar from 'react-gravatar';
-
+import { API_URL } from '../../config/config';
 const PostDetail = () => {
   const { id } = useParams(); // Get the post ID from the route
   const [post, setPost] = useState(null); // State to store the post data
@@ -11,7 +11,7 @@ const PostDetail = () => {
   useEffect(() => {
     const fetchPost = async () => {
       try {
-        const response = await axios.get(`http://localhost:3000/api/v1/posts/detail/${id}`); // Fetch post data by ID
+        const response = await axios.get(`${API_URL}v1/posts/detail/${id}`);
         setPost(response.data); // Set the fetched post data
         setLoading(false); // Stop loading
       } catch (error) {

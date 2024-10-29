@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Layout, Button, Row, Col, Typography, Form, Input, message } from "antd";
 import signinbg from "../../../assets/images/img-signin.jpg";
 import { useUser } from '../../../../context/UserContext';
-
+import { API_URL } from "../../../../config/config";
 const { Title } = Typography;
 const { Content } = Layout;
 
@@ -19,7 +19,7 @@ const SignIn = () => {
 
     const onFinish = async (values) => {
         try {
-            const response = await fetch("http://localhost:3000/api/v1/admin/auth/login", {
+            const response = await fetch(`${API_URL}/admin/auth/login`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

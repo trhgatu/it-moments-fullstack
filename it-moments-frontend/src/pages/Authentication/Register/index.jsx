@@ -3,7 +3,7 @@ import styles from './Register.module.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope, faUser, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
-
+import { API_URL } from "../../../config/config";
 function Register() {
     const [passwordShown, setPasswordShown] = useState(false);
     const [confirmPasswordShown, setConfirmPasswordShown] = useState(false);
@@ -40,7 +40,7 @@ function Register() {
         }
 
         try {
-            const response = await fetch('http://localhost:3000/api/v1/auth/register', {
+            const response = await fetch(`${API_URL}/auth/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

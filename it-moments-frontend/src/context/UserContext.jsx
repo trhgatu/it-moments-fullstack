@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
-
+import {API_URL} from '../config/config'
 const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
@@ -13,7 +13,7 @@ export const UserProvider = ({ children }) => {
         const fetchUser = async () => {
             setLoading(true);
             try {
-                const response = await axios.get("http://localhost:3000/api/v1/admin/auth/me", {
+                const response = await axios.get(`${API_URL}/admin/auth/me`, {
                     withCredentials: true,
                 });
 

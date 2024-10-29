@@ -3,6 +3,7 @@ import { Row, Col, notification, Modal, Spin } from "antd";
 import PostsCard from './PostsCard';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../../../../context/UserContext';
+import { API_URL } from '../../../../config/config';
 import axios from 'axios';
 
 function PostsAll() {
@@ -51,7 +52,7 @@ function PostsAll() {
     }
 
     try {
-      const response = await axios.get(`http://localhost:3000/api/v1/admin/posts?page=${pagination.currentPage}`, {
+      const response = await axios.get(`${API_URL}/admin/posts?page=${pagination.currentPage}`, {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
@@ -118,7 +119,7 @@ function PostsAll() {
     }
 
     try {
-      await axios.patch('http://localhost:3000/api/v1/admin/posts/change-status-multi', {
+      await axios.patch(`${API_URL}/admin/posts/change-status-multi`, {
         ids: selectedRowKeys,
         key: 'status',
         value: actionType
@@ -146,7 +147,7 @@ function PostsAll() {
     if (!token) return;
 
     try {
-      await axios.delete(`http://localhost:3000/api/v1/admin/posts/delete/${postId}`, {
+      await axios.delete(`${API_URL}/admin/posts/delete/${postId}`, {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`

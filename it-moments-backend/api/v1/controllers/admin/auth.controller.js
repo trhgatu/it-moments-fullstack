@@ -52,8 +52,8 @@ const controller = {
             user.token = token;
             res.cookie("admin_token", token, {
                 httpOnly: true,
-                sameSite: "Lax",
-                secure: false
+                sameSite: "Strict",
+                secure: process.env.NODE_ENV === "production"
             });
             return res.status(200).json({
                 code: 200,

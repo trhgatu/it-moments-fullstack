@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
-
+import {API_URL} from '../../config/config'
 const PostDetail = () => {
   const { slug } = useParams();
   const [post, setPost] = useState(null);
@@ -10,7 +10,7 @@ const PostDetail = () => {
   useEffect(() => {
     const fetchPost = async () => {
       try {
-        const response = await axios.get(`http://localhost:3000/api/v1/posts/detail/${slug}`);
+        const response = await axios.get(`${API_URL}/posts/detail/${slug}`);
         setPost(response.data);
         console.log(response.data);
         setLoading(false);

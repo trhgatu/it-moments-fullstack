@@ -4,6 +4,7 @@ import { Outlet, useParams } from 'react-router-dom';
 import ActivityList from './ActivityList';
 import EventList from '../Event/EventList';
 import Spinner from '../../components/Spinner'; // Import spinner
+import { API_URL } from '../../config/config';
 
 export default function Posts() {
     const { category, slug } = useParams();
@@ -21,7 +22,7 @@ export default function Posts() {
 
             setLoading(true);
             try {
-                const response = await axios.get(`http://localhost:3000/api/v1/posts?category=${category}`);
+                const response = await axios.get(`${API_URL}/posts?category=${category}`);
                 setPosts(response.data.data.posts);
                 setCachedPosts((prev) => ({ ...prev, [category]: response.data.data.posts }));
             } catch (error) {
