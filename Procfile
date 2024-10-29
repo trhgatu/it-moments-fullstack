@@ -1,1 +1,1 @@
-web: node it-moments-backend/server.mjs
+web: cd it-moments-backend && npm install && npm start
