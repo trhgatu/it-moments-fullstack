@@ -1,6 +1,5 @@
 import About from "../pages/About";
 import { DefaultLayout } from "../components/Layouts";
-import Academic from "../pages/Academic";
 import Posts from "../pages/Posts";
 import Home from "../pages/Home";
 import Event from "../pages/Event";
@@ -14,7 +13,7 @@ import PrivateRoutes from "../components/PrivateRoutes";
 import VerifyEmail from "../pages/VerifyEmail";
 import ActivityList from "../pages/Posts/ActivityList";
 import EventList from "../pages/Event/EventList";
-
+import Academic from "../pages/Academic";
 export const clientRoute = [
     {
         path: "/",
@@ -36,20 +35,16 @@ export const clientRoute = [
                 ]
             },
             {
-                path: "posts/event",
-                element: <Event />
-            },
-            {
                 path: "about",
                 element: <About />
             },
             {
-                path: "profile",
-                element: <Profile />
+                path: "academic",
+                element: < Academic/>
             },
             {
-                path: "posts/academic",
-                element: <Academic />
+                path: "profile",
+                element: <Profile />
             },
             {
                 path: "*",

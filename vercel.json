@@ -1,0 +1,17 @@
+{
+    "builds": [
+      {
+        "src": "it-moments-backend/server.mjs",
+        "use": "@vercel/node"
+      },
+      {
+        "src": "it-moments-frontend/package.json",
+        "use": "@vercel/static-build",
+        "config": { "distDir": "it-moments-frontend/dist" }
+      }
+    ],
+    "routes": [
+      { "src": "/api/v1/(.*)", "dest": "it-moments-backend/server.mjs" },
+      { "src": "/(.*)", "dest": "it-moments-frontend/dist/$1" }
+    ]
+  }
