@@ -121,7 +121,7 @@ export const Header = () => {
                     Văn nghệ
                 </NavLink>
                 <NavLink
-                    to="academic"
+                    to="/posts/hoc-thuat"
                     className={({ isActive }) =>
                         cx(styles.navLink, 'transition-colors duration-300', {
                             'text-black': (isScrolled || location.pathname !== '/') && !isActive,

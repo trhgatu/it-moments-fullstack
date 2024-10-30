@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Outlet, useParams } from 'react-router-dom';
 import ActivityList from './ActivityList';
+import Academic from '../Academic';
 import EventList from '../Event/EventList';
-import Spinner from '../../components/Spinner'; // Import spinner
+import Spinner from '../../components/Spinner';
 import { API_URL } from '../../config/config';
 
 export default function Posts() {
@@ -39,14 +40,20 @@ export default function Posts() {
         return <Spinner />;
     }
 
-    const RenderList = category === 'su-kien' ? EventList : ActivityList;
-
+    let RenderList;
+    if (category === 'su-kien') {
+        RenderList = EventList;
+    } else if (category === 'hoc-thuat') {
+        RenderList = Academic;
+    } else {
+        RenderList = ActivityList;
+    }
     return (
         <div>
             {!slug ? (
                 <RenderList posts={posts} category={category} />
             ) : (
-                <Outlet /> // Nếu có slug, chỉ hiển thị PostDetail
+                <Outlet />
             )}
         </div>
     );

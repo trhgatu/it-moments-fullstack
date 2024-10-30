@@ -32,16 +32,17 @@ export const clientRoute = [
                         path: ":slug",
                         element: <PostDetail />
                     },
+                    {
+                        path: ":slug",
+                        element: < Academic/>
+                    },
                 ]
             },
             {
                 path: "about",
                 element: <About />
             },
-            {
-                path: "academic",
-                element: < Academic/>
-            },
+
             {
                 path: "profile",
                 element: <Profile />
