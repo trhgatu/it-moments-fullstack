@@ -2,7 +2,6 @@ import React, { forwardRef } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Autoplay } from 'swiper/modules';
 import 'swiper/css';
-import slide1 from "../../../../assets/images/slider_1.jpg";
 import { Link } from "react-router-dom";
 
 const SwiperComponent = forwardRef(({ items = [], slidesPerView, autoPlay }, ref) => {
@@ -11,18 +10,18 @@ const SwiperComponent = forwardRef(({ items = [], slidesPerView, autoPlay }, ref
             <Swiper
                 ref={ref}
                 slidesPerView={slidesPerView}
-                autoplay={autoPlay}
+                autoplay={autoPlay ? { delay: 3000, disableOnInteraction: false } : false}
                 spaceBetween={30}
                 navigation
                 loop={true}
                 modules={[Navigation, Autoplay]}
                 className="mySwiper"
             >
-                {items.map((item, index) => (
-                    <SwiperSlide key={index}>
+                {items.map((item) => (
+                    <SwiperSlide key={item._id}>
                         <div className="relative text-white bg-cover bg-center overflow-hidden h-96"
                             style={{
-                                backgroundImage: `url(${slide1})`,
+                                backgroundImage: `url(${item.thumbnail})`,
                             }}
                         >
                             <div className="absolute inset-0 bg-black opacity-50"></div>

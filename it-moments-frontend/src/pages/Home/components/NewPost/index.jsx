@@ -1,54 +1,50 @@
-import slide1 from "../../../../assets/images/slider_1.jpg";
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import { Link } from "react-router-dom";
 
 export default function NewPost() {
+    const [latestPosts, setLatestPosts] = useState([]);
+
+    useEffect(() => {
+        const fetchPosts = async () => {
+            try {
+                const latestResponse = await axios.get('http://localhost:3000/api/v1/posts?category=van-nghe&isLastest=true&limit=1&sort=createdAt&order=desc');
+                setLatestPosts(latestResponse.data.data.posts);
+            } catch(error) {
+                console.error('Lỗi khi lấy bài viết:', error);
+            }
+        };
+        fetchPosts();
+    }, []);
+
     return (
-        <div className="relative overflow-hidden block md:col-span-2 h-full">
-            <div
-                className="relative overflow-hidden min-h-full h-full"
-                style={{
-                    backgroundImage: `url(${slide1})`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                }}
-            >
-                <div className="absolute inset-0 bg-black opacity-50"></div>
-                <span className="absolute bg-blue-500 text-white text-lg md:text-xl font-semibold px-6 py-1 left-5 top-5">Mới</span>
+        <div className="relative block md:col-span-2 h-full min-h-[400px]">
+            {latestPosts.length > 0 && latestPosts.map((post, index) => (
+                <div
+                    key={index}
+                    className="relative overflow-hidden h-full flex flex-col justify-end p-8 bg-cover bg-center text-white"
+                    style={{ backgroundImage: `url(${post.thumbnail})` }} // Duy trì chiều cao từ CSS
+                >
 
-                <div className="absolute z-10 w-full bottom-0 px-4 md:px-11 pb-6">
-                    {/* Danh mục */}
-                    <div className="mb-4 flex flex-wrap">
-                        <Link className="text-white text-lg md:text-2xl uppercase hover:text-blue-600 duration-300">Văn nghệ</Link>
-                        <p className="text-white text-lg md:text-2xl ml-2 mr-2">/</p>
-                        <p className="text-white text-lg md:text-2xl">28/9/24</p>
-                    </div>
+                    <div className="absolute inset-0 bg-black bg-opacity-50"></div>
 
-                    {/* Tiêu đề */}
-                    <div className="mb-4">
-                        <p className="text-xl md:text-4xl font-semibold text-white mt-2">
-                            <Link to="/path-to-your-performances" className="hover:text-blue-500 transition-colors duration-300">
-                                GALA Chào đón tân sinh viên K15: Tiết mục "Chúng ta của hiện tại"
+                    <div className="relative z-10">
+                        <div className="text-lg md:text-3xl font-semibold mt-2 hover:text-blue-500 transition">
+                            <Link to={`/category/${post.post_category_id.slug}`} className="text-white font-semibold">
+                                <span className="bg-blue-500 px-2 py-1">
+                                    {post.post_category_id.title}
+                                </span>
                             </Link>
-                        </p>
-                    </div>
-
-                    {/* Mô tả */}
-                    <div className="w-full md:w-3/6 mt-4 mb-4">
-                        <p className="text-lg md:text-2xl text-white font-normal">
-                            Tiết mục đạt giải nhất trong sự kiện GALA Chào đón tân sinh viên k15...
-                        </p>
-                    </div>
-
-                    {/* Thông tin người đăng và lượt xem */}
-                    <div className="w-full mt-auto">
-                        <div className="flex justify-between text-white w-full font-normal">
-                            <span>Admin</span>
-                            <span>Views: 100</span>
+                            <span>/</span>
+                            <span>{new Date(post.createdAt).toLocaleDateString()}</span>
                         </div>
+                        <h2 className="text-lg md:text-3xl font-semibold mt-2 hover:text-blue-500 transition">
+                            <Link to={`/posts/${post.post_category_id.slug}/${post.slug}`}>{post.title}</Link>
+                        </h2>
+                        <p className="text-sm md:text-lg mt-2">{post.description.slice(0, 100)}...</p>
                     </div>
                 </div>
-            </div>
+            ))}
         </div>
-
     );
 }

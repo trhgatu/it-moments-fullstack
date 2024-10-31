@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Card, Table, Button, Avatar, Typography, Alert, message } from "antd";
+import { Row, Col, Card, Table, Button, Avatar, Typography, Alert, message, Modal } from "antd"; // Import Modal
 import { EyeOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import { useUser } from '../../../context/UserContext'; // Nhập UserContext
+import { useUser } from '../../../context/UserContext';
 import Pagination from '../../components/Pagination';
 import moment from 'moment';
 import axios from 'axios';
-import {API_URL} from '../../../config/config'
+import { API_URL } from '../../../config/config';
 
 const { Title } = Typography;
 
@@ -20,7 +20,7 @@ const fetchCategoriesData = async (currentPage, token) => {
     });
 
     if (!response.data) {
-        throw new Error('Failed to fetch categories data');
+        throw new Error('Lỗi khi lấy dữ liệu danh mục bài viết');
     }
 
     return response.data;
@@ -81,6 +81,17 @@ function CategoriesAll() {
         }));
     };
 
+    const handleDeleteConfirmation = (id) => {
+        Modal.confirm({
+            title: 'Xác nhận xóa',
+            content: 'Bạn có chắc chắn muốn xóa danh mục này?',
+            okText: 'Xóa',
+            okType: 'danger',
+            cancelText: 'Hủy',
+            onOk: () => handleDeletePost(id),
+        });
+    };
+
     const handleDeletePost = async (id) => {
         const token = user?.token;
 
@@ -90,7 +101,7 @@ function CategoriesAll() {
         }
 
         try {
-            await axios.delete(`${API_URL}/admin/post-categories/${id}`, {
+            await axios.delete(`${API_URL}/admin/post-categories/delete/${id}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 },
@@ -166,7 +177,7 @@ function CategoriesAll() {
                         type="link"
                         icon={<DeleteOutlined />}
                         danger
-                        onClick={() => handleDeletePost(record._id)}
+                        onClick={() => handleDeleteConfirmation(record._id)} // Call the confirmation dialog
                     />
                 </>
             ),

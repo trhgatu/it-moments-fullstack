@@ -1,12 +1,16 @@
-.wrapper{
+.wrapper {
     height: 70px;
     display: flex;
     justify-content: center;
     width: 100%;
 }
 
-.inner{
+.inner {
     height: 100%;
     width: 100%;
     background-color: #314987;
+}
+.textLogo {
+    font-family: 'Kranky', serif;
+    font-size: 2.4rem;
 }

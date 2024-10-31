@@ -58,13 +58,21 @@ const controller = {
             sort.position = "desc";
             sort.createdAt = "desc";
         }
-
-        // Fetch posts with applied filters
+        if (req.query.isLatest === 'true') {
+            objectPagination.limitItems = 5;
+            sort.createdAt = "desc";
+        }
+        if(req.query.isFeatured === 'true'){
+            find.isFeatured = true;
+        }
+        if (req.query.sortKey === 'views') {
+            sort.views = -1;
+        }
         const posts = await Post.find(find)
             .sort(sort)
             .limit(objectPagination.limitItems)
             .skip(objectPagination.skip)
-            .populate('post_category_id', 'title')
+            .populate('post_category_id', 'title slug')
             .populate('event_id', 'title')
             .lean();
 

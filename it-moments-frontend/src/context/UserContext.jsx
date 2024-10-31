@@ -21,6 +21,7 @@ export const UserProvider = ({ children }) => {
                     const { user: fetchedUser, token } = response.data;
                     setUser({ ...fetchedUser, token });
                     setRole(fetchedUser.role_id);
+                    console.log(response.data)
 
                 } else {
                     setUser(null);

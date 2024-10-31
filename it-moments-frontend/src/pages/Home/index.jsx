@@ -1,78 +1,76 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import Slider from './components/Slider';
-import 'swiper/css';
-import './Home.module.scss';
-import slide1 from '../../assets/images/slider_1.jpg';
-import slide2 from '../../assets/images/slider_2.jpg';
-import slide3 from '../../assets/images/slider_3.jpg';
 import PopularPerformances from './components/PopularPerformances';
 import PostSection from './components/PostSection';
 import NewPost from './components/NewPost';
 import EventSection from './components/EventSection';
+import 'swiper/css';
+import styles from './Home.module.scss';
+import slide1 from '../../assets/images/slider_1.jpg';
+import slide2 from '../../assets/images/slider_2.jpg';
+import slide3 from '../../assets/images/slider_3.jpg';
 
 export default function Home() {
+    const [popularPerformances, setPopularPerformances] = useState([]);
+    const [performances, setPerformances] = useState([]);
+    const [events, setEvents] = useState([]);
+    const [activeTab, setActiveTab] = useState('Mới');
+
+    useEffect(() => {
+        axios.get('http://localhost:3000/api/v1/posts?category=van-nghe&isFeatured=true&isLatest=true')
+            .then((response) => setPerformances(response.data.data.posts))
+            .catch((error) => console.error("Error fetching Văn nghệ posts:", error));
+    }, []);
+
+    useEffect(() => {
+        axios.get('http://localhost:3000/api/v1/posts?category=su-kien')
+            .then((response) => setEvents(response.data.data.posts))
+            .catch((error) => console.error("Error fetching Sự kiện posts:", error));
+    }, []);
+
+    useEffect(() => {
+        axios.get('http://localhost:3000/api/v1/posts?category=van-nghe&isFeatured=true&sortKey=views&sortValue=desc')
+            .then((response) => setPopularPerformances(response.data.data.posts))
+            .catch((error) => console.error("Error fetching Tiết mục nhiều lượt xem posts:", error));
+    }, []);
+
     const slides = [
         { src: slide1, alt: "Image 1", title: "Lưu giữ những khoảnh khắc" },
         { src: slide2, alt: "Image 2", title: "Những sự kiện mới" },
         { src: slide3, alt: "Image 3", title: "Các hoạt động văn nghệ" },
     ];
 
-    const performances = [
-        { title: "Chúng ta của hiện tại", views: 250 },
-        { title: "Đừng làm trái tim anh đau", views: 300 },
-        { title: "Tiết mục 3", views: 150 },
-        { title: "Tiết mục 4", views: 400 },
-        { title: "Tiết mục 5", views: 500 },
-        { title: "Tiết mục 6", views: 600 },
-    ];
-
-    const postData = {
-        'Mới': [
-            { title: "Bài viết Mới 1", description: "Mô tả ngắn cho bài viết này." },
-            { title: "Bài viết Mới 2", description: "Mô tả ngắn cho bài viết này." },
-            { title: "Bài viết Mới 3", description: "Mô tả ngắn cho bài viết này." },
-            { title: "Bài viết Mới 4", description: "Mô tả ngắn cho bài viết này." }
-        ],
-        'Liên quan': [
-            { title: "Bài viết liên quan 1", description: "Mô tả ngắn cho bài viết liên quan này." },
-            { title: "Bài viết liên quan 2", description: "Mô tả ngắn cho bài viết liên quan này." },
-            { title: "Bài viết liên quan 3", description: "Mô tả ngắn cho bài viết liên quan này." },
-            { title: "Bài viết liên quan 4", description: "Mô tả ngắn cho bài viết liên quan này." }
-        ],
-        'Nhiều like': [
-            { title: "Bài viết nhiều like 1", description: "Mô tả ngắn cho bài viết nhiều like này." },
-            { title: "Bài viết nhiều like 2", description: "Mô tả ngắn cho bài viết nhiều like này." },
-            { title: "Bài viết nhiều like 3", description: "Mô tả ngắn cho bài viết nhiều like này." },
-            { title: "Bài viết nhiều like 4", description: "Mô tả ngắn cho bài viết nhiều like này." }
-        ]
-    };
-
-    const [activeTab, setActiveTab] = useState('Mới');
-
     return (
         <>
-            <Slider slides={slides} />
-            <div className="text-black font-bold mx-auto" style={{ paddingLeft: '10rem', paddingRight: '10rem' }}>
-                <div className="posts-content">
-                    <div className="text-black font-bold mx-auto px-4 md:px-0">
-                        <div className="w-full my-8">
-                            <p className="text-2xl md:text-4xl">VĂN NGHỆ</p>
-                        </div>
-
-                        <div className="main-content">
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+            <div className="w-full">
+                <Slider slides={slides} className="w-full" />
+                <div className="text-black mx-auto container">
+                    <div className={styles.mainContent}>
+                        {/* Cập nhật responsive cho grid */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8 mb-8">
+                            <div className="flex flex-col col-span-2 h-full">
                                 <NewPost />
-                                <PostSection postData={postData} activeTab={activeTab} setActiveTab={setActiveTab} />
+                            </div>
+                            <div className="flex flex-col h-full">
+                                <PostSection postData={{
+                                    'Mới': performances,
+                                    'Nhiều lượt bình chọn': popularPerformances
+                                }} activeTab={activeTab} setActiveTab={setActiveTab} />
                             </div>
                         </div>
-                        <div className="h-full">
-                            <PopularPerformances performances={performances} />
+                        {/* Tiết mục nhiều lượt xem */}
+                        <div className="my-6">
+                            <PopularPerformances popularPerformances={popularPerformances} />
+                        </div>
+
+                        {/* Sự kiện Section */}
+                        <div className="event-section">
+                            <EventSection events={events} />
                         </div>
                     </div>
-                </div>
 
-                <div className="event-section">
-                    <EventSection />
+
                 </div>
             </div>
         </>

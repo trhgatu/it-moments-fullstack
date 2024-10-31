@@ -22,7 +22,8 @@ const postSchema = new mongoose.Schema({
     status: String,
     position: Number,
     images: [String],
-
+    isFeatured: { type: Boolean, default: false },
+    isLastest : {type: Boolean, default: false},
     slug: {
         type: String,
         slug: "title",

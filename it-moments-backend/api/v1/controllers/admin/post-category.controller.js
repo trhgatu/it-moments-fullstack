@@ -128,7 +128,27 @@ const controller = {
                 error: error.message, // Gửi thông tin lỗi
             });
         }
-    }
+    },
+    delete: async (req, res) => {
+        try {
+            const id = req.params.id;
+            await PostCategory.updateOne({
+                _id: id,
+            }, {
+                deleted: true,
+                deletedAt: new Date()
+            });
+            res.json({
+                code: 200,
+                message: "Xóa danh mục bài viết thành công"
+            })
+        } catch(error) {
+            res.json({
+                code: 400,
+                message: "Lỗi"
+            })
+        }
+    },
 
 }
 export default controller;

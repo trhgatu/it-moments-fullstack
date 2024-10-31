@@ -1,24 +1,24 @@
 import React from 'react';
 
 const PostSection = ({ postData, activeTab, setActiveTab }) => {
-    const renderContent = () => {
-        return postData[activeTab].map((post, index) => (
-            <div className="border p-4" key={index}>
-                <h4 className="font-semibold">{post.title}</h4>
-                <p className="text-gray-600">{post.description}</p>
-            </div>
-        ));
+    const MAX_TITLE_LENGTH = 30; // Giới hạn số ký tự cho tiêu đề
+
+    const truncateTitle = (title) => {
+        if(title.length > MAX_TITLE_LENGTH) {
+            return title.slice(0, MAX_TITLE_LENGTH) + '...'; // Cắt tiêu đề và thêm dấu '...'
+        }
+        return title;
     };
 
     return (
-        <div className="w-full">
-            <div className="flex space-x-4 border-b-2 pb-2 mb-4">
+        <div className="w-full min-h-[400px]">
+            <div className="flex flex-wrap border-b-2 pb-2 mb-4">
                 {Object.keys(postData).map((tab, index) => (
                     <button
                         key={index}
-                        className={`flex-1 text-lg font-semibold text-center py-2 p-8 transition duration-300 ease-in-out transform ${activeTab === tab
-                            ? 'text-white bg-blue-500 border-b-4 border-blue-500 scale-105'
-                            : 'text-gray-500 hover:text-blue-600 hover:bg-blue-100'
+                        className={`w-full md:w-auto text-sm md:text-lg font-semibold text-center py-2 px-4 transition duration-300 ease-in-out ${activeTab === tab
+                            ? 'bg-blue-600 text-white'
+                            : 'text-gray-500 hover:bg-blue-200 hover:text-gray-800'
                             }`}
                         onClick={() => setActiveTab(tab)}
                     >
@@ -26,8 +26,27 @@ const PostSection = ({ postData, activeTab, setActiveTab }) => {
                     </button>
                 ))}
             </div>
-            <div className="flex flex-col gap-4">
-                {renderContent()}
+
+            <div className="grid grid-cols-1 gap-4">
+                {/* Chỉ lấy 3 bài viết mới nhất */}
+                {postData[activeTab]?.slice(0, 3).map((post, index) => (
+                    <div
+                        key={index}
+                        className="p-4 bg-white shadow-md hover:shadow-lg transition duration-300 ease-in-out flex items-start"
+                    >
+                        <img
+                            src={post.thumbnail}
+                            alt={post.title}
+                            className="w-24 h-24 object-cover mr-4"
+                        />
+                        <div className="flex flex-col flex-grow">
+                            <h4 className="font-semibold text-lg text-gray-900 hover:text-blue-600 transition duration-300 ease-in-out">
+                                {truncateTitle(post.title)}
+                            </h4>
+                            <p className="text-gray-600 text-sm">{post.description.slice(0, 100)}...</p>
+                        </div>
+                    </div>
+                ))}
             </div>
         </div>
     );

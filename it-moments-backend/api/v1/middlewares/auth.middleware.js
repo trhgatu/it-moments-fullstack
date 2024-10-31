@@ -10,7 +10,7 @@ export const requireAuth = async (req, res, next) => {
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const user = await User.findById(decoded.id).populate('role_id', 'title permissions isAdmin').select("-password -token");
+        const user = await User.findById(decoded.id).populate('role_id', 'title permissions description isAdmin').select("-password -token");
 
         if(!user) {
             return res.status(401).json({ message: "Người dùng không tồn tại" });

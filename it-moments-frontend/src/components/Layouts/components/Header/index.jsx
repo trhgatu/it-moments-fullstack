@@ -1,29 +1,47 @@
 import { useEffect, useState } from 'react';
-import { NavLink, useLocation } from 'react-router-dom'; // Import thêm useLocation
+import { NavLink, useLocation, useNavigate } from 'react-router-dom'; // Import thêm useLocation
 import cx from 'classnames'; // Import classnames
 import styles from './Header.module.scss';
 import { useClientUser } from '../../../../context/ClientUserContext';
+import { Avatar, Dropdown, Menu } from 'antd';
+import { UserOutlined } from '@ant-design/icons';
 
 export const Header = () => {
+    const navigate = useNavigate();
     const { user, setUser } = useClientUser();
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const location = useLocation(); // Lấy pathname từ location
 
     const handleScroll = () => {
-        if (window.scrollY > 50) {
+        if(window.scrollY > 50) {
             setIsScrolled(true);
         } else {
             setIsScrolled(false);
         }
     };
+    const handleLogout = () => {
+        setUser(null);
+        navigate('/');
+    };
 
+    const menu = (
+        <Menu className={styles.dropdownMenu}>
+            <Menu.Item key="profile" onClick={() => navigate('/profile')}>
+                Profile
+            </Menu.Item>
+            <Menu.Divider />
+            <Menu.Item key="logout" onClick={handleLogout}>
+                Đăng xuất
+            </Menu.Item>
+        </Menu>
+    );
     const toggleMenu = () => {
         setIsMenuOpen(!isMenuOpen);
     };
 
     useEffect(() => {
-        if (location.pathname === '/') {
+        if(location.pathname === '/') {
             window.addEventListener('scroll', handleScroll);
         }
 
@@ -148,33 +166,33 @@ export const Header = () => {
 
             <div className="hidden md:flex gap-4 items-center">
                 {user ? (
-                    <span className="text-[var(--primary)]">Xin chào, {user.fullName}</span> // Hiển thị tên người dùng
+                    <Dropdown overlay={menu} placement="bottomRight" trigger={['click']}>
+                        <Avatar
+                            src={user.avatar}
+                            icon={!user.avatar && <UserOutlined />}
+                            size={40}
+                            style={{
+                                backgroundColor: '#f0f0f0',
+                                color: '#8c8c8c',
+                                border: '1px solid #d9d9d9',
+                                cursor: 'pointer',
+                            }}
+                        />
+                    </Dropdown>
                 ) : (
                     <>
                         <NavLink
-                            className={cx(
-                                'px-2 md:px-4 py-1 transition-all duration-300',
-                                {
-                                    'bg-[var(--primary)] text-white border border-[#2E6C7B] hover:bg-[#2E6C7B] hover:text-white':
-                                        isScrolled || location.pathname !== '/',
-                                    'bg-transparent text-white border border-white hover:bg-[var(--primary)] hover:text-white':
-                                        !isScrolled && location.pathname === '/'
-                                }
-                            )}
+                            className={cx(styles.loginButton, {
+                                [styles.scrolled]: isScrolled || location.pathname !== '/',
+                            })}
                             to="/login"
                         >
                             Đăng nhập
                         </NavLink>
                         <NavLink
-                            className={cx(
-                                'px-2 md:px-4 py-1 transition-all duration-300',
-                                {
-                                    'bg-white text-[var(--primary)] border border-white hover:bg-white':
-                                        isScrolled || location.pathname !== '/',
-                                    'bg-transparent text-[var(--primary)] border border-[var(--primary)] hover:bg-white hover:text-[var(--primary)]':
-                                        !isScrolled && location.pathname === '/'
-                                }
-                            )}
+                            className={cx(styles.registerButton, {
+                                [styles.scrolled]: isScrolled || location.pathname !== '/',
+                            })}
                             to="/register"
                         >
                             Đăng ký

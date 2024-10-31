@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Form, Input, Button, Select, Upload, message, Radio } from 'antd';
+import { Card, Form, Input, Button, Select, Upload, message, Radio,Checkbox  } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { UploadOutlined } from '@ant-design/icons';
 import axios from 'axios';
@@ -15,6 +15,7 @@ const CreatePost = () => {
     const [imageFileList, setImageFileList] = useState([]);
     const [videoURL, setVideoURL] = useState('');
     const [categories, setCategories] = useState([]);
+    const [isFeatured, setIsFeatured] = useState(false);
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -66,6 +67,7 @@ const CreatePost = () => {
 
         formData.append('status', values.status);
         formData.append('video', videoURL);
+        formData.append('isFeatured', isFeatured);
 
         if(thumbnailFileList.length > 0) {
             formData.append('thumbnail', thumbnailFileList[0].originFileObj);
@@ -116,6 +118,11 @@ const CreatePost = () => {
                                 </Option>
                             ))}
                         </Select>
+                    </Form.Item>
+                    <Form.Item>
+                        <Checkbox checked={isFeatured} onChange={(e) => setIsFeatured(e.target.checked)}>
+                            Hiển thị trên trang chủ
+                        </Checkbox>
                     </Form.Item>
 
 
