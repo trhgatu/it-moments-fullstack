@@ -30,7 +30,7 @@ export default function Home() {
     }, []);
 
     useEffect(() => {
-        axios.get('http://localhost:3000/api/v1/posts?category=van-nghe&isFeatured=true&sortKey=views&sortValue=desc')
+        axios.get('http://localhost:3000/api/v1/posts?category=van-nghe&isFeatured=true&sortKey=votes&sortValue=desc')
             .then((response) => setPopularPerformances(response.data.data.posts))
             .catch((error) => console.error("Error fetching Tiết mục nhiều lượt xem posts:", error));
     }, []);
@@ -44,10 +44,12 @@ export default function Home() {
     return (
         <>
             <div className="w-full">
-                <Slider slides={slides} className="w-full" />
+                <div className={styles.sliderContainer}>
+                    <Slider slides={slides} />
+                </div>
+
                 <div className="text-black mx-auto container">
                     <div className={styles.mainContent}>
-                        {/* Cập nhật responsive cho grid */}
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8 mb-8">
                             <div className="flex flex-col col-span-2 h-full">
                                 <NewPost />

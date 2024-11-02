@@ -24,6 +24,8 @@ const postSchema = new mongoose.Schema({
     images: [String],
     isFeatured: { type: Boolean, default: false },
     isLastest : {type: Boolean, default: false},
+    votes: { type: Number, default: 0 }, // Tổng số lượt bình chọn
+    voters: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     slug: {
         type: String,
         slug: "title",

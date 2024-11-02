@@ -81,28 +81,24 @@ const About = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Hero Section */}
-      <section className="relative h-[600px] overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-800 opacity-80" />
+      <section className="relative h-[50vh] md:h-[600px] overflow-hidden">
         <img
           src={slide1}
           alt="Hero background"
           className="absolute inset-0 w-full h-full object-cover"
         />
-      <div className="relative container mx-auto px-6 h-full flex items-center justify-end">
-    <div className="max-w-2xl text-white" data-aos="fade-right">
-        <h1 className="text-6xl font-bold mb-6">Khoa Công Nghệ Thông Tin</h1>
-        <p className="text-xl mb-8 opacity-90">
-        Đào tạo những nhà lãnh đạo công nghệ tương lai, thúc đẩy đổi mới và sáng tạo trong kỷ nguyên số.
-        </p>
-        <button className="bg-white text-blue-600 px-8 py-3 rounded-full font-semibold hover:bg-blue-50 transition-colors flex items-center gap-2 group absolute right-0">
-            <ArrowLeft className="w-5 h-5 transform -translate-x-1 group-hover:translate-x-0 transition-transform" />
-            Tìm hiểu thêm
-        </button>
-
-    </div>
-</div>
-
+        <div className="relative container mx-auto px-4 md:px-6 h-full flex items-center justify-center md:justify-end">
+          <div className="max-w-2xl text-white" data-aos="fade-right">
+            <h1 className="text-4xl md:text-6xl font-bold mb-6">Khoa Công Nghệ Thông Tin</h1>
+            <p className="text-lg md:text-xl mb-8 opacity-90">
+              Đào tạo những nhà lãnh đạo công nghệ tương lai, thúc đẩy đổi mới và sáng tạo trong kỷ nguyên số.
+            </p>
+            <button className="bg-white text-blue-600 px-4 md:px-8 py-2 md:py-3 rounded-full font-semibold hover:bg-blue-50 transition-colors flex items-center gap-2">
+              <ArrowLeft className="w-5 h-5" />
+              Tìm hiểu thêm
+            </button>
+          </div>
+        </div>
       </section>
 
       {/* Features Grid */}
@@ -124,13 +120,13 @@ const About = () => {
       </section>
 
       {/* About Content */}
-      <section className="container mx-auto px-6 py-24">
+      <section className="container mx-auto px-4 md:px-6 py-24">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div data-aos="fade-right">
             <img
               src={slide2}
               alt="About"
-              className="rounded-xl shadow-lg w-full h-[400px] object-cover"
+              className="rounded-xl shadow-lg w-full h-auto max-h-[400px] object-cover"
             />
           </div>
           <div data-aos="fade-left" className="space-y-6">
@@ -179,7 +175,7 @@ const About = () => {
       </section>
 
       {/* Team Section */}
-      <section className="container mx-auto px-6 py-20">
+      <section className="container mx-auto px-4 md:px-6 py-20">
         <div className="text-center mb-16" data-aos="fade-up">
           <h2 className="text-4xl font-bold text-gray-800 mb-4">Thành Viên Thực Hiện</h2>
           <p className="text-gray-600 max-w-2xl mx-auto">
@@ -188,7 +184,7 @@ const About = () => {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {teamMembers.map((member, index) => (
-            <div key={index} className="bg-white rounded-xl shadow-lg p-6" data-aos="fade-up">
+            <div key={index} className="bg-white rounded-xl shadow-lg p-6">
               <img src={member.image} alt={member.name} className="rounded-full w-24 h-24 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-center">{member.name}</h3>
               <p className="text-gray-600 text-center">{member.role}</p>
@@ -200,8 +196,9 @@ const About = () => {
           ))}
         </div>
       </section>
-      {/* Có thể xóa section*/}
-      <section className="container mx-auto px-6 py-20">
+
+      {/* Final Call to Action Section */}
+      <section className="container mx-auto px-4 md:px-6 py-20">
         <div
           className="bg-gradient-to-r from-blue-600 to-blue-800 rounded-2xl p-12 text-center text-white"
           data-aos="fade-up"

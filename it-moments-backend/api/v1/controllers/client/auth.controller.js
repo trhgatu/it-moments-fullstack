@@ -6,7 +6,6 @@ import { FRONT_END_DOMAIN } from '../../../../config/system.js';
 import crypto from 'crypto';
 const controller = {
     /* [POST] /api/v1/auth/login */
-    /* [POST] /api/v1/auth/login - Đăng nhập người dùng */
     login: async (req, res) => {
         try {
             const { email, password } = req.body;
@@ -47,13 +46,12 @@ const controller = {
                 sameSite: "None",
                 secure: true,
             });
-            console.log('Setting cookie:', res.get('Set-Cookie'));
             user.password = undefined;
             return res.status(200).json({
                 code: 200,
                 message: 'Đăng nhập thành công',
-                token,
-                user,
+                token: token,
+                user: user
             });
         } catch(error) {
             console.error(error);

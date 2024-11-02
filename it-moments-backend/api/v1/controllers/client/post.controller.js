@@ -58,14 +58,14 @@ const controller = {
             sort.position = "desc";
             sort.createdAt = "desc";
         }
-        if (req.query.isLatest === 'true') {
+        if(req.query.isLatest === 'true') {
             objectPagination.limitItems = 5;
             sort.createdAt = "desc";
         }
-        if(req.query.isFeatured === 'true'){
+        if(req.query.isFeatured === 'true') {
             find.isFeatured = true;
         }
-        if (req.query.sortKey === 'views') {
+        if(req.query.sortKey === 'views') {
             sort.views = -1;
         }
         const posts = await Post.find(find)
@@ -108,7 +108,47 @@ const controller = {
         const post = await Post.findOne(find)
             .populate("post_category_id", "title")
             .populate("event_id", "title")
+            .populate({
+                path: "voters",
+                select: "fullName", // Chỉ lấy trường fullName
+            });
         res.json(post);
-    }
+    },
+    vote: async (req, res) => {
+        try {
+            const { id } = req.params; // ID của post
+            const user = res.locals.user; // Lấy user từ middleware
+
+            // Kiểm tra xem người dùng đã bình chọn hay chưa
+            const post = await Post.findById(id);
+            if(!post) {
+                return res.status(404).json({ success: false, message: 'Post không tồn tại!' });
+            }
+
+            if(post.voters.includes(user._id)) {
+                return res.status(400).json({ success: false, message: 'Bạn đã bình chọn rồi!' });
+            }
+
+            // Cập nhật post với người dùng đã bình chọn
+            post.voters.push(user._id); // Thêm ID người dùng vào danh sách voters
+            post.votes = post.voters.length; // Cập nhật tổng số lượt bình chọn
+            await post.save(); // Lưu lại thay đổi
+
+            // Lấy thông tin người dùng
+            const userInfo = await User.findById(user._id).select('fullName'); // Lấy firstName và lastName
+
+            return res.status(200).json({
+                success: true,
+                data: {
+                    votes: post.votes,
+                    userFullName: `${userInfo.fullName}`, // Tạo tên đầy đủ
+                },
+            });
+        } catch(error) {
+            console.error(error);
+            return res.status(500).json({ message: 'Có lỗi xảy ra khi bình chọn.' });
+        }
+    },
+
 }
 export default controller;

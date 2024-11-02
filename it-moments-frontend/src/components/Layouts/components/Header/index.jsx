@@ -1,25 +1,26 @@
-import { useEffect, useState } from 'react';
-import { NavLink, useLocation, useNavigate } from 'react-router-dom'; // Import thêm useLocation
-import cx from 'classnames'; // Import classnames
+import { useEffect, useState, useRef } from 'react';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import cx from 'classnames';
 import styles from './Header.module.scss';
 import { useClientUser } from '../../../../context/ClientUserContext';
 import { Avatar, Dropdown, Menu } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
+import { motion } from 'framer-motion';
+import { Button } from 'antd';
 
 export const Header = () => {
     const navigate = useNavigate();
     const { user, setUser } = useClientUser();
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const location = useLocation(); // Lấy pathname từ location
+    const [hoveredIndex, setHoveredIndex] = useState(null);
+    const location = useLocation();
+    const navRef = useRef([]);
 
     const handleScroll = () => {
-        if(window.scrollY > 50) {
-            setIsScrolled(true);
-        } else {
-            setIsScrolled(false);
-        }
+        setIsScrolled(window.scrollY > 50);
     };
+
     const handleLogout = () => {
         setUser(null);
         navigate('/');
@@ -36,39 +37,56 @@ export const Header = () => {
             </Menu.Item>
         </Menu>
     );
+
     const toggleMenu = () => {
         setIsMenuOpen(!isMenuOpen);
+    };
+
+    const handleMenuItemClick = () => {
+        setIsMenuOpen(false);
     };
 
     useEffect(() => {
         if(location.pathname === '/') {
             window.addEventListener('scroll', handleScroll);
         }
-
         return () => {
             window.removeEventListener('scroll', handleScroll);
         };
     }, [location.pathname]);
 
+    const navItems = [
+        { path: '/', label: 'Trang chủ' },
+        { path: '/posts/su-kien', label: 'Sự kiện' },
+        { path: '/posts/van-nghe', label: 'Văn nghệ' },
+        { path: '/posts/hoc-thuat', label: 'Học thuật' },
+        { path: '/about', label: 'Giới thiệu' },
+    ];
+
+    const activeIndex = navItems.findIndex(item => item.path === location.pathname);
+    const hoveredItem = hoveredIndex !== null ? navRef.current[hoveredIndex] : null;
+    const hoveredItemWidth = hoveredItem ? hoveredItem.offsetWidth : 0;
+    const hoveredItemLeft = hoveredItem ? hoveredItem.offsetLeft : 0;
+
     return (
         <header
             className={cx(
-                'flex items-center justify-between px-9 py-3 fixed top-0 left-0 right-0 z-50 transition-all duration-300',
+                'flex items-center justify-between fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-4 md:px-9',
                 {
                     'bg-white shadow-md': isScrolled || location.pathname !== '/',
-                    'bg-transparent': !isScrolled && location.pathname === '/'
+                    'bg-transparent': !isScrolled && location.pathname === '/',
                 }
             )}
             style={{ height: 'var(--header-height)' }}
         >
-            <NavLink className="flex gap-2 items-center" to="/">
+            <NavLink className="flex gap-2 items-center ml-4" to="/" onClick={() => setHoveredIndex(0)}>
                 <span
                     className={cx(
                         styles.textLogo,
-                        'text-2xl transition-colors duration-300',
+                        'text-2xl transition-transform duration-300 ease-in-out hover:scale-110',
                         {
-                            'text-black': isScrolled || location.pathname !== '/',
-                            'text-white': !isScrolled && location.pathname === '/'
+                            'text-black hover:text-blue-500': isScrolled || location.pathname !== '/',
+                            'text-white hover:text-blue-500 hover:font-semibold': !isScrolled && location.pathname === '/',
                         }
                     )}
                 >
@@ -76,95 +94,69 @@ export const Header = () => {
                 </span>
             </NavLink>
 
+            {/* Nút Toggle cho Menu Di Động */}
             <div className="md:hidden" onClick={toggleMenu}>
                 <button className="focus:outline-none">
-                    <svg
-                        className={cx('w-6 h-6', {
-                            'text-black': isScrolled || location.pathname !== '/',
-                            'text-white': !isScrolled && location.pathname === '/'
-                        })}
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                    >
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M4 6h16M4 12h16m-7 6h7"
-                        />
-                    </svg>
+                    {isMenuOpen ? (
+                        <svg className={cx('w-6 h-6', { 'text-black': isScrolled || location.pathname !== '/', 'text-white': !isScrolled && location.pathname === '/' })} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    ) : (
+                        <svg className={cx('w-6 h-6', { 'text-black': isScrolled || location.pathname !== '/', 'text-white': !isScrolled && location.pathname === '/' })} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7" />
+                        </svg>
+                    )}
                 </button>
             </div>
 
-            <nav className={cx('hidden md:flex gap-32', {
-                block: isMenuOpen,
-                hidden: !isMenuOpen
-            })}>
-                <NavLink
-                    to="/"
-                    className={({ isActive }) =>
-                        cx(styles.navLink, 'transition-colors duration-300', {
-                            'text-black': (isScrolled || location.pathname !== '/') && !isActive,
-                            'text-white': !isScrolled && location.pathname === '/' && !isActive,
-                            'text-blue-500': isActive
-                        })
-                    }
-                >
-                    Trang chủ
-                </NavLink>
-                <NavLink
-                    to="/posts/su-kien"
-                    className={({ isActive }) =>
-                        cx(styles.navLink, 'transition-colors duration-300', {
-                            'text-black': (isScrolled || location.pathname !== '/') && !isActive,
-                            'text-white': !isScrolled && location.pathname === '/' && !isActive,
-                            'text-blue-500': isActive
-                        })
-                    }
-                >
-                    Sự kiện
-                </NavLink>
-                <NavLink
-                    to="/posts/van-nghe"
-                    className={({ isActive }) =>
-                        cx(styles.navLink, 'transition-colors duration-300', {
-                            'text-black': (isScrolled || location.pathname !== '/') && !isActive,
-                            'text-white': !isScrolled && location.pathname === '/' && !isActive,
-                            'text-blue-500': isActive
-                        })
-                    }
-                >
-                    Văn nghệ
-                </NavLink>
-                <NavLink
-                    to="/posts/hoc-thuat"
-                    className={({ isActive }) =>
-                        cx(styles.navLink, 'transition-colors duration-300', {
-                            'text-black': (isScrolled || location.pathname !== '/') && !isActive,
-                            'text-white': !isScrolled && location.pathname === '/' && !isActive,
-                            'text-blue-500': isActive
-                        })
-                    }
-                >
-                    Học thuật
-                </NavLink>
-                <NavLink
-                    to="about"
-                    className={({ isActive }) =>
-                        cx(styles.navLink, 'transition-colors duration-300', {
-                            'text-black': (isScrolled || location.pathname !== '/') && !isActive,
-                            'text-white': !isScrolled && location.pathname === '/' && !isActive,
-                            'text-blue-500': isActive
-                        })
-                    }
-                >
-                    Giới thiệu
-                </NavLink>
+            {/* Menu Điều Hướng */}
+            <nav className={cx('hidden md:flex gap-20 relative h-full')}>
+                {navItems.map((item, index) => (
+                    <NavLink
+                        key={item.path}
+                        to={item.path}
+                        end={item.path === '/'}
+                        onMouseEnter={() => setHoveredIndex(index)}
+                        onMouseLeave={() => setHoveredIndex(activeIndex)}
+                        ref={el => navRef.current[index] = el}
+                        className={({ isActive }) =>
+                            cx('flex items-center relative transition-colors duration-300 h-full', {
+                                'text-white': !isScrolled && location.pathname === '/',
+                                'text-black': isScrolled || location.pathname !== '/',
+                                'hover:text-blue-500': !isActive && location.pathname === '/',
+                            })
+                        }
+                    >
+                        <span className="text">{item.label}</span>
+                    </NavLink>
+                ))}
+                <motion.div
+                    className="absolute bottom-0 h-[4px] bg-blue-500"
+                    style={{
+                        width: hoveredItemWidth,
+                        left: hoveredItemLeft,
+                        zIndex: -1,
+                    }}
+                    initial={{ opacity: 0, scale: 0.8, filter: "blur(6px)" }}
+                    animate={{
+                        width: hoveredItemWidth,
+                        left: hoveredItemLeft,
+                        opacity: 1,
+                        scale: 1,
+                        filter: "blur(0px)"
+                    }}
+                    transition={{
+                        type: 'spring',
+                        stiffness: 200,
+                        damping: 20,
+                        mass: 0.8,
+                        duration: 0.6
+                    }}
+                />
             </nav>
 
-            <div className="hidden md:flex gap-4 items-center">
+            {/* Các Nút Đăng Nhập và Đăng Ký */}
+            <div className="hidden md:flex gap-4 items-center mr-4">
                 {user ? (
                     <Dropdown overlay={menu} placement="bottomRight" trigger={['click']}>
                         <Avatar
@@ -181,61 +173,88 @@ export const Header = () => {
                     </Dropdown>
                 ) : (
                     <>
-                        <NavLink
+                        <Button
                             className={cx(styles.loginButton, {
                                 [styles.scrolled]: isScrolled || location.pathname !== '/',
                             })}
-                            to="/login"
+                            type="primary"
+                            size="large"
+                            onClick={() => navigate('/login')}
                         >
                             Đăng nhập
-                        </NavLink>
-                        <NavLink
+                        </Button>
+                        <Button
                             className={cx(styles.registerButton, {
                                 [styles.scrolled]: isScrolled || location.pathname !== '/',
                             })}
-                            to="/register"
+                            type="default"
+                            size="large"
+                            onClick={() => navigate('/register')}
                         >
                             Đăng ký
-                        </NavLink>
+                        </Button>
                     </>
                 )}
             </div>
 
-            {/* Menu di động khi mở */}
+            {/* Menu Di Động Khi Mở */}
             {isMenuOpen && (
-                <div className="md:hidden fixed top-16 left-0 right-0 bg-white shadow-md z-40">
+                <div className="md:hidden fixed top-16 left-0 right-0 bg-white shadow-md z-40 p-4">
                     <nav className="flex flex-col items-center">
-                        <NavLink to="/" className={({ isActive }) =>
-                            cx(styles.navLink, 'transition-colors duration-300', {
-                                'text-blue-500': isActive
-                            })}
-                        >
-                            Trang chủ
-                        </NavLink>
-                        <NavLink to="/about" className={({ isActive }) =>
-                            cx('text-[#2E6C7B] py-2', {
-                                'text-blue-500': isActive
-                            })}
-                        >
-                            Sự kiện
-                        </NavLink>
-                        <NavLink to="/service" className={({ isActive }) =>
-                            cx('text-[#2E6C7B] py-2', {
-                                'text-blue-500': isActive
-                            })}
-                        >
-                            Hoạt động
-                        </NavLink>
-                        <NavLink to="/contact" className={({ isActive }) =>
-                            cx('text-[#2E6C7B] py-2', {
-                                'text-blue-500': isActive
-                            })}
-                        >
-                            Học thuật
-                        </NavLink>
+                        {navItems.map(item => (
+                            <NavLink
+                                key={item.path}
+                                to={item.path}
+                                onClick={handleMenuItemClick}
+                                className={({ isActive }) =>
+                                    cx('text-[#2E6C7B] py-2 text-lg font-semibold transition-colors duration-300', {
+                                        'text-blue-500': isActive
+                                    })
+                                }
+                            >
+                                {item.label}
+                            </NavLink>
+                        ))}
+                        {/* Nếu không có user thì hiển thị nút đăng nhập và đăng ký */}
+                        {!user ? (
+                            <div className="flex flex-col items-center mt-4">
+                                <Button
+                                    className="mb-2 w-full" // Đặt chiều rộng toàn bộ
+                                    type="primary"
+                                    onClick={() => navigate('/login')}
+                                >
+                                    Đăng nhập
+                                </Button>
+                                <Button
+                                    className="w-full" // Đặt chiều rộng toàn bộ
+                                    type="default"
+                                    onClick={() => navigate('/register')}
+                                >
+                                    Đăng ký
+                                </Button>
+                            </div>
+                        ) : (
+                            // Nếu có user thì hiển thị thông tin người dùng
+                            <div className="flex flex-col items-center mt-4">
+                                <Avatar
+                                    src={user.avatar}
+                                    icon={!user.avatar && <UserOutlined />}
+                                    size={50} // Kích thước lớn hơn cho dễ nhìn
+                                    style={{
+                                        backgroundColor: '#f0f0f0',
+                                        color: '#8c8c8c',
+                                        border: '1px solid #d9d9d9',
+                                        cursor: 'pointer',
+                                    }}
+                                />
+                                <span className="mt-2 text-lg font-semibold">{user.name || 'Người dùng'}</span>
+                            </div>
+                        )}
                     </nav>
                 </div>
             )}
+
+
         </header>
     );
 };

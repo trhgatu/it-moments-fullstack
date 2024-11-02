@@ -4,7 +4,7 @@ import { Outlet, useParams } from 'react-router-dom';
 import ActivityList from './ActivityList';
 import Academic from '../Academic';
 import EventList from '../Event/EventList';
-import Spinner from '../../components/Spinner';
+import { Spin } from 'antd'; // Nhập component Spin từ Ant Design
 import { API_URL } from '../../config/config';
 
 export default function Posts() {
@@ -37,8 +37,18 @@ export default function Posts() {
     }, [category, cachedPosts]);
 
     if (loading) {
-        return <Spinner />;
+        return (
+            <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100vh' // Chiều cao toàn bộ trang
+            }}>
+                <Spin size="large" tip="Đang tải dữ liệu..." />
+            </div>
+        );
     }
+
 
     let RenderList;
     if (category === 'su-kien') {
@@ -48,6 +58,7 @@ export default function Posts() {
     } else {
         RenderList = ActivityList;
     }
+
     return (
         <div>
             {!slug ? (

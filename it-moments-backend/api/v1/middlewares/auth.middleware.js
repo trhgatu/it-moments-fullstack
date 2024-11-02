@@ -39,7 +39,7 @@ export const requireClientAuth = async (req, res, next) => {
             return res.status(401).json({ message: "Người dùng không tồn tại" });
         }
         res.locals.user = user;
-
+        console.log(user)
         next();
     } catch(error) {
         console.error("Token verification error:", error);
