@@ -1,12 +1,12 @@
-// src/pages/Posts/EventList.js
 import React from 'react';
 import EventItem from '../Event/EventItem';
+import styles from './EventList.module.scss';
+import { ChevronRightIcon } from '@heroicons/react/24/solid';
 
-const EventList = ({posts = []}) => {
+const EventList = ({ posts = [], category }) => {
     return (
-        <div>
-            <h1>Sự Kiện</h1>
-            <div>
+        <div className={styles.eventListContainer}>
+            <div className={`${styles.eventList} flex flex-col gap-4`}>
                 {posts.map((post) => (
                     <EventItem
                         key={post._id}
@@ -16,6 +16,7 @@ const EventList = ({posts = []}) => {
                         date={new Date(post.createdAt).toLocaleDateString()}
                         imageUrl={post.thumbnail || 'https://via.placeholder.com/150'}
                         slug={post.slug}
+                        category={category}
                     />
                 ))}
             </div>

@@ -3,18 +3,16 @@ import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { API_URL } from '../../config/config';
 import { useClientUser } from '../../context/ClientUserContext';
-import { message, Modal, Row, Col, Image, Card } from 'antd';
+import { message, Modal } from 'antd';
 
-const PostDetail = () => {
+const PostEventDetail = () => {
   const { slug } = useParams();
   const { user, loading: userLoading } = useClientUser();
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
   const [voted, setVoted] = useState(false);
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [isCancelModalVisible, setIsCancelModalVisible] = useState(false);
-  const [imageModalVisible, setImageModalVisible] = useState(false); // State for image modal
-  const [selectedImage, setSelectedImage] = useState(''); // State for selected image
+  const [isModalVisible, setIsModalVisible] = useState(false); // Modal bình chọn
+  const [isCancelModalVisible, setIsCancelModalVisible] = useState(false); // Modal hủy bình chọn
 
   const fetchPost = async () => {
     try {
@@ -52,7 +50,7 @@ const PostDetail = () => {
     setIsModalVisible(true);
   };
 
-  // Hàm xác nhận bình chọn
+  // Xử lý xác nhận bình chọn
   const handleVote = async () => {
     try {
       const response = await axios.post(`${API_URL}/posts/${post._id}/vote`, null, {
@@ -65,7 +63,7 @@ const PostDetail = () => {
         setVoted(true);
         message.success('Bình chọn thành công!');
       }
-      setIsModalVisible(false);
+      setIsModalVisible(false); // Đóng modal sau khi bình chọn thành công
     } catch (error) {
       console.error('Lỗi khi bình chọn:', error.response?.data?.message);
       message.error('Có lỗi xảy ra trong quá trình bình chọn.');
@@ -77,7 +75,7 @@ const PostDetail = () => {
     setIsCancelModalVisible(true);
   };
 
-  // Hàm hủy bình chọn
+  // Xử lý hủy bình chọn
   const handleCancelVote = async () => {
     try {
       const response = await axios.post(`${API_URL}/posts/${post._id}/cancel-vote`, null, {
@@ -90,36 +88,27 @@ const PostDetail = () => {
         setVoted(false);
         message.success('Hủy bình chọn thành công!');
       }
-      setIsCancelModalVisible(false);
+      setIsCancelModalVisible(false); // Đóng modal hủy bình chọn
     } catch (error) {
       console.error('Lỗi khi hủy bình chọn:', error.response?.data?.message);
       message.error('Có lỗi xảy ra trong quá trình hủy bình chọn.');
     }
   };
 
+  // Hàm hủy modal bình chọn
+  const handleVoteModalCancel = () => {
+    setIsModalVisible(false); // Đóng modal bình chọn
+  };
+
+  // Hàm hủy modal hủy bình chọn
   const handleCancelVoteModal = () => {
     setIsCancelModalVisible(false);
   };
 
+  // Xác nhận hủy bình chọn
   const handleCancelVoteConfirm = () => {
     setIsCancelModalVisible(false);
-    handleCancelVote();
-  };
-
-  const handleVoteModalCancel = () => {
-    setIsModalVisible(false);
-  };
-
-  // Hàm mở modal hình ảnh
-  const showImageModal = (image) => {
-    setSelectedImage(image);
-    setImageModalVisible(true);
-  };
-
-  // Hàm đóng modal hình ảnh
-  const handleImageModalCancel = () => {
-    setImageModalVisible(false);
-    setSelectedImage(''); // Reset selected image
+    handleCancelVote(); // Gọi hàm hủy bình chọn
   };
 
   if (userLoading || loading) {
@@ -130,26 +119,12 @@ const PostDetail = () => {
     return <div>Không tìm thấy bài viết.</div>;
   }
 
+  // Kiểm tra danh mục
+  const isEventCategory = post.post_category_id?.title === 'Sự kiện'; // Kiểm tra xem danh mục có phải là sự kiện không
+  const canVote = !isEventCategory && post.post_category_id?.title !== 'Danh mục không cho bình chọn'; // Kiểm tra khả năng bình chọn
+
   return (
     <div className="max-w-screen-lg mx-auto p-6 bg-white h-screen pt-40">
-      {/* Video section */}
-      {post.video && (
-        <Card title="Video liên quan" className="mb-8">
-          <div className="mt-4">
-            <iframe
-              width="100%"
-              height="450"
-              src={`https://www.youtube.com/embed/${post.video.split('v=')[1].split('&')[0]}`}
-              title="Video Liên Quan"
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            ></iframe>
-          </div>
-        </Card>
-      )}
-
-      {/* Thumbnail Image */}
       <div className="cursor-pointer">
         <img
           src={post.thumbnail || 'https://via.placeholder.com/150'}
@@ -173,59 +148,68 @@ const PostDetail = () => {
         <p className="text-lg">{post.description}</p>
 
         <div className="mt-6">
-          <button
-            onClick={showVoteModal}
-            disabled={voted}
-            className={`px-4 py-2 rounded bg-blue-600 text-white ${voted ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700'}`}
-          >
-            {voted ? 'Bạn đã bình chọn' : 'Bình chọn'}
-          </button>
-          {voted && (
-            <button
-              onClick={showCancelVoteModal}
-              className="ml-4 px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700"
-            >
-              Hủy bình chọn
-            </button>
+          {/* Chỉ hiển thị nút bình chọn nếu không phải là danh mục sự kiện */}
+          {!isEventCategory && canVote && (
+            <>
+              <button
+                onClick={showVoteModal}
+                disabled={voted}
+                className={`px-4 py-2 rounded bg-blue-600 text-white ${voted ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700'}`}
+              >
+                {voted ? 'Bạn đã bình chọn' : 'Bình chọn'}
+              </button>
+              {voted && (
+                <button
+                  onClick={showCancelVoteModal}
+                  className="ml-4 px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700"
+                >
+                  Hủy bình chọn
+                </button>
+              )}
+            </>
           )}
         </div>
 
         <div className="mt-8">
-          <h3 className="text-2xl font-semibold">Hình ảnh bổ sung</h3>
-          <Row gutter={[16, 16]} className="mt-4">
-            {post.images && post.images.length > 0 ? (
-              post.images.map((image, index) => (
-                <Col span={8} key={index}> {/* 8 cột cho mỗi hình ảnh, tổng cộng 3 hình mỗi hàng */}
-                  <Image
-                    src={image}
-
-                    alt={`Post Image ${index + 1}`}
-                    preview={false} // Disable default Ant Design preview
-                    onClick={() => showImageModal(image)} // Open image modal on click
-                    style={{ width: '100%', height: 'auto', objectFit: 'cover', aspectRatio: '16/9',cursor: 'pointer' }} // Maintain 16:9 aspect ratio
-                  />
-                </Col>
-              ))
-            ) : (
-              <p>Không có hình ảnh bổ sung.</p>
-            )}
-          </Row>
+          {post.images && post.images.length > 0 ? (
+            post.images.map((image, index) => (
+              <div key={index} className="mt-4">
+                <img
+                  src={image}
+                  alt={`Post Image ${index + 1}`}
+                  className="w-full h-80 object-cover rounded-lg shadow-lg hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+            ))
+          ) : (
+            <p>Không có hình ảnh bổ sung.</p>
+          )}
         </div>
       </div>
 
-      <div className="mt-12">
-        <h3 className="text-2xl font-semibold">Bài viết liên quan</h3>
-        <div className="flex space-x-8 mt-8">
-          {/* Related posts will be rendered here */}
+      {post.video && (
+        <div className="mt-8">
+          <h3 className="text-2xl font-semibold">Video liên quan</h3>
+          <div className="mt-4">
+            <iframe
+              width="100%"
+              height="450"
+              src={`https://www.youtube.com/embed/${post.video.split('v=')[1].split('&')[0]}`}
+              title="Video Liên Quan"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            ></iframe>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Modal xác nhận bình chọn */}
       <Modal
         title="Xác nhận bình chọn"
         visible={isModalVisible}
-        onOk={handleVote}
-        onCancel={handleVoteModalCancel}
+        onOk={handleVote} // Xác nhận bình chọn
+        onCancel={handleVoteModalCancel} // Hủy bỏ bình chọn
       >
         <p>Bạn có chắc chắn muốn bình chọn cho bài viết này không?</p>
       </Modal>
@@ -234,24 +218,13 @@ const PostDetail = () => {
       <Modal
         title="Xác nhận hủy bình chọn"
         visible={isCancelModalVisible}
-        onOk={handleCancelVoteConfirm}
-        onCancel={handleCancelVoteModal}
+        onOk={handleCancelVoteConfirm} // Xác nhận hủy bình chọn
+        onCancel={handleCancelVoteModal} // Hủy bỏ hủy bình chọn
       >
         <p>Bạn có chắc chắn muốn hủy bình chọn cho bài viết này không?</p>
-      </Modal>
-
-      {/* Modal cho hình ảnh */}
-      <Modal
-        visible={imageModalVisible}
-        footer={null}
-        onCancel={handleImageModalCancel}
-        centered
-        width={800} // Width of the image modal
-      >
-        <img src={selectedImage} alt="Selected" className="w-full h-auto" />
       </Modal>
     </div>
   );
 };
 
-export default PostDetail;
+export default PostEventDetail;

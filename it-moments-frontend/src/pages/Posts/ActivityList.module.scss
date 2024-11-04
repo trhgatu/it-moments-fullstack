@@ -25,21 +25,12 @@
     align-items: center;
 }
 
-/* Container cho bộ lọc */
-.activityFilterContainer {
-    width: 100%;
-    margin-bottom: 10px;  /* Giảm khoảng cách */
-    padding: 5px;  /* Giảm padding */
-    z-index: 999;  /* Đảm bảo bộ lọc hiển thị phía trên */
-    position: relative;
-}
-
 /* Layout chính */
 .activityList {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    gap: 15px;  /* Giảm khoảng cách giữa các phần */
+    gap: 15px;
     flex-wrap: wrap;
     flex-direction: row;
     max-width: 100%;

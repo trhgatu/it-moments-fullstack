@@ -88,7 +88,6 @@ export const Header = () => {
                 </span>
             </NavLink>
 
-            {/* Nút Toggle cho Menu Di Động */}
             <div className="md:hidden" onClick={toggleMenu}>
                 <button className="focus:outline-none">
                     {isMenuOpen ? (
@@ -103,7 +102,6 @@ export const Header = () => {
                 </button>
             </div>
 
-            {/* Menu Điều Hướng */}
             <nav className={cx('hidden md:flex gap-20 relative h-full')}>
                 {navItems.map((item, index) => (
                     <NavLink
@@ -122,7 +120,7 @@ export const Header = () => {
                         <span className="text">{item.label}</span>
                     </NavLink>
                 ))}
-                {/* Chỉ báo hoạt động */}
+
                 <motion.div
                     className="absolute bottom-0 h-[4px] bg-blue-500"
                     style={{
@@ -148,10 +146,8 @@ export const Header = () => {
                 />
             </nav>
 
-            {/* Các Nút Đăng Nhập và Đăng Ký */}
             <div className="hidden md:flex gap-4 items-center mr-4 w-[200px]">
                 {loading ? (
-                    // Render a loading indicator or nothing while loading
                     <div className="loader">Loading...</div>
                 ) : user ? (
                     <Dropdown overlay={menu} placement="bottomRight" trigger={['click']}>

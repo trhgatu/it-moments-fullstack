@@ -1,15 +1,29 @@
 .eventListContainer {
-    padding: 20px;
+    padding-top: 80px;
+    width: 100%;
+    max-width: 1200px;  /* Giảm chiều rộng */
+    min-width: 320px;
+    min-height: 100vh;
+    margin: 0 auto;
+    background-color: #f9f9f9;
+    padding-bottom: 100px;  /* Giảm padding dưới */
+    box-sizing: border-box;
+}
+.breadcrumb {
+    font-size: 14px;  /* Giảm kích thước chữ */
+    color: #6c757d;
+    margin-bottom: 15px;  /* Giảm khoảng cách */
+    background-color: #d9d9d9;
+    padding: 10px 15px;  /* Giảm padding */
+    width: 100%;
+    height: 50px;  /* Giảm chiều cao */
+    line-height: 50px;  /* Điều chỉnh chiều cao chữ */
+    display: flex;
+    align-items: center;
 }
 
 .eventList {
-    display: flex; /* Sử dụng flexbox để sắp xếp các bài viết */
-    flex-wrap: wrap; /* Cho phép các bài viết tràn xuống dòng mới khi không đủ chỗ */
-    gap: 20px; /* Khoảng cách giữa các bài viết */
-}
-
-.postsContainer {
-    display: flex; /* Bố trí hàng ngang */
-    flex-wrap: wrap; /* Cho phép tràn dòng */
-    gap: 20px; /* Khoảng cách giữa các bài viết */
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
