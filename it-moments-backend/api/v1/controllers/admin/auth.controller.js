@@ -53,7 +53,7 @@ const controller = {
             res.cookie("admin_token", token, {
                 httpOnly: true,
                 sameSite: "None",
-                secure: false
+                secure: true
             });
             return res.status(200).json({
                 code: 200,

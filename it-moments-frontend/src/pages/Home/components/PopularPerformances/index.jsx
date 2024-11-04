@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import SwiperComponent from '../SwiperComponent';
 import SwiperNavigation from '../SwiperNavigation';
 
-const PopularPerformances = ({ popularPerformances }) => {
+const PopularPerformances = ({ mostViewPostPerformances }) => {
     const swiperRef = useRef(null);
     const [slidesPerView, setSlidesPerView] = useState(1); // Khởi tạo với giá trị mặc định
 
@@ -53,7 +53,7 @@ const PopularPerformances = ({ popularPerformances }) => {
                     <SwiperNavigation onNext={handleNext} onPrev={handlePrev} />
                 </div>
             </div>
-            <SwiperComponent ref={swiperRef} items={popularPerformances} slidesPerView={slidesPerView} autoPlay={true} />
+            <SwiperComponent ref={swiperRef} items={mostViewPostPerformances} slidesPerView={slidesPerView} autoPlay={true} />
         </div>
     );
 };

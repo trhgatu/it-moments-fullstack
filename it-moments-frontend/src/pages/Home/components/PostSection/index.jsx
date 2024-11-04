@@ -1,25 +1,26 @@
 import React from 'react';
 
 const PostSection = ({ postData, activeTab, setActiveTab }) => {
-    const MAX_TITLE_LENGTH = 30; // Giới hạn số ký tự cho tiêu đề
+    const MAX_TITLE_LENGTH = 30;
 
     const truncateTitle = (title) => {
-        if(title.length > MAX_TITLE_LENGTH) {
-            return title.slice(0, MAX_TITLE_LENGTH) + '...'; // Cắt tiêu đề và thêm dấu '...'
+        if (title.length > MAX_TITLE_LENGTH) {
+            return title.slice(0, MAX_TITLE_LENGTH) + '...';
         }
         return title;
     };
 
     return (
         <div className="w-full min-h-[400px]">
-            <div className="flex flex-wrap border-b-2 pb-2 mb-4">
+            <div className="grid grid-cols-3 gap-2 border-b-2 pb-2 mb-4">
                 {Object.keys(postData).map((tab, index) => (
                     <button
                         key={index}
-                        className={`w-full md:w-auto text-sm md:text-lg font-semibold text-center py-2 px-4 transition duration-300 ease-in-out ${activeTab === tab
-                            ? 'bg-blue-600 text-white'
-                            : 'text-gray-500 hover:bg-blue-200 hover:text-gray-800'
-                            }`}
+                        className={`text-center py-2 px-4 font-semibold transition duration-300 ease-in-out ${
+                            activeTab === tab
+                                ? 'bg-blue-600 text-white'
+                                : 'text-gray-500 hover:bg-blue-200 hover:text-gray-800'
+                        }`}
                         onClick={() => setActiveTab(tab)}
                     >
                         {tab}
@@ -28,7 +29,6 @@ const PostSection = ({ postData, activeTab, setActiveTab }) => {
             </div>
 
             <div className="grid grid-cols-1 gap-4">
-                {/* Chỉ lấy 3 bài viết mới nhất */}
                 {postData[activeTab]?.slice(0, 3).map((post, index) => (
                     <div
                         key={index}
@@ -43,7 +43,9 @@ const PostSection = ({ postData, activeTab, setActiveTab }) => {
                             <h4 className="font-semibold text-lg text-gray-900 hover:text-blue-600 transition duration-300 ease-in-out">
                                 {truncateTitle(post.title)}
                             </h4>
-                            <p className="text-gray-600 text-sm">{post.description.slice(0, 100)}...</p>
+                            <p className="text-gray-600 text-sm">
+                                {post.description.slice(0, 100)}...
+                            </p>
                         </div>
                     </div>
                 ))}

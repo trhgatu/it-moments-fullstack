@@ -21,7 +21,6 @@ const PostDetail = () => {
       setVotes(response.data.votes);
       setVotersList(response.data.voters || []);
 
-      // Kiểm tra xem người dùng hiện tại đã bình chọn chưa
       if (user && user._id) {
         const hasVoted = response.data.voters.some(voter => voter._id === user._id);
         setVoted(hasVoted);
@@ -46,7 +45,7 @@ const PostDetail = () => {
 
     if (voted) {
       message.warning('Bạn đã bình chọn rồi!');
-      return; // Ngăn không cho bình chọn lại
+      return;
     }
 
     try {
@@ -58,15 +57,13 @@ const PostDetail = () => {
       });
       if (response.data.success) {
         setVotes(response.data.data.votes);
-        setVoted(true); // Đánh dấu đã bình chọn
+        setVoted(true);
 
-        // Chỉ lưu vào Local Storage nếu user._id có giá trị
         if (user && user._id) {
           const userVoteKey = `voted_${post._id}_${user._id}`;
           localStorage.setItem(userVoteKey, 'true');
         }
 
-        // Cập nhật danh sách người bình chọn
         const newVoter = { fullName: user.fullName, _id: user._id };
         setVotersList(prev => [...prev, newVoter]);
 
@@ -172,7 +169,6 @@ const PostDetail = () => {
       <div className="mt-12">
         <h3 className="text-2xl font-semibold">Bài viết liên quan</h3>
         <div className="flex space-x-8 mt-8">
-          {/* Ví dụ hiển thị bài viết liên quan */}
         </div>
       </div>
     </div>

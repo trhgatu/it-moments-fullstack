@@ -4,6 +4,7 @@ import { Navigate } from "react-router-dom";
 import Dashboard from '../admin/pages/Dashboard';
 import PostDetail from "../admin/pages/Posts/PostDetail.jsx";
 import PostAll from "../admin/pages/Posts/components/PostAll";
+import EventAll from "../admin/pages/Events/components/EventAll";
 import Posts from '../admin/pages/Posts';
 import CreatePost from '../admin/pages/Posts/CreatePost';
 import SignUp from '../admin/pages/Auth/SignUp';
@@ -20,6 +21,8 @@ import Users from "../admin/pages/Users";
 import UsersAll from "../admin/pages/Users/components/UsersAll";
 import Roles from "../admin/pages/Roles";
 import RolesAll from "../admin/pages/Roles/components/RolesAll";
+import Event from "../admin/pages/Events";
+/* import CreateEvent from "../admin/pages/Events/CreateEvent"; */
 import CreateRole from "../admin/pages/Roles/CreateRole";
 import PermissionForm from "../admin/pages/Roles/PermissionForm";
 import Profile from "../admin/pages/Profile";
@@ -115,6 +118,21 @@ export const adminRoute = [
                             },
 
                         ]
+                    },
+                    {
+                        path :"events",
+                        element: <Event />,
+                        children: [
+                            {
+                                index: true,
+                                element: <EventAll />
+                            },
+                            /* {
+                                path: "create",
+                                element: <CreateEvent />
+                            }, */
+                        ]
+
                     },
                     {
                         path: "profile",

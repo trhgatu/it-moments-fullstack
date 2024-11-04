@@ -2,6 +2,7 @@ import postRoutes from "./post.route.js";
 import authRoutes from "./auth.route.js";
 import userRoutes from "./user.route.js";
 import roleRoutes from "./role.route.js";
+import eventRoutes from "./event.route.js";
 import dashboardRoutes from "./dashboard.js";
 import categoryRoutes from "./post-category.route.js";
 import { requireAdminRole, requireAuth } from "../../middlewares/auth.middleware.js";
@@ -13,6 +14,7 @@ const adminRoutes = (app) => {
     app.use(version + "/post-categories", requireAuth, requireAdminRole, requirePermission("posts-category_view"), categoryRoutes);
     app.use(version + "/users", requireAuth, requireAdminRole, requirePermission("accounts_view"), userRoutes);
     app.use(version + "/roles", requireAuth, requireAdminRole, requirePermission("roles_view"), roleRoutes);
+    app.use(version + "/events", requireAuth, requireAdminRole, requirePermission("events_view"), eventRoutes);
     app.use(version + "/auth", authRoutes);
 };
 

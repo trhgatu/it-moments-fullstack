@@ -1,11 +1,11 @@
 import React from 'react';
 import { Card, Button, Radio } from "antd";
-import PostsTable from './PostsTable';
-import PostsActions from './PostsActions';
-import PaginationControl from './PaginationControl';
+import EventsTable from './EventsTable'; // Giả sử bạn đã tạo một component EventsTable tương tự như PostsTable
+import EventsActions from './EventsActions'; // Có thể là component để xử lý các hành động nhóm cho sự kiện
+import PaginationControl from './PaginationControl'; // Giả sử bạn cũng đã có component này cho phân trang
 
-const PostsCard = ({
-  posts,
+const EventsCard = ({
+  events,
   loading,
   error,
   selectedRowKeys,
@@ -17,23 +17,24 @@ const PostsCard = ({
   setActionType,
   handleActionSubmit,
   handlePageChange,
-  filterValue,
-  setFilterValue,
+  filterValue,          // Nhận giá trị bộ lọc từ props
+  setFilterValue,      // Nhận hàm cập nhật giá trị bộ lọc từ props
 }) => {
-  const filteredPosts = posts.filter(post => {
-    if (filterValue === '') return true;
-    return post.status === filterValue;
+  // Hàm để lọc sự kiện theo trạng thái
+  const filteredEvents = events.filter(event => {
+    if (filterValue === '') return true; // Nếu không có bộ lọc, trả tất cả sự kiện
+    return event.status === filterValue; // Chỉ trả sự kiện có trạng thái tương ứng
   });
 
   return (
     <Card
       bordered={false}
       className="criclebox tablespace mb-24"
-      title="Danh sách bài viết"
+      title="Danh sách sự kiện"
       extra={
         <div>
-          <Button type="primary" onClick={() => navigate('/admin/posts/create')}>
-            Tạo bài viết
+          <Button type="primary" onClick={() => navigate('/admin/events/create')}>
+            Tạo sự kiện
           </Button>
           <Radio.Group value={filterValue} onChange={(e) => setFilterValue(e.target.value)}>
             <Radio.Button value="">Tất cả</Radio.Button>
@@ -43,7 +44,7 @@ const PostsCard = ({
         </div>
       }
     >
-      <PostsActions
+      <EventsActions
         error={error}
         actionType={actionType}
         setActionType={setActionType}
@@ -51,8 +52,8 @@ const PostsCard = ({
         handleActionSubmit={handleActionSubmit}
       />
       <div className="table-responsive">
-        <PostsTable
-          posts={filteredPosts} // Sử dụng bài viết đã lọc
+        <EventsTable
+          events={filteredEvents} // Sử dụng sự kiện đã lọc
           loading={loading}
           selectedRowKeys={selectedRowKeys}
           handleSelectChange={handleSelectChange}
@@ -69,4 +70,4 @@ const PostsCard = ({
   );
 };
 
-export default PostsCard;
+export default EventsCard;

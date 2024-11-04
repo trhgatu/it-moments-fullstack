@@ -4,7 +4,6 @@ import { Autoplay, Pagination, EffectFade, Navigation } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
-import styles from './Slider.module.scss';
 
 import slide1 from '../../../../assets/images/slider_1.jpg';
 import slide2 from '../../../../assets/images/slider_2.jpg';
@@ -23,9 +22,9 @@ const Slider = () => {
         const swiperInstance = swiperRef.current.swiper;
         const handleSlideChange = () => {
             document.querySelectorAll('.swiper-slide .slide-title').forEach(title => {
-                title.classList.remove(styles['animate']);
+                title.classList.remove('animate-fade');
                 void title.offsetWidth;
-                title.classList.add(styles['animate']);
+                title.classList.add('animate-fade');
             });
         };
 
@@ -41,22 +40,24 @@ const Slider = () => {
             modules={[Navigation, Pagination, Autoplay]}
             speed={800}
             loop={true}
-            autoplay={true}
+            autoplay={{ delay: 3000 }}
             navigation
-            pagination={{
-                clickable: true,
-            }}
-            className="mySwiper"
+            pagination={{ clickable: true }}
+            className="mySwiper h-screen w-full"
         >
             {slides.map((slide, index) => (
-                <SwiperSlide key={index} className={styles['swiper-slide']}>
+                <SwiperSlide key={index} className="relative h-full">
                     <div
-                        className={styles['bg-slide']}
+                        className="absolute inset-0 bg-cover bg-center"
                         style={{ backgroundImage: `url(${slide.src})` }}
                     >
-                        <div className={styles['overlay']}></div>
+                        <div className="absolute inset-0 bg-black opacity-50"></div>
                     </div>
-
+                    <div className="relative z-10 flex items-center justify-center h-full">
+                        <h2 className="text-white text-3xl md:text-5xl font-bold animate-fade">
+                            {slide.title}
+                        </h2>
+                    </div>
                 </SwiperSlide>
             ))}
         </Swiper>

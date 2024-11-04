@@ -58,10 +58,6 @@ const controller = {
             sort.position = "desc";
             sort.createdAt = "desc";
         }
-        if(req.query.isLatest === 'true') {
-            objectPagination.limitItems = 5;
-            sort.createdAt = "desc";
-        }
         if(req.query.isFeatured === 'true') {
             find.isFeatured = true;
         }
@@ -110,16 +106,14 @@ const controller = {
             .populate("event_id", "title")
             .populate({
                 path: "voters",
-                select: "fullName", // Chỉ lấy trường fullName
+                select: "fullName",
             });
         res.json(post);
     },
     vote: async (req, res) => {
         try {
-            const { id } = req.params; // ID của post
-            const user = res.locals.user; // Lấy user từ middleware
-
-            // Kiểm tra xem người dùng đã bình chọn hay chưa
+            const { id } = req.params;
+            const user = res.locals.user;
             const post = await Post.findById(id);
             if(!post) {
                 return res.status(404).json({ success: false, message: 'Post không tồn tại!' });

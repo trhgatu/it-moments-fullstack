@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Card, Button, Table, Checkbox, Form, message } from 'antd';
 import axios from 'axios';
 import { useUser } from '../../../context/UserContext';
-import { API_URL } from '../../../config/config'
+import { API_URL } from '../../../config/config';
+
 const PermissionForm = ({ role }) => {
     const { user } = useUser();
     const [records, setRecords] = useState([]);
@@ -43,6 +44,11 @@ const PermissionForm = ({ role }) => {
                         'accounts_create': permissions.includes('accounts_create'),
                         'accounts_edit': permissions.includes('accounts_edit'),
                         'accounts_delete': permissions.includes('accounts_delete'),
+                        // Thêm quyền cho sự kiện
+                        'events_view': permissions.includes('events_view'),
+                        'events_create': permissions.includes('events_create'),
+                        'events_edit': permissions.includes('events_edit'),
+                        'events_delete': permissions.includes('events_delete'),
                     };
                 });
 
@@ -54,8 +60,6 @@ const PermissionForm = ({ role }) => {
 
         fetchRecords();
     }, [form, user]);
-
-
 
     const handleSubmit = async () => {
         const values = form.getFieldsValue();
@@ -78,6 +82,11 @@ const PermissionForm = ({ role }) => {
                 value['accounts_create'] ? 'accounts_create' : null,
                 value['accounts_edit'] ? 'accounts_edit' : null,
                 value['accounts_delete'] ? 'accounts_delete' : null,
+                // Thêm quyền cho sự kiện
+                value['events_view'] ? 'events_view' : null,
+                value['events_create'] ? 'events_create' : null,
+                value['events_edit'] ? 'events_edit' : null,
+                value['events_delete'] ? 'events_delete' : null,
             ].filter(Boolean),
         }));
 
@@ -100,28 +109,29 @@ const PermissionForm = ({ role }) => {
     const renderCheckboxes = (itemPrefix, roleId) => (
         <div style={{ display: 'flex', flexDirection: 'column' }}>
             <Form.Item name={[roleId, `${itemPrefix}_view`]} valuePropName="checked" noStyle>
-                <Checkbox />
+                <Checkbox>Xem</Checkbox>
             </Form.Item>
             <Form.Item name={[roleId, `${itemPrefix}_create`]} valuePropName="checked" noStyle>
-                <Checkbox />
+                <Checkbox>Thêm mới</Checkbox>
             </Form.Item>
             <Form.Item name={[roleId, `${itemPrefix}_edit`]} valuePropName="checked" noStyle>
-                <Checkbox />
+                <Checkbox>Chỉnh sửa</Checkbox>
             </Form.Item>
             <Form.Item name={[roleId, `${itemPrefix}_delete`]} valuePropName="checked" noStyle>
-                <Checkbox />
+                <Checkbox>Xóa</Checkbox>
             </Form.Item>
         </div>
     );
-
-
 
     const featureToPrefixMap = {
         'Quản lý bài viết': 'posts',
         'Quản lý danh mục bài viết': 'posts-category',
         'Quản lý nhóm quyền': 'roles',
         'Quản lý tài khoản': 'accounts',
+        // Thêm sự kiện vào bản đồ
+        'Quản lý sự kiện': 'events',
     };
+
     const columns = [
         {
             title: 'Chức năng',
@@ -142,36 +152,36 @@ const PermissionForm = ({ role }) => {
             render: (text, recordData) => {
                 const itemPrefix = featureToPrefixMap[recordData.feature];
 
-                if(!itemPrefix) return null;
+                if (!itemPrefix) return null;
 
                 return renderCheckboxes(itemPrefix, record._id);
             },
         })),
     ];
 
-
-
-
     const dataSource = [
         {
             key: '1',
-            feature: 'Quản lý bài viết', // Thay 'posts' bằng 'Quản lý bài viết'
+            feature: 'Quản lý bài viết',
         },
         {
             key: '2',
-            feature: 'Quản lý danh mục bài viết', // Thay 'posts-category' bằng 'Quản lý danh mục bài viết'
+            feature: 'Quản lý danh mục bài viết',
         },
         {
             key: '3',
-            feature: 'Quản lý nhóm quyền', // Thay 'roles' bằng 'Quản lý nhóm quyền'
+            feature: 'Quản lý nhóm quyền',
         },
         {
             key: '4',
-            feature: 'Quản lý tài khoản', // Thay 'accounts' bằng 'Quản lý tài khoản'
+            feature: 'Quản lý tài khoản',
+        },
+        // Thêm dữ liệu cho sự kiện
+        {
+            key: '5',
+            feature: 'Quản lý sự kiện',
         },
     ];
-
-
 
     return (
         <div className="page-inner">

@@ -13,7 +13,6 @@ export const Header = () => {
     const { user, setUser } = useClientUser();
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [hoveredIndex, setHoveredIndex] = useState(null);
     const location = useLocation();
     const navRef = useRef([]);
 
@@ -42,10 +41,6 @@ export const Header = () => {
         setIsMenuOpen(!isMenuOpen);
     };
 
-    const handleMenuItemClick = () => {
-        setIsMenuOpen(false);
-    };
-
     useEffect(() => {
         if(location.pathname === '/') {
             window.addEventListener('scroll', handleScroll);
@@ -62,9 +57,8 @@ export const Header = () => {
         { path: '/posts/hoc-thuat', label: 'Học thuật' },
         { path: '/about', label: 'Giới thiệu' },
     ];
-
-    const activeIndex = navItems.findIndex(item => item.path === location.pathname);
-    const hoveredItem = hoveredIndex !== null ? navRef.current[hoveredIndex] : null;
+    const activeIndex = navItems.findIndex(item => location.pathname === item.path || location.pathname.startsWith(item.path + '/'));
+    const hoveredItem = navRef.current[activeIndex];
     const hoveredItemWidth = hoveredItem ? hoveredItem.offsetWidth : 0;
     const hoveredItemLeft = hoveredItem ? hoveredItem.offsetLeft : 0;
 
@@ -116,8 +110,6 @@ export const Header = () => {
                         key={item.path}
                         to={item.path}
                         end={item.path === '/'}
-                        onMouseEnter={() => setHoveredIndex(index)}
-                        onMouseLeave={() => setHoveredIndex(activeIndex)}
                         ref={el => navRef.current[index] = el}
                         className={({ isActive }) =>
                             cx('flex items-center relative transition-colors duration-300 h-full', {
@@ -130,6 +122,7 @@ export const Header = () => {
                         <span className="text">{item.label}</span>
                     </NavLink>
                 ))}
+                {/* Chỉ báo hoạt động */}
                 <motion.div
                     className="absolute bottom-0 h-[4px] bg-blue-500"
                     style={{
@@ -205,7 +198,7 @@ export const Header = () => {
                             <NavLink
                                 key={item.path}
                                 to={item.path}
-                                onClick={handleMenuItemClick}
+                                onClick={toggleMenu}
                                 className={({ isActive }) =>
                                     cx('text-[#2E6C7B] py-2 text-lg font-semibold transition-colors duration-300', {
                                         'text-blue-500': isActive
@@ -234,12 +227,11 @@ export const Header = () => {
                                 </Button>
                             </div>
                         ) : (
-                            // Nếu có user thì hiển thị thông tin người dùng
                             <div className="flex flex-col items-center mt-4">
                                 <Avatar
                                     src={user.avatar}
                                     icon={!user.avatar && <UserOutlined />}
-                                    size={50} // Kích thước lớn hơn cho dễ nhìn
+                                    size={50}
                                     style={{
                                         backgroundColor: '#f0f0f0',
                                         color: '#8c8c8c',
@@ -253,8 +245,6 @@ export const Header = () => {
                     </nav>
                 </div>
             )}
-
-
         </header>
     );
 };

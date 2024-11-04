@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { API_URL } from '../../config/config';
 import Slider from './components/Slider';
 import PopularPerformances from './components/PopularPerformances';
 import PostSection from './components/PostSection';
@@ -12,28 +13,37 @@ import slide2 from '../../assets/images/slider_2.jpg';
 import slide3 from '../../assets/images/slider_3.jpg';
 
 export default function Home() {
-    const [popularPerformances, setPopularPerformances] = useState([]);
-    const [performances, setPerformances] = useState([]);
+    const [mostViewPostPerformances, setMostViewPostPerformances] = useState([]);
+    const [newPostPerformances, setnewPostPerformances] = useState([]);
+    const [mostVotePostPerformances, setMostVotePostPerformances] = useState([]);
     const [events, setEvents] = useState([]);
     const [activeTab, setActiveTab] = useState('Mới');
 
+
+   /*  Lỗi */
     useEffect(() => {
-        axios.get('http://localhost:3000/api/v1/posts?category=van-nghe&isFeatured=true&isLatest=true')
-            .then((response) => setPerformances(response.data.data.posts))
+        axios.get(`${API_URL}/posts?category=van-nghe&isFeatured=true&isLatest=true`)
+            .then((response) => setnewPostPerformances(response.data.data.posts))
             .catch((error) => console.error("Error fetching Văn nghệ posts:", error));
     }, []);
 
     useEffect(() => {
-        axios.get('http://localhost:3000/api/v1/posts?category=su-kien')
+        axios.get(`${API_URL}/posts?category=su-kien`)
             .then((response) => setEvents(response.data.data.posts))
             .catch((error) => console.error("Error fetching Sự kiện posts:", error));
     }, []);
 
     useEffect(() => {
-        axios.get('http://localhost:3000/api/v1/posts?category=van-nghe&isFeatured=true&sortKey=votes&sortValue=desc')
-            .then((response) => setPopularPerformances(response.data.data.posts))
+        axios.get(`${API_URL}/posts?category=van-nghe&isFeatured=true&sortKey=views&sortValue=desc`)
+            .then((response) => setMostViewPostPerformances(response.data.data.posts))
             .catch((error) => console.error("Error fetching Tiết mục nhiều lượt xem posts:", error));
     }, []);
+    useEffect(() => {
+        axios.get(`${API_URL}/posts?category=van-nghe&isFeatured=true&sortKey=votes&sortValue=desc`)
+            .then((response) => setMostVotePostPerformances(response.data.data.posts))
+            .catch((error) => console.error("Error fetching Tiết mục nhiều lượt xem posts:", error));
+    }, []);
+
 
     const slides = [
         { src: slide1, alt: "Image 1", title: "Lưu giữ những khoảnh khắc" },
@@ -56,14 +66,14 @@ export default function Home() {
                             </div>
                             <div className="flex flex-col h-full">
                                 <PostSection postData={{
-                                    'Mới': performances,
-                                    'Nhiều lượt bình chọn': popularPerformances
+                                    'Mới': newPostPerformances,
+                                    'Nhiều lượt bình chọn': mostVotePostPerformances,
+                                    'Nhiều lượt xem': mostViewPostPerformances
                                 }} activeTab={activeTab} setActiveTab={setActiveTab} />
                             </div>
                         </div>
-                        {/* Tiết mục nhiều lượt xem */}
                         <div className="my-6">
-                            <PopularPerformances popularPerformances={popularPerformances} />
+                            <PopularPerformances mostViewPostPerformances={mostViewPostPerformances} />
                         </div>
 
                         {/* Sự kiện Section */}

@@ -18,6 +18,7 @@ function Sidenav({ color }) {
         { key: "users", label: "Người dùng", path: "users", permission: "accounts_view" },
         { key: "roles", label: "Nhóm quyền", path: "roles", permission: "roles_view" },
         { key: "roles-permissions", label: "Phân quyền", path: "roles/permissions", permission: "roles_view" },
+        { key: "events", label: "Sự kiện", path: "events", permission: "events_view" },
     ];
 
     return (
@@ -25,7 +26,7 @@ function Sidenav({ color }) {
             <div className="brand text-4xl">
                 <span>IT Moments</span>
             </div>
-            {user && <div className="user-greeting">Xin chào, {user.fullName}</div>} {/* Hiển thị tên người dùng */}
+            {user && <div className="user-greeting">Xin chào, {user.fullName}</div>}
             <hr />
             <Menu theme="light" mode="inline">
                 {menuItems.map(({ key, label, path, permission }) => {

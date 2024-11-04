@@ -4,7 +4,8 @@ import { Card, Avatar, Typography, Alert, Image, Row, Col, Divider, Spin } from 
 import axios from 'axios';
 import moment from 'moment';
 import { useUser } from '../../../context/UserContext';
-import {API_URL} from '../../../config/config'
+import { API_URL } from '../../../config/config';
+
 const { Title, Text } = Typography;
 
 const fetchData = async (id, token) => {
@@ -36,7 +37,7 @@ function PostDetail() {
 
         fetchData(id, token)
             .then(postResponse => {
-                if(postResponse.data?.success) {
+                if (postResponse.data?.success) {
                     setPost(postResponse.data.data);
                 } else {
                     throw new Error(postResponse.data.message || 'Failed to fetch post data');
@@ -49,11 +50,11 @@ function PostDetail() {
             .finally(() => setLoading(false));
     }, [id, user]);
 
-    if(loading) return <Spin tip="Loading..." />;
-    if(error) return <Alert message={error} type="error" showIcon />;
-    if(!post) return <Alert message="Post not found." type="warning" showIcon />;
+    if (loading) return <Spin tip="Loading..." />;
+    if (error) return <Alert message={error} type="error" showIcon />;
+    if (!post) return <Alert message="Post not found." type="warning" showIcon />;
 
-    const { title, description, thumbnail, video, status, images, createdAt, position, post_category_id } = post;
+    const { title, description, thumbnail, video, status, images, createdAt, position, post_category_id, event_id } = post;
 
     return (
         <div style={{ padding: '20px', background: '#f0f2f5' }}>
@@ -104,6 +105,26 @@ function PostDetail() {
 
                 <Divider />
 
+                {/* Hiển thị thông tin sự kiện nếu có */}
+                {event_id && (
+                    <div>
+                        <Text strong>Sự kiện:</Text>
+                        <div style={{ marginTop: '10px', padding: '10px', border: '1px solid #e0e0e0', borderRadius: '8px' }}>
+                            <Text strong>Tên sự kiện:</Text> <Text>{event_id.title}</Text>
+                            <br />
+                            <Text strong>Mô tả:</Text> <Text>{event_id.description}</Text>
+                            <br />
+                            <Text strong>Thời gian bắt đầu:</Text> <Text>{moment(event_id.start_time).format('DD/MM/YYYY HH:mm')}</Text>
+                            <br />
+                            <Text strong>Thời gian kết thúc:</Text> <Text>{moment(event_id.end_time).format('DD/MM/YYYY HH:mm')}</Text>
+                            <br />
+                            <Text strong>Địa điểm:</Text> <Text>{event_id.location}</Text>
+                        </div>
+                    </div>
+                )}
+
+                <Divider />
+
                 <div>
                     <Text strong>Hình ảnh liên quan:</Text>
                     <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
@@ -118,7 +139,7 @@ function PostDetail() {
                 </div>
 
                 {video && (
-                    <div style={{ marginTop: '20px', height: '500px' }} >
+                    <div style={{ marginTop: '20px', height: '500px' }}>
                         <Text strong>Video:</Text>
                         <div className="w-full h-full">
                             <iframe

@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link } from "react-router-dom";
-
+import {API_URL} from '../../../../config/config'
 export default function NewPost() {
     const [latestPosts, setLatestPosts] = useState([]);
 
     useEffect(() => {
         const fetchPosts = async () => {
             try {
-                const latestResponse = await axios.get('http://localhost:3000/api/v1/posts?category=van-nghe&isLastest=true&limit=1&sort=createdAt&order=desc');
+                const latestResponse = await axios.get(`${API_URL}/posts?category=van-nghe&isLastest=true&limit=1&sort=createdAt&order=desc`);
                 setLatestPosts(latestResponse.data.data.posts);
             } catch(error) {
                 console.error('Lỗi khi lấy bài viết:', error);
