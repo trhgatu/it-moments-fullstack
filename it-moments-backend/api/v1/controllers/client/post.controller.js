@@ -123,24 +123,51 @@ const controller = {
                 return res.status(400).json({ success: false, message: 'Bạn đã bình chọn rồi!' });
             }
 
-            // Cập nhật post với người dùng đã bình chọn
-            post.voters.push(user._id); // Thêm ID người dùng vào danh sách voters
-            post.votes = post.voters.length; // Cập nhật tổng số lượt bình chọn
-            await post.save(); // Lưu lại thay đổi
+            post.voters.push(user._id);
+            post.votes = post.voters.length;
+            await post.save();
 
-            // Lấy thông tin người dùng
-            const userInfo = await User.findById(user._id).select('fullName'); // Lấy firstName và lastName
+            const userInfo = await User.findById(user._id).select('fullName');
 
             return res.status(200).json({
                 success: true,
                 data: {
                     votes: post.votes,
-                    userFullName: `${userInfo.fullName}`, // Tạo tên đầy đủ
+                    userFullName: `${userInfo.fullName}`,
                 },
             });
         } catch(error) {
             console.error(error);
             return res.status(500).json({ message: 'Có lỗi xảy ra khi bình chọn.' });
+        }
+    },
+    /* [POST] api/v1/posts/:id/cancel-vote */
+    cancelVote: async (req, res) => {
+        try {
+            const { id } = req.params;
+            const user = res.locals.user;
+            const post = await Post.findById(id);
+            if(!post) {
+                return res.status(404).json({ success: false, message: 'Bài viết không tồn tại!' });
+            }
+
+            if(!post.voters.includes(user._id)) {
+                return res.status(400).json({ success: false, message: 'Bạn chưa bình chọn!' });
+            }
+
+            post.voters.pull(user._id);
+            post.votes = post.voters.length;
+            await post.save();
+
+            return res.status(200).json({
+                success: true,
+                data: {
+                    votes: post.votes,
+                },
+            });
+        } catch(error) {
+            console.error(error);
+            return res.status(500).json({ message: 'Có lỗi xảy ra khi hủy bình chọn.' });
         }
     },
 

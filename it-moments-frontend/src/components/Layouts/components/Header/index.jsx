@@ -10,7 +10,7 @@ import { Button } from 'antd';
 
 export const Header = () => {
     const navigate = useNavigate();
-    const { user, setUser } = useClientUser();
+    const { user, setUser, loading } = useClientUser(); // Assumes loading state is provided
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const location = useLocation();
@@ -42,7 +42,7 @@ export const Header = () => {
     };
 
     useEffect(() => {
-        if(location.pathname === '/') {
+        if (location.pathname === '/') {
             window.addEventListener('scroll', handleScroll);
         }
         return () => {
@@ -73,7 +73,7 @@ export const Header = () => {
             )}
             style={{ height: 'var(--header-height)' }}
         >
-            <NavLink className="flex gap-2 items-center ml-4" to="/" onClick={() => setHoveredIndex(0)}>
+            <NavLink className="flex gap-2 items-center ml-4 w-[200px]" to="/" onClick={() => setHoveredIndex(0)}>
                 <span
                     className={cx(
                         styles.textLogo,
@@ -149,8 +149,11 @@ export const Header = () => {
             </nav>
 
             {/* Các Nút Đăng Nhập và Đăng Ký */}
-            <div className="hidden md:flex gap-4 items-center mr-4">
-                {user ? (
+            <div className="hidden md:flex gap-4 items-center mr-4 w-[200px]">
+                {loading ? (
+                    // Render a loading indicator or nothing while loading
+                    <div className="loader">Loading...</div>
+                ) : user ? (
                     <Dropdown overlay={menu} placement="bottomRight" trigger={['click']}>
                         <Avatar
                             src={user.avatar}
@@ -163,6 +166,7 @@ export const Header = () => {
                                 cursor: 'pointer',
                             }}
                         />
+
                     </Dropdown>
                 ) : (
                     <>

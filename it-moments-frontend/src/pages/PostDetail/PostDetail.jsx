@@ -3,23 +3,21 @@ import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { API_URL } from '../../config/config';
 import { useClientUser } from '../../context/ClientUserContext';
-import { message } from 'antd';
+import { message, Modal } from 'antd';
 
 const PostDetail = () => {
   const { slug } = useParams();
   const { user, loading: userLoading } = useClientUser();
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [votes, setVotes] = useState(0);
   const [voted, setVoted] = useState(false);
-  const [votersList, setVotersList] = useState([]);
+  const [isModalVisible, setIsModalVisible] = useState(false); // Modal bình chọn
+  const [isCancelModalVisible, setIsCancelModalVisible] = useState(false); // Modal hủy bình chọn
 
   const fetchPost = async () => {
     try {
       const response = await axios.get(`${API_URL}/posts/detail/${slug}`);
       setPost(response.data);
-      setVotes(response.data.votes);
-      setVotersList(response.data.voters || []);
 
       if (user && user._id) {
         const hasVoted = response.data.voters.some(voter => voter._id === user._id);
@@ -37,7 +35,8 @@ const PostDetail = () => {
     fetchPost();
   }, [slug]);
 
-  const handleVote = async () => {
+  // Hàm mở modal xác nhận bình chọn
+  const showVoteModal = () => {
     if (!user) {
       alert("Bạn cần đăng nhập để bình chọn!");
       return;
@@ -48,6 +47,11 @@ const PostDetail = () => {
       return;
     }
 
+    setIsModalVisible(true);
+  };
+
+  // Hàm xác nhận bình chọn
+  const handleVote = async () => {
     try {
       const response = await axios.post(`${API_URL}/posts/${post._id}/vote`, null, {
         headers: {
@@ -56,23 +60,52 @@ const PostDetail = () => {
         withCredentials: true,
       });
       if (response.data.success) {
-        setVotes(response.data.data.votes);
         setVoted(true);
-
-        if (user && user._id) {
-          const userVoteKey = `voted_${post._id}_${user._id}`;
-          localStorage.setItem(userVoteKey, 'true');
-        }
-
-        const newVoter = { fullName: user.fullName, _id: user._id };
-        setVotersList(prev => [...prev, newVoter]);
-
         message.success('Bình chọn thành công!');
       }
+      setIsModalVisible(false); // Đóng modal sau khi bình chọn thành công
     } catch (error) {
       console.error('Lỗi khi bình chọn:', error.response?.data?.message);
       message.error('Có lỗi xảy ra trong quá trình bình chọn.');
     }
+  };
+
+  // Hàm mở modal xác nhận hủy bình chọn
+  const showCancelVoteModal = () => {
+    setIsCancelModalVisible(true);
+  };
+
+  // Hàm hủy bình chọn
+  const handleCancelVote = async () => {
+    try {
+      const response = await axios.post(`${API_URL}/posts/${post._id}/cancel-vote`, null, {
+        headers: {
+          Authorization: `Bearer ${user.token}`
+        },
+        withCredentials: true,
+      });
+      if (response.data.success) {
+        setVoted(false);
+        message.success('Hủy bình chọn thành công!');
+      }
+      setIsCancelModalVisible(false); // Đóng modal hủy bình chọn
+    } catch (error) {
+      console.error('Lỗi khi hủy bình chọn:', error.response?.data?.message);
+      message.error('Có lỗi xảy ra trong quá trình hủy bình chọn.');
+    }
+  };
+
+  const handleCancelVoteModal = () => {
+    setIsCancelModalVisible(false);
+  };
+
+  const handleCancelVoteConfirm = () => {
+    setIsCancelModalVisible(false);
+    handleCancelVote(); // Gọi hàm hủy bình chọn
+  };
+
+  const handleVoteModalCancel = () => {
+    setIsModalVisible(false);
   };
 
   if (userLoading || loading) {
@@ -109,28 +142,23 @@ const PostDetail = () => {
 
         <div className="mt-6">
           <button
-            onClick={handleVote}
+            onClick={showVoteModal} // Mở modal khi nhấn nút bình chọn
             disabled={voted}
             className={`px-4 py-2 rounded bg-blue-600 text-white ${voted ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700'}`}
           >
             {voted ? 'Bạn đã bình chọn' : 'Bình chọn'}
           </button>
-          <span className="ml-4 text-lg">
-            {votes} {votes === 1 ? 'lượt bình chọn' : 'lượt bình chọn'}
-          </span>
-        </div>
 
-        {/* Hiển thị danh sách người đã bình chọn chỉ khi người dùng đã bình chọn */}
-        {voted && votersList.length > 0 && (
-          <div className="mt-4 text-lg">
-            <strong>Danh sách người đã bình chọn:</strong>
-            <ul className="list-disc pl-5">
-              {votersList.map((voter) => (
-                <li key={voter._id}>{voter.fullName}</li>
-              ))}
-            </ul>
-          </div>
-        )}
+          {/* Nút hủy bình chọn chỉ hiển thị nếu người dùng đã bình chọn */}
+          {voted && (
+            <button
+              onClick={showCancelVoteModal} // Mở modal xác nhận hủy bình chọn
+              className="ml-4 px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700"
+            >
+              Hủy bình chọn
+            </button>
+          )}
+        </div>
 
         <div className="mt-8">
           {post.images && post.images.length > 0 ? (
@@ -171,6 +199,26 @@ const PostDetail = () => {
         <div className="flex space-x-8 mt-8">
         </div>
       </div>
+
+      {/* Modal xác nhận bình chọn */}
+      <Modal
+        title="Xác nhận bình chọn"
+        visible={isModalVisible}
+        onOk={handleVote} // Xác nhận bình chọn
+        onCancel={handleVoteModalCancel} // Hủy bỏ bình chọn
+      >
+        <p>Bạn có chắc chắn muốn bình chọn cho bài viết này không?</p>
+      </Modal>
+
+      {/* Modal xác nhận hủy bình chọn */}
+      <Modal
+        title="Xác nhận hủy bình chọn"
+        visible={isCancelModalVisible}
+        onOk={handleCancelVoteConfirm} // Xác nhận hủy bình chọn
+        onCancel={handleCancelVoteModal} // Hủy bỏ hủy bình chọn
+      >
+        <p>Bạn có chắc chắn muốn hủy bình chọn cho bài viết này không?</p>
+      </Modal>
     </div>
   );
 };
