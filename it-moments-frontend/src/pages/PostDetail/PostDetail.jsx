@@ -20,9 +20,9 @@ const PostDetail = () => {
     try {
       const response = await axios.get(`${API_URL}/posts/detail/${slug}`);
       setPost(response.data.data.post);
-
+      console.log(response.data.data.post)
       if (user && user._id) {
-        const hasVoted = response.data.voters.some(voter => voter._id === user._id);
+        const hasVoted = response.data.data.post.voters.some(voter => voter._id === user._id);
         setVoted(hasVoted);
       }
 

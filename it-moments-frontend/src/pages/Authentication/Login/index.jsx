@@ -41,24 +41,23 @@ export default function Login() {
                 email,
                 password
             }, {
-                withCredentials: true, // Để gửi cookie kèm theo yêu cầu
+                withCredentials: true,
             });
 
             const data = response.data;
 
-            if (response.status === 200) {
+            if(response.status === 200) {
                 setUser(data.user);
                 setError("");
                 showNotification("success", "Đăng nhập thành công!", "Bạn sẽ được chuyển hướng trong giây lát.");
 
                 setTimeout(() => {
-                    notification.destroy();
-                    navigate("/");
+                    window.location.href = "/";
                 }, 3000);
             } else {
                 showNotification("error", "Đăng nhập thất bại!", data.message || "Đã có lỗi xảy ra.");
             }
-        } catch (error) {
+        } catch(error) {
             showNotification("error", "Đăng nhập thất bại!", "Đã xảy ra lỗi khi đăng nhập.");
             console.error("Lỗi đăng nhập:", error);
         } finally {

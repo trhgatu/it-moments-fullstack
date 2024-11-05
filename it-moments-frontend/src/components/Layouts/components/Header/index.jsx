@@ -32,11 +32,9 @@ export const Header = () => {
                 description: 'Bạn đã đăng xuất khỏi tài khoản.',
                 placement: 'bottomRight',
             });
-
-            // Delay page reload to ensure notification is shown
             setTimeout(() => {
-                window.location.reload(); // Reload the page
-            }, 2000); // Delay 2 giây
+                window.location.reload();
+            }, 2000);
         } catch(error) {
             console.error('Đăng xuất thất bại:', error);
         }
@@ -48,12 +46,12 @@ export const Header = () => {
     };
 
     const handleOk = () => {
-        handleLogout(); // Call logout on confirmation
-        setIsModalVisible(false); // Close modal
+        handleLogout();
+        setIsModalVisible(false);
     };
 
     const handleCancel = () => {
-        setIsModalVisible(false); // Close modal on cancel
+        setIsModalVisible(false);
     };
 
     const menu = (
