@@ -69,7 +69,7 @@ const controller = {
             .limit(objectPagination.limitItems)
             .skip(objectPagination.skip)
             .populate('post_category_id', 'title slug')
-            .populate('event_id', 'title')
+            .populate('event_id')
             .lean();
 
         for(const post of posts) {

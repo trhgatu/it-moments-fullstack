@@ -1,28 +1,31 @@
-import React, { useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
+import axios from 'axios';
 import SwiperNavigation from '../SwiperNavigation';
 import PostSection from '../PostSection';
 import SwiperComponent from '../SwiperComponent';
+import { API_URL } from '../../../../config/config'; // Đường dẫn đến API của bạn
 
 export default function EventSection() {
     const [activeTab, setActiveTab] = useState('Đang diễn ra');
+    const [events, setEvents] = useState({ ongoing: [], past: [] });
     const swiperRef = useRef(null);
 
-    const ongoingEvents = [
-        { title: 'Sự kiện 1', description: 'Mô tả ngắn về sự kiện 1', date: '28/09/2024', imageUrl: 'https://via.placeholder.com/600x300' },
-        { title: 'Sự kiện 2', description: 'Mô tả ngắn về sự kiện 2', date: '30/09/2024', imageUrl: 'https://via.placeholder.com/600x300' },
-        { title: 'Sự kiện 3', description: 'Mô tả ngắn về sự kiện 3', date: '01/10/2024', imageUrl: 'https://via.placeholder.com/600x300' },
-        { title: 'Sự kiện 4', description: 'Mô tả ngắn về sự kiện 4', date: '02/10/2024', imageUrl: 'https://via.placeholder.com/600x300' },
-    ];
+    useEffect(() => {
+        const fetchEvents = async () => {
+            try {
+                const response = await axios.get(`${API_URL}/posts?category=su-kien`);
+                if (response.data.success) {
+                    const ongoing = response.data.data.posts.filter(event => event.event_id && event.event_id.status === 'active');
+                    const past = response.data.data.posts.filter(event => event.event_id && event.event_id.status === 'inactive');
+                    setEvents({ ongoing, past });
+                }
+            } catch (error) {
+                console.error('Lỗi khi lấy sự kiện:', error);
+            }
+        };
 
-    const pastEvents = [
-        { title: 'Sự kiện Đã Kết Thúc 1', description: 'Mô tả về sự kiện đã kết thúc', date: '15/09/2024' },
-        { title: 'Sự kiện Đã Kết Thúc 2', description: 'Mô tả về sự kiện đã kết thúc', date: '20/08/2024' },
-    ];
-
-    const postData = {
-        'Đang diễn ra': ongoingEvents,
-        'Đã kết thúc': pastEvents,
-    };
+        fetchEvents();
+    }, []);
 
     const handleNext = () => {
         if(swiperRef.current) {
@@ -36,6 +39,11 @@ export default function EventSection() {
         }
     };
 
+    const postData = {
+        'Đang diễn ra': events.ongoing,
+        'Đã kết thúc': events.past,
+    };
+
     return (
         <div className="h-full w-full">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
@@ -47,12 +55,10 @@ export default function EventSection() {
                 </div>
             </div>
 
-
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
                 <div className="md:col-span-2">
-                    <SwiperComponent ref={swiperRef} items={ongoingEvents} slidesPerView={2} autoPlay={false} />
+                    <SwiperComponent ref={swiperRef} items={events.ongoing} slidesPerView={2} autoPlay={false} />
                 </div>
-
 
                 <div className="md:col-span-1">
                     <PostSection postData={postData} activeTab={activeTab} setActiveTab={setActiveTab} />

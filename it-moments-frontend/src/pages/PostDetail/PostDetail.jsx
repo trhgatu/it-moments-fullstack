@@ -37,7 +37,6 @@ const PostDetail = () => {
     fetchPost();
   }, [slug]);
 
-  // Hàm mở modal xác nhận bình chọn
   const showVoteModal = () => {
     if (!user) {
       alert("Bạn cần đăng nhập để bình chọn!");
