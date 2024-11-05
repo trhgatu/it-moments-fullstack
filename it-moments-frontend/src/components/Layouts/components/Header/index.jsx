@@ -3,16 +3,18 @@ import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import cx from 'classnames';
 import styles from './Header.module.scss';
 import { useClientUser } from '../../../../context/ClientUserContext';
-import { Avatar, Dropdown, Menu } from 'antd';
+import { Avatar, Dropdown, Menu, Button, Modal, notification } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import { motion } from 'framer-motion';
-import { Button } from 'antd';
+import axios from 'axios';
+import { API_URL } from '../../../../config/config';
 
 export const Header = () => {
     const navigate = useNavigate();
     const { user, setUser, loading } = useClientUser(); // Assumes loading state is provided
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isModalVisible, setIsModalVisible] = useState(false); // State for modal
     const location = useLocation();
     const navRef = useRef([]);
 
@@ -20,9 +22,38 @@ export const Header = () => {
         setIsScrolled(window.scrollY > 50);
     };
 
-    const handleLogout = () => {
-        setUser(null);
-        navigate('/');
+    const handleLogout = async () => {
+        try {
+            await axios.post(`${API_URL}/auth/logout`, {}, { withCredentials: true });
+
+            // Show success notification
+            notification.success({
+                message: 'Đăng xuất thành công',
+                description: 'Bạn đã đăng xuất khỏi tài khoản.',
+                placement: 'bottomRight',
+            });
+
+            // Delay page reload to ensure notification is shown
+            setTimeout(() => {
+                window.location.reload(); // Reload the page
+            }, 2000); // Delay 2 giây
+        } catch(error) {
+            console.error('Đăng xuất thất bại:', error);
+        }
+    };
+
+
+    const showModal = () => {
+        setIsModalVisible(true);
+    };
+
+    const handleOk = () => {
+        handleLogout(); // Call logout on confirmation
+        setIsModalVisible(false); // Close modal
+    };
+
+    const handleCancel = () => {
+        setIsModalVisible(false); // Close modal on cancel
     };
 
     const menu = (
@@ -31,7 +62,7 @@ export const Header = () => {
                 Profile
             </Menu.Item>
             <Menu.Divider />
-            <Menu.Item key="logout" onClick={handleLogout}>
+            <Menu.Item key="logout" onClick={showModal}> {/* Show modal on logout */}
                 Đăng xuất
             </Menu.Item>
         </Menu>
@@ -42,7 +73,7 @@ export const Header = () => {
     };
 
     useEffect(() => {
-        if (location.pathname === '/') {
+        if(location.pathname === '/') {
             window.addEventListener('scroll', handleScroll);
         }
         return () => {
@@ -162,7 +193,6 @@ export const Header = () => {
                                 cursor: 'pointer',
                             }}
                         />
-
                     </Dropdown>
                 ) : (
                     <>
@@ -189,6 +219,18 @@ export const Header = () => {
                     </>
                 )}
             </div>
+
+            {/* Modal xác nhận đăng xuất */}
+            <Modal
+                title="Xác nhận đăng xuất"
+                visible={isModalVisible}
+                onOk={handleOk}
+                onCancel={handleCancel}
+                okText="Đăng xuất"
+                cancelText="Hủy"
+            >
+                <p>Bạn có chắc chắn muốn đăng xuất không?</p>
+            </Modal>
 
             {/* Menu Di Động Khi Mở */}
             {isMenuOpen && (

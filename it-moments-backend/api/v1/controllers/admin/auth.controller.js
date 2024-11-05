@@ -80,6 +80,26 @@ const controller = {
         } catch(error) {
             return res.status(500).json({ message: "Lỗi khi lấy thông tin người dùng" });
         }
+    },
+    /* [POST] /api/v1/admin/auth/logout */
+    logout: async (req, res) => {
+        try {
+            // Xóa cookie `admin_token` khỏi trình duyệt
+            res.clearCookie("admin_token", {
+                httpOnly: true,
+                sameSite: "None",
+                secure: true
+            });
+            return res.status(200).json({
+                code: 200,
+                message: "Đăng xuất thành công",
+            });
+        } catch(error) {
+            return res.status(500).json({
+                code: 500,
+                message: "Có lỗi xảy ra trong quá trình đăng xuất",
+            });
+        }
     }
 };
 

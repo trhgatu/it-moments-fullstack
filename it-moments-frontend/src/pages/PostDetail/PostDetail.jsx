@@ -19,7 +19,7 @@ const PostDetail = () => {
   const fetchPost = async () => {
     try {
       const response = await axios.get(`${API_URL}/posts/detail/${slug}`);
-      setPost(response.data);
+      setPost(response.data.data.post);
 
       if (user && user._id) {
         const hasVoted = response.data.voters.some(voter => voter._id === user._id);
@@ -162,7 +162,7 @@ const PostDetail = () => {
         <div className="mb-8">
           <h1 className="text-5xl font-bold mb-4 text-black">{post.title}</h1>
           <div className="flex justify-between text-lg text-gray-700 mb-3">
-            <span className="italic">By {post.createdBy.account_id}</span>
+            <span className="italic">By {post.accountFullName}</span>
             <span className="text-gray-600">
               {new Date(post.createdAt).toLocaleDateString()}
             </span>

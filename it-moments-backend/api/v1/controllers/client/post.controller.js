@@ -96,20 +96,48 @@ const controller = {
     },
     /* [GET] api/v1/posts/detail/:slug */
     detail: async (req, res) => {
-        const slug = req.params.slug;
-        const find = {
-            slug: slug,
-            deleted: false,
+        try {
+            const slug = req.params.slug;
+            const find = {
+                slug: slug,
+                deleted: false,
+            };
+
+            const post = await Post.findOne(find)
+                .populate("post_category_id", "title")
+                .populate("event_id", "title")
+                .populate({
+                    path: "voters",
+                    select: "fullName",
+                })
+                .lean();
+
+            if(post) {
+                const user = await User.findOne({ _id: post.createdBy.account_id });
+                if(user) {
+                    post.accountFullName = user.isAdmin ? "Admin" : user.fullName;
+                }
+                const updatedBy = post.updatedBy.slice(-1)[0];
+                if(updatedBy) {
+                    const userUpdated = await User.findOne({ _id: updatedBy.account_id });
+                    if(userUpdated) {
+                        updatedBy.accountFullName = userUpdated.fullName;
+                    }
+                }
+                res.json({
+                    success: true,
+                    data: {
+                        post: post
+                    }
+                });
+            } else {
+                res.status(404).json({ success: false, message: "Post not found" });
+            }
+        } catch(error) {
+            res.status(500).json({ success: false, message: error.message });
         }
-        const post = await Post.findOne(find)
-            .populate("post_category_id", "title")
-            .populate("event_id", "title")
-            .populate({
-                path: "voters",
-                select: "fullName",
-            });
-        res.json(post);
     },
+
     vote: async (req, res) => {
         try {
             const { id } = req.params;

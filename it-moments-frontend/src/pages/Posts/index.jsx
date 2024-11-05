@@ -21,7 +21,7 @@ export default function Posts() {
 
             setLoading(true);
             try {
-                const response = await axios.get(`${API_URL}/posts?category=${category}`); // Dùng category từ URL
+                const response = await axios.get(`${API_URL}/posts?category=${category}`);
                 setPosts(response.data.data.posts);
                 setCachedPosts((prev) => ({ ...prev, [category]: response.data.data.posts }));
             } catch (error) {
