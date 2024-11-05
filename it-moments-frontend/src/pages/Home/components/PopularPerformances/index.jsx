@@ -4,21 +4,18 @@ import SwiperNavigation from '../SwiperNavigation';
 
 const PopularPerformances = ({ mostViewPostPerformances }) => {
     const swiperRef = useRef(null);
-    const [slidesPerView, setSlidesPerView] = useState(1); // Khởi tạo với giá trị mặc định
-
-    // Định nghĩa hàm getSlidesPerView
+    const [slidesPerView, setSlidesPerView] = useState(1);
     const getSlidesPerView = () => {
         if (window.innerWidth >= 1024) {
-            return 4; // Large screens
+            return 4;
         } else if (window.innerWidth >= 768) {
-            return 3; // Medium screens
+            return 3;
         } else {
-            return 1; // Small screens
+            return 1;
         }
     };
 
     useEffect(() => {
-        // Cập nhật slidesPerView ngay khi component được mount
         setSlidesPerView(getSlidesPerView());
 
         const handleResize = () => {

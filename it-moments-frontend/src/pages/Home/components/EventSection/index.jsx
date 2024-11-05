@@ -3,7 +3,7 @@ import axios from 'axios';
 import SwiperNavigation from '../SwiperNavigation';
 import PostSection from '../PostSection';
 import SwiperComponent from '../SwiperComponent';
-import { API_URL } from '../../../../config/config'; // Đường dẫn đến API của bạn
+import { API_URL } from '../../../../config/config';
 
 export default function EventSection() {
     const [activeTab, setActiveTab] = useState('Đang diễn ra');

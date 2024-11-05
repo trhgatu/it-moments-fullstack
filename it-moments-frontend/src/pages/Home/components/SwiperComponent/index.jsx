@@ -26,12 +26,13 @@ const SwiperComponent = forwardRef(({ items = [], slidesPerView, autoPlay }, ref
                         >
                             <div className="absolute z-10 w-full bottom-0 bg-black bg-opacity-50 p-4">
                                 <div className="flex flex-wrap">
-                                    <Link className="text-white text-xl uppercase hover:text-blue-600 duration-300">Văn nghệ</Link>
+                                    <Link to="posts/su-kien"
+                                        className="text-white text-xl uppercase hover:text-blue-600 duration-300">{item.post_category_id.title}
+                                    </Link>
                                     <p className="text-white text-2xl ml-3 mr-3 font-light">/</p>
                                     <p className="text-white text-xl font-light">{item.date || '28/9/24'}</p>
                                 </div>
-                                {/* Sử dụng tiện ích của Tailwind để cắt văn bản */}
-                                <h3 className="font-normal text-3xl mb-2 text-white line-clamp-2">{item.title}</h3> {/* Sử dụng line-clamp-2 */}
+                                <h3 className="font-normal text-3xl mb-2 text-white line-clamp-2">{item.title}</h3>
                             </div>
                         </div>
                     </SwiperSlide>

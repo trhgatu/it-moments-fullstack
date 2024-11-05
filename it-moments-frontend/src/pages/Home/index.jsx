@@ -19,8 +19,6 @@ export default function Home() {
     const [events, setEvents] = useState([]);
     const [activeTab, setActiveTab] = useState('Mới');
 
-
-   /*  Lỗi */
     useEffect(() => {
         axios.get(`${API_URL}/posts?category=van-nghe&isFeatured=true&isLatest=true`)
             .then((response) => setnewPostPerformances(response.data.data.posts))

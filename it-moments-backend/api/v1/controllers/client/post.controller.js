@@ -198,6 +198,86 @@ const controller = {
             return res.status(500).json({ message: 'Có lỗi xảy ra khi hủy bình chọn.' });
         }
     },
+    /* [GET] api/v1/posts/lastest */
+    lastestPost: async (req, res) => {
+        try {
+            const find = { deleted: false };
+            if(req.query.category) {
+                const category = await PostCategory.findOne(
+                    {
+                        slug: req.query.category
+                    }
+                );
+                if(category) {
+                    find.post_category_id = category._id;
+                } else {
+                    return res.status(404).json({
+                        success: false,
+                        message: `Danh mục ${req.query.category} không tồn tại`,
+                    });
+                }
+            }
+            const latestPost = await Post.findOne(find)
+                .sort({ createdAt: -1 })
+                .populate('post_category_id', 'title slug')
+                .populate('event_id')
+                .lean();
+            if(!latestPost) {
+                return res.status(404).json({
+                    success: false,
+                    message: 'Không có bài viết nào đáp ứng điều kiện!',
+                });
+            }
+            if(!latestPost.isFeatured) {
+                return res.status(403).json({
+                    success: false,
+                    message: 'Bài viết mới nhất không được hiển thị trên trang chủ!',
+                });
+            }
 
+            res.json({
+                success: true,
+                data: {
+                    post: latestPost,
+                },
+            });
+        } catch(error) {
+            console.error("Lỗi khi lấy bài viết mới nhất:", error);
+            res.status(500).json({ success: false, message: error.message });
+        }
+    },
+    // [GET] api/v1/posts/home
+    home: async (req, res) => {
+        try {
+            const find = { deleted: false, isFeatured: true };
+
+            if(req.query.category) {
+                const category = await PostCategory.findOne({ slug: req.query.category });
+                if(category) {
+                    find.post_category_id = category._id;
+                } else {
+                    return res.status(404).json({
+                        success: false,
+                        message: `Danh mục ${req.query.category} không tồn tại`,
+                    });
+                }
+            }
+
+            const posts = await Post.find(find)
+                .sort({ createdAt: -1 })
+                .limit(5)
+                .populate('post_category_id', 'title slug')
+                .lean();
+
+            res.json({
+                success: true,
+                data: {
+                    posts: posts,
+                },
+            });
+        } catch(error) {
+            res.status(500).json({ success: false, message: error.message });
+        }
+    },
 }
 export default controller;

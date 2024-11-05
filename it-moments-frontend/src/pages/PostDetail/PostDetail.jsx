@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { API_URL } from '../../config/config';
 import { useClientUser } from '../../context/ClientUserContext';
-import { message, Modal, Row, Col, Image, Card } from 'antd';
+import { message, Modal, Row, Col, Image, Card, Carousel } from 'antd';
 
 const PostDetail = () => {
   const { slug } = useParams();
@@ -13,21 +13,18 @@ const PostDetail = () => {
   const [voted, setVoted] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isCancelModalVisible, setIsCancelModalVisible] = useState(false);
-  const [imageModalVisible, setImageModalVisible] = useState(false); // State for image modal
-  const [selectedImage, setSelectedImage] = useState(''); // State for selected image
 
   const fetchPost = async () => {
     try {
       const response = await axios.get(`${API_URL}/posts/detail/${slug}`);
       setPost(response.data.data.post);
-      console.log(response.data.data.post)
-      if (user && user._id) {
+      if(user && user._id) {
         const hasVoted = response.data.data.post.voters.some(voter => voter._id === user._id);
         setVoted(hasVoted);
       }
 
       setLoading(false);
-    } catch (error) {
+    } catch(error) {
       console.error('Lỗi khi lấy chi tiết bài viết:', error);
       setLoading(false);
     }
@@ -38,12 +35,12 @@ const PostDetail = () => {
   }, [slug]);
 
   const showVoteModal = () => {
-    if (!user) {
+    if(!user) {
       alert("Bạn cần đăng nhập để bình chọn!");
       return;
     }
 
-    if (voted) {
+    if(voted) {
       message.warning('Bạn đã bình chọn rồi!');
       return;
     }
@@ -60,12 +57,12 @@ const PostDetail = () => {
         },
         withCredentials: true,
       });
-      if (response.data.success) {
+      if(response.data.success) {
         setVoted(true);
         message.success('Bình chọn thành công!');
       }
       setIsModalVisible(false);
-    } catch (error) {
+    } catch(error) {
       console.error('Lỗi khi bình chọn:', error.response?.data?.message);
       message.error('Có lỗi xảy ra trong quá trình bình chọn.');
     }
@@ -85,12 +82,12 @@ const PostDetail = () => {
         },
         withCredentials: true,
       });
-      if (response.data.success) {
+      if(response.data.success) {
         setVoted(false);
         message.success('Hủy bình chọn thành công!');
       }
       setIsCancelModalVisible(false);
-    } catch (error) {
+    } catch(error) {
       console.error('Lỗi khi hủy bình chọn:', error.response?.data?.message);
       message.error('Có lỗi xảy ra trong quá trình hủy bình chọn.');
     }
@@ -109,23 +106,11 @@ const PostDetail = () => {
     setIsModalVisible(false);
   };
 
-  // Hàm mở modal hình ảnh
-  const showImageModal = (image) => {
-    setSelectedImage(image);
-    setImageModalVisible(true);
-  };
-
-  // Hàm đóng modal hình ảnh
-  const handleImageModalCancel = () => {
-    setImageModalVisible(false);
-    setSelectedImage(''); // Reset selected image
-  };
-
-  if (userLoading || loading) {
+  if(userLoading || loading) {
     return <div>Loading...</div>;
   }
 
-  if (!post) {
+  if(!post) {
     return <div>Không tìm thấy bài viết.</div>;
   }
 
@@ -177,7 +162,7 @@ const PostDetail = () => {
             disabled={voted}
             className={`px-4 py-2 rounded bg-blue-600 text-white ${voted ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700'}`}
           >
-            {voted ? 'Bạn đã bình chọn' : 'Bình chọn'}
+            {voted ? 'Đã bình chọn' : 'Bình chọn'}
           </button>
           {voted && (
             <button
@@ -190,18 +175,17 @@ const PostDetail = () => {
         </div>
 
         <div className="mt-8">
-          <h3 className="text-2xl font-semibold">Hình ảnh bổ sung</h3>
+          <h3 className="text-2xl font-semibold">Hình ảnh:</h3>
           <Row gutter={[16, 16]} className="mt-4">
             {post.images && post.images.length > 0 ? (
               post.images.map((image, index) => (
-                <Col span={8} key={index}> {/* 8 cột cho mỗi hình ảnh, tổng cộng 3 hình mỗi hàng */}
+                <Col span={8} key={index}>
                   <Image
                     src={image}
 
                     alt={`Post Image ${index + 1}`}
-                    preview={false} // Disable default Ant Design preview
-                    onClick={() => showImageModal(image)} // Open image modal on click
-                    style={{ width: '100%', height: 'auto', objectFit: 'cover', aspectRatio: '16/9',cursor: 'pointer' }} // Maintain 16:9 aspect ratio
+                    preview={true}
+                    style={{ width: '100%', height: 'auto', objectFit: 'cover', aspectRatio: '16/9', cursor: 'pointer' }} // Maintain 16:9 aspect ratio
                   />
                 </Col>
               ))
@@ -210,6 +194,7 @@ const PostDetail = () => {
             )}
           </Row>
         </div>
+
       </div>
 
       <div className="mt-12">
@@ -237,17 +222,6 @@ const PostDetail = () => {
         onCancel={handleCancelVoteModal}
       >
         <p>Bạn có chắc chắn muốn hủy bình chọn cho bài viết này không?</p>
-      </Modal>
-
-      {/* Modal cho hình ảnh */}
-      <Modal
-        visible={imageModalVisible}
-        footer={null}
-        onCancel={handleImageModalCancel}
-        centered
-        width={800} // Width of the image modal
-      >
-        <img src={selectedImage} alt="Selected" className="w-full h-auto" />
       </Modal>
     </div>
   );
