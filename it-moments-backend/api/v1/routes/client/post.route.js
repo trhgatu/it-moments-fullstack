@@ -10,6 +10,7 @@ router.get('/detail/:slug', controller.detail);
 router.post('/:id/vote', requireClientAuth, controller.vote);
 
 router.post('/:id/cancel-vote', requireClientAuth, controller.cancelVote);
+
 router.get('/lastestPost', controller.lastestPost);
 
 export default router;

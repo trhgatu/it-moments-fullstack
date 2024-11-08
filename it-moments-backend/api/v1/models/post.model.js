@@ -11,6 +11,7 @@ const postSchema = new mongoose.Schema({
     event_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Event',
+        required: false
     },
     description: String,
     views: {
@@ -23,8 +24,7 @@ const postSchema = new mongoose.Schema({
     position: Number,
     images: [String],
     isFeatured: { type: Boolean, default: false },
-    isLastest : {type: Boolean, default: false},
-    votes: { type: Number, default: 0 }, // Tổng số lượt bình chọn
+    votes: { type: Number, default: 0 },
     voters: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     slug: {
         type: String,
@@ -53,9 +53,20 @@ const postSchema = new mongoose.Schema({
         }
     ],
 },
-{
-    timestamps: true,
-});
+    {
+        timestamps: true,
+    }
+);
+
+postSchema.methods.isVotingActive = async function () {
+    const event = await mongoose.model('Event').findById(this.event_id);
+    const now = new Date();
+    if (event && event.status === "active" && event.votingStartTime <= now && event.votingEndTime >= now) {
+        return true;
+    }
+    return false;
+};
+
 const Post = mongoose.model('Post', postSchema, 'posts');
 
 export default Post;

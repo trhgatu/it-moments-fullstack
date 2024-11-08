@@ -23,24 +23,33 @@ const eventSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['active', 'inactive'],
-        default: 'active'
+        enum: ["active", "inactive", "completed", "canceled"],
+        default: "active",
     },
     votingStartTime: {
-        type: Date
+        type: Date,
+        validate: {
+            validator: function (v) {
+                return v < this.endTime;
+            },
+            message: "Thời gian bình chọn phải trước khi sự kiện kết thúc.",
+        },
     },
     votingEndTime: {
-        type: Date
+        type: Date,
+        validate: {
+            validator: function (v) {
+                return v > this.votingStartTime && v <= this.endTime;
+            },
+            message: "Thời gian kết thúc bình chọn phải nằm trong khoảng thời gian sự kiện.",
+        },
+    },
+    votingStatus: {
+        type: String,
+        enum: ['active', 'closed'],
     },
     createdBy: {
-        account_id: {
-            type: String,
-            required: true
-        },
-        fullName: {
-            type: String,
-            required: true
-        },
+        account_id: String,
         createdAt: {
             type: Date,
             default: Date.now
@@ -57,6 +66,13 @@ const eventSchema = new mongoose.Schema({
 }, {
     timestamps: true,
 });
+eventSchema.methods.updateVotingStatus = function () {
+    const now = new Date();
+    this.isVotingOpen =
+        this.status === "active" &&
+        this.votingStartTime <= now &&
+        this.votingEndTime >= now;
+};
 
 const Event = mongoose.model('Event', eventSchema, 'events');
 

@@ -34,12 +34,6 @@ const EventsTable = ({ events, loading, selectedRowKeys, handleSelectChange, han
       key: "title",
     },
     {
-      title: "Video",
-      dataIndex: "video",
-      key: "video",
-      render: (video) => (video ? <a href={video} target="_blank" rel="noopener noreferrer">Xem Video</a> : 'Không có video'),
-    },
-    {
       title: "Trạng thái",
       dataIndex: "status",
       key: "status",

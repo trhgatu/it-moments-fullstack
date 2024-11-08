@@ -30,15 +30,14 @@ const controller = {
         if(req.query.sortKey && req.query.sortValue) {
             sort[req.query.sortKey] = req.query.sortValue;
         } else {
-            sort.createdAt = "desc"; // Sắp xếp theo ngày tạo giảm dần
+            sort.createdAt = "desc";
         }
 
-        // Lấy danh sách sự kiện
         const events = await Event.find(find)
             .sort(sort)
             .limit(objectPagination.limitItems)
             .skip(objectPagination.skip)
-            .populate('createdBy', 'fullName') // Giả định có trường createdBy
+            .populate('createdBy', 'fullName')
             .lean();
 
         res.json({
@@ -127,7 +126,6 @@ const controller = {
         }
     },
 
-    /* Tạo sự kiện mới */
     createEvent: async (req, res) => {
         if(req.body.position == '' || isNaN(req.body.position)) {
             const countPosts = await Event.countDocuments();
@@ -157,7 +155,7 @@ const controller = {
             });
         }
     },
-    /* Cập nhật sự kiện */
+
     editPatch: async (req, res) => {
         try {
             const id = req.params.id;

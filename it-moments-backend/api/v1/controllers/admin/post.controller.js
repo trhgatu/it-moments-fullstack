@@ -85,8 +85,8 @@ const controller = {
             _id: id,
             deleted: false,
         })
-        .populate('post_category_id', 'title')
-        .populate('event_id');
+            .populate('post_category_id', 'title')
+            .populate('event_id');
         res.json({
             success: true,
             message: 'Lấy chi tiết bài viết thành công.',
@@ -158,32 +158,31 @@ const controller = {
         }
     },
 
+    /* [POST] api/v1/admin/posts */
     createPost: async (req, res) => {
-        if(req.body.position == '' || isNaN(req.body.position)) {
-            const countPosts = await Post.countDocuments();
-            req.body.position = countPosts + 1;
-        } else {
-            req.body.position = parseInt(req.body.position);
-        }
-
-        req.body.createdBy = {
-            account_id: res.locals.user.id,
-        };
-
         try {
+            if(req.body.position === '' || isNaN(req.body.position)) {
+                const countPosts = await Post.countDocuments();
+                req.body.position = countPosts + 1;
+            } else {
+                req.body.position = parseInt(req.body.position);
+            }
+
+            req.body.createdBy = { account_id: res.locals.user.id };
+
             const post = new Post(req.body);
             const data = await post.save();
 
-            res.json({
+            res.status(200).json({
                 code: 200,
-                message: "Tạo thành công",
+                message: "Tạo bài viết thành công",
                 data: data,
             });
         } catch(error) {
             console.error("Lỗi khi tạo bài viết:", error);
-            res.json({
+            res.status(400).json({
                 code: 400,
-                message: "Lỗi khi tạo bài viết. Vui lòng thử lại.",
+                message: error.message || "Lỗi khi tạo bài viết. Vui lòng thử lại.",
             });
         }
     },

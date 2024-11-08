@@ -16,7 +16,7 @@ export default function EventSection() {
                 const response = await axios.get(`${API_URL}/posts?category=su-kien`);
                 if (response.data.success) {
                     const ongoing = response.data.data.posts.filter(event => event.event_id && event.event_id.status === 'active');
-                    const past = response.data.data.posts.filter(event => event.event_id && event.event_id.status === 'inactive');
+                    const past = response.data.data.posts.filter(event => event.event_id && event.event_id.status === 'completed');
                     setEvents({ ongoing, past });
                 }
             } catch (error) {

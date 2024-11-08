@@ -6,6 +6,7 @@ import search from '../../../../helpers/search.js';
 import filterStatus from '../../../../helpers/filterStatus.js';
 import User from '../../models/user.model.js';
 import Role from '../../models/role.model.js';
+import moment from 'moment';
 const controller = {
 
     /* [GET] api/v1/posts */
@@ -105,7 +106,7 @@ const controller = {
 
             const post = await Post.findOne(find)
                 .populate("post_category_id", "title")
-                .populate("event_id", "title")
+                .populate("event_id")
                 .populate({
                     path: "voters",
                     select: "fullName",
@@ -142,9 +143,29 @@ const controller = {
         try {
             const { id } = req.params;
             const user = res.locals.user;
-            const post = await Post.findById(id);
+            const post = await Post.findById(id).populate('event_id');
+
             if(!post) {
                 return res.status(404).json({ success: false, message: 'Post không tồn tại!' });
+            }
+
+            const event = post.event_id;
+            const eventStatus = event.status;
+            const votingEndTime = new Date(event.votingEndTime);
+
+            // Kiểm tra nếu sự kiện không còn mở hoặc không còn cho phép bình chọn
+            if(eventStatus !== 'active' || event.votingStatus !== 'active') {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Sự kiện đã kết thúc hoặc không cho phép bình chọn nữa!'
+                });
+            }
+
+            if(moment().isAfter(votingEndTime)) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Thời gian bình chọn đã kết thúc!'
+                });
             }
 
             if(post.voters.includes(user._id)) {
@@ -169,17 +190,30 @@ const controller = {
             return res.status(500).json({ message: 'Có lỗi xảy ra khi bình chọn.' });
         }
     },
+
     /* [POST] api/v1/posts/:id/cancel-vote */
     cancelVote: async (req, res) => {
         try {
             const { id } = req.params;
             const user = res.locals.user;
-            const post = await Post.findById(id);
+            const post = await Post.findById(id).populate("event_id");
+
             if(!post) {
                 return res.status(404).json({ success: false, message: 'Bài viết không tồn tại!' });
             }
 
-            if(!post.voters.includes(user._id)) {
+            if(!post.event_id) {
+                return res.status(400).json({ success: false, message: 'Không tìm thấy sự kiện liên quan!' });
+            }
+
+            const event = post.event_id;
+            const eventStatus = event.status;
+
+            if(eventStatus !== 'active' || event.votingStatus !== 'active') {
+                return res.status(400).json({ success: false, message: 'Sự kiện đã kết thúc hoặc không cho phép hủy bình chọn!' });
+            }
+
+            if(!post.voters || !Array.isArray(post.voters) || !post.voters.includes(user._id)) {
                 return res.status(400).json({ success: false, message: 'Bạn chưa bình chọn!' });
             }
 
@@ -198,6 +232,7 @@ const controller = {
             return res.status(500).json({ message: 'Có lỗi xảy ra khi hủy bình chọn.' });
         }
     },
+
     /* [GET] api/v1/posts/lastest */
     lastestPost: async (req, res) => {
         try {
@@ -243,39 +278,6 @@ const controller = {
             });
         } catch(error) {
             console.error("Lỗi khi lấy bài viết mới nhất:", error);
-            res.status(500).json({ success: false, message: error.message });
-        }
-    },
-    // [GET] api/v1/posts/home
-    home: async (req, res) => {
-        try {
-            const find = { deleted: false, isFeatured: true };
-
-            if(req.query.category) {
-                const category = await PostCategory.findOne({ slug: req.query.category });
-                if(category) {
-                    find.post_category_id = category._id;
-                } else {
-                    return res.status(404).json({
-                        success: false,
-                        message: `Danh mục ${req.query.category} không tồn tại`,
-                    });
-                }
-            }
-
-            const posts = await Post.find(find)
-                .sort({ createdAt: -1 })
-                .limit(5)
-                .populate('post_category_id', 'title slug')
-                .lean();
-
-            res.json({
-                success: true,
-                data: {
-                    posts: posts,
-                },
-            });
-        } catch(error) {
             res.status(500).json({ success: false, message: error.message });
         }
     },

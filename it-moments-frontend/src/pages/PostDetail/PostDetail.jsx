@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { API_URL } from '../../config/config';
 import { useClientUser } from '../../context/ClientUserContext';
-import { message, Modal, Row, Col, Image, Card, Carousel } from 'antd';
+import { message, Modal, Row, Col, Image, Card, Spin, Progress } from 'antd';
 
 const PostDetail = () => {
   const { slug } = useParams();
@@ -13,6 +13,7 @@ const PostDetail = () => {
   const [voted, setVoted] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isCancelModalVisible, setIsCancelModalVisible] = useState(false);
+  const [timeRemaining, setTimeRemaining] = useState(null);
 
   const fetchPost = async () => {
     try {
@@ -22,7 +23,6 @@ const PostDetail = () => {
         const hasVoted = response.data.data.post.voters.some(voter => voter._id === user._id);
         setVoted(hasVoted);
       }
-
       setLoading(false);
     } catch(error) {
       console.error('Lỗi khi lấy chi tiết bài viết:', error);
@@ -33,7 +33,34 @@ const PostDetail = () => {
   useEffect(() => {
     fetchPost();
   }, [slug]);
+  useEffect(() => {
+    if(post && post.event_id) {
+      const countdown = setInterval(() => {
+        const endTime = new Date(post.event_id.endTime).getTime(); // Thời gian kết thúc sự kiện
+        const now = new Date().getTime(); // Thời gian hiện tại
+        const distance = endTime - now;
 
+        if(distance <= 0) {
+          clearInterval(countdown);
+          setTimeRemaining(0);
+        } else {
+          setTimeRemaining(distance);
+        }
+      }, 1000);
+
+      return () => clearInterval(countdown);
+    }
+  }, [post]);
+
+  const formatTime = (time) => {
+    if(time === null) return "Loading...";
+
+    const hours = Math.floor(time / (1000 * 60 * 60));
+    const minutes = Math.floor((time % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((time % (1000 * 60)) / 1000);
+
+    return `${hours}h ${minutes}m ${seconds}s`;
+  };
   const showVoteModal = () => {
     if(!user) {
       alert("Bạn cần đăng nhập để bình chọn!");
@@ -114,9 +141,14 @@ const PostDetail = () => {
     return <div>Không tìm thấy bài viết.</div>;
   }
 
+  // Kiểm tra trạng thái sự kiện
+  const isEventCompleted = post.event_id?.status === 'completed';
+  const isVotingEnded = new Date(post.event_id?.votingEndTime) < new Date();
+  const isVotingOpen = !isEventCompleted && post.event_id?.votingStatus === 'active';  // Bình chọn chỉ mở khi sự kiện chưa kết thúc và trạng thái bình chọn là 'active'
+  const isEventOngoing = post.event_id?.status === 'active'; // Kiểm tra sự kiện đang diễn ra
+
   return (
     <div className="max-w-screen-lg mx-auto p-6 bg-white h-screen pt-40">
-      {/* Video section */}
       {post.video && (
         <Card title="Video liên quan" className="mb-8">
           <div className="mt-4">
@@ -151,28 +183,65 @@ const PostDetail = () => {
               {new Date(post.createdAt).toLocaleDateString()}
             </span>
           </div>
-          <span className="bg-blue-600 text-white px-4 py-2 rounded">Danh mục: {post.post_category_id?.title || "Không có danh mục"}</span>
+          <div className="flex space-x-2 justify-between">
+            <span className="bg-blue-600 text-white px-4 py-2 rounded">
+              Danh mục: {post.post_category_id?.title || "Không có danh mục"}
+            </span>
+            <span className="bg-green-600 text-white px-4 py-2 rounded">
+              Sự kiện: {post.event_id?.title || "Không có sự kiện"}
+            </span>
+          </div>
         </div>
 
         <p className="text-lg">{post.description}</p>
 
         <div className="mt-6">
-          <button
-            onClick={showVoteModal}
-            disabled={voted}
-            className={`px-4 py-2 rounded bg-blue-600 text-white ${voted ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700'}`}
-          >
-            {voted ? 'Đã bình chọn' : 'Bình chọn'}
-          </button>
-          {voted && (
-            <button
-              onClick={showCancelVoteModal}
-              className="ml-4 px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700"
-            >
-              Hủy bình chọn
-            </button>
+          {isEventOngoing ? (
+            <div>
+              <div className='flex items-center'>
+                <Spin spinning={true} tip="Sự kiện đang diễn ra..." size="small" />
+                <div className="text-xl mt-4">
+                  <p>Thời gian còn lại: {formatTime(timeRemaining)}</p>
+                </div>
+              </div>
+              {/* Nội dung khi sự kiện đang diễn ra */}
+              {isVotingOpen ? (
+                <>
+                  <button
+                    onClick={showVoteModal}
+                    disabled={voted}
+                    className={`px-4 py-2 rounded bg-blue-600 text-white ${voted ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700'}`}
+                  >
+                    {voted ? 'Đã bình chọn' : 'Bình chọn'}
+                  </button>
+                  {voted && (
+                    <button
+                      onClick={showCancelVoteModal}
+                      className="ml-4 px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700"
+                    >
+                      Hủy bình chọn
+                    </button>
+                  )}
+                </>
+              ) : (
+                <p className="text-lg text-gray-600">Bình chọn đã kết thúc</p>
+              )}
+            </div>
+          ) : (
+            <p className="text-lg text-gray-600">Sự kiện đã kết thúc.</p>
           )}
         </div>
+
+        {isEventCompleted && post.voters && post.voters.length > 0 && (
+          <>
+            <h3 className="text-2xl font-semibold">Danh sách người đã bình chọn:</h3>
+            <ul className="mt-4">
+              {post.voters.map((voter, index) => (
+                <li key={index} className="text-lg">{voter.fullName}</li>
+              ))}
+            </ul>
+          </>
+        )}
 
         <div className="mt-8">
           <h3 className="text-2xl font-semibold">Hình ảnh:</h3>
@@ -182,10 +251,9 @@ const PostDetail = () => {
                 <Col span={8} key={index}>
                   <Image
                     src={image}
-
                     alt={`Post Image ${index + 1}`}
                     preview={true}
-                    style={{ width: '100%', height: 'auto', objectFit: 'cover', aspectRatio: '16/9', cursor: 'pointer' }} // Maintain 16:9 aspect ratio
+                    style={{ width: '100%', height: 'auto', objectFit: 'cover', aspectRatio: '16/9', cursor: 'pointer' }}
                   />
                 </Col>
               ))
@@ -193,14 +261,6 @@ const PostDetail = () => {
               <p>Không có hình ảnh bổ sung.</p>
             )}
           </Row>
-        </div>
-
-      </div>
-
-      <div className="mt-12">
-        <h3 className="text-2xl font-semibold">Bài viết liên quan</h3>
-        <div className="flex space-x-8 mt-8">
-          {/* Related posts will be rendered here */}
         </div>
       </div>
 

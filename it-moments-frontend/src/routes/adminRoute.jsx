@@ -15,6 +15,7 @@ import PrivateRoutes from "../admin/components/PrivateRoutes";
 import CategoriesAll from "../admin/pages/Categories/CategoriesAll";
 import CategoryDetail from "../admin/pages/Categories/CategoryDetail";
 import CreateCategory from "../admin/pages/Categories/CreateCategory";
+import CreateEvent from "../admin/pages/Events/CreateEvent";
 import Categories from "../admin/pages/Categories";
 import 'antd/dist/reset.css';
 import Users from "../admin/pages/Users";
@@ -127,10 +128,10 @@ export const adminRoute = [
                                 index: true,
                                 element: <EventAll />
                             },
-                            /* {
+                            {
                                 path: "create",
                                 element: <CreateEvent />
-                            }, */
+                            },
                         ]
 
                     },
