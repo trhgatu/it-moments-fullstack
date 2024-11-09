@@ -21,11 +21,6 @@ const PostEventDetail = () => {
       setPost(response.data.data.post);
       console.log(response.data.data.post)
 
-      if(user && user._id) {
-        const hasVoted = response.data.voters.some(voter => voter._id === user._id);
-        setVoted(hasVoted);
-      }
-
       setLoading(false);
     } catch(error) {
       console.error('Lỗi khi lấy chi tiết bài viết:', error);

@@ -10,8 +10,7 @@ export default function NewPost() {
         const fetchPosts = async () => {
             try {
                 const latestResponse = await axios.get(`${API_URL}/posts/lastestPost/?category=van-nghe`);
-                setLatestPost(latestResponse.data.data.post);
-                console.log(latestResponse.data.data.post);
+                setLatestPost(latestResponse.data.data.post)
             } catch(error) {
                 console.error('Lỗi khi lấy bài viết:', error);
             }

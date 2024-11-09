@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { API_URL } from '../../config/config';
 import { useClientUser } from '../../context/ClientUserContext';
-import { message, Modal, Row, Col, Image, Card, Spin, Progress } from 'antd';
+import { message, Modal, Row, Col, Image, Card, Spin, Input, Button } from 'antd';
 
 const PostDetail = () => {
   const { slug } = useParams();
@@ -14,18 +14,23 @@ const PostDetail = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isCancelModalVisible, setIsCancelModalVisible] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(null);
+  const [votingTimeRemaining, setVotingTimeRemaining] = useState(null);
+  const [comment, setComment] = useState('');
+  const [comments, setComments] = useState([]);
+  const [emotion, setEmotion] = useState(null); // Thêm trạng thái cảm xúc
 
   const fetchPost = async () => {
     try {
       const response = await axios.get(`${API_URL}/posts/detail/${slug}`);
       setPost(response.data.data.post);
+      setComments(response.data.data.post.comments || []); // Lấy danh sách bình luận
       if(user && user._id) {
         const hasVoted = response.data.data.post.voters.some(voter => voter._id === user._id);
         setVoted(hasVoted);
       }
       setLoading(false);
     } catch(error) {
-      console.error('Lỗi khi lấy chi tiết bài viết:', error);
+      console.error('Lỗi khi tải chi tiết bài đăng:', error);
       setLoading(false);
     }
   };
@@ -33,11 +38,12 @@ const PostDetail = () => {
   useEffect(() => {
     fetchPost();
   }, [slug]);
+
   useEffect(() => {
     if(post && post.event_id) {
       const countdown = setInterval(() => {
-        const endTime = new Date(post.event_id.endTime).getTime(); // Thời gian kết thúc sự kiện
-        const now = new Date().getTime(); // Thời gian hiện tại
+        const endTime = new Date(post.event_id.endTime).getTime();
+        const now = new Date().getTime();
         const distance = endTime - now;
 
         if(distance <= 0) {
@@ -52,35 +58,54 @@ const PostDetail = () => {
     }
   }, [post]);
 
+  useEffect(() => {
+    if(post && post.event_id && post.event_id.votingEndTime) {
+      const votingCountdown = setInterval(() => {
+        const votingEndTime = new Date(post.event_id.votingEndTime).getTime();
+        const now = new Date().getTime();
+        const votingDistance = votingEndTime - now;
+
+        if(votingDistance <= 0) {
+          clearInterval(votingCountdown);
+          setVotingTimeRemaining(0);
+        } else {
+          setVotingTimeRemaining(votingDistance);
+        }
+      }, 1000);
+
+      return () => clearInterval(votingCountdown);
+    }
+  }, [post]);
+
   const formatTime = (time) => {
-    if(time === null) return "Loading...";
+    if(time === null) return 'Đang tải...';
 
     const hours = Math.floor(time / (1000 * 60 * 60));
     const minutes = Math.floor((time % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((time % (1000 * 60)) / 1000);
 
-    return `${hours}h ${minutes}m ${seconds}s`;
+    return `${hours} giờ ${minutes} phút ${seconds} giây`;
   };
+
   const showVoteModal = () => {
     if(!user) {
-      alert("Bạn cần đăng nhập để bình chọn!");
+      alert('Bạn cần đăng nhập để bình chọn!');
       return;
     }
 
     if(voted) {
-      message.warning('Bạn đã bình chọn rồi!');
+      message.warning('Bạn đã bình chọn!');
       return;
     }
 
     setIsModalVisible(true);
   };
 
-  // Hàm xác nhận bình chọn
   const handleVote = async () => {
     try {
       const response = await axios.post(`${API_URL}/posts/${post._id}/vote`, null, {
         headers: {
-          Authorization: `Bearer ${user.token}`
+          Authorization: `Bearer ${user.token}`,
         },
         withCredentials: true,
       });
@@ -91,21 +116,52 @@ const PostDetail = () => {
       setIsModalVisible(false);
     } catch(error) {
       console.error('Lỗi khi bình chọn:', error.response?.data?.message);
-      message.error('Có lỗi xảy ra trong quá trình bình chọn.');
+      message.error('Đã xảy ra lỗi khi bình chọn.');
     }
   };
 
-  // Hàm mở modal xác nhận hủy bình chọn
+  const handleEmotionClick = (emotion) => {
+    setEmotion(emotion); // Cập nhật cảm xúc người dùng đã chọn
+    message.success(`Bạn đã chọn cảm xúc: ${emotion}`);
+  };
+
+  const handleCommentSubmit = async () => {
+    if(!comment.trim()) {
+      message.warning('Vui lòng nhập bình luận');
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        `${API_URL}/posts/${post._id}/comment`,
+        { comment },
+        {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+          },
+        }
+      );
+
+      if(response.data.success) {
+        setComments([...comments, response.data.data.comment]);
+        setComment('');
+        message.success('Bình luận thành công!');
+      }
+    } catch(error) {
+      console.error('Lỗi khi bình luận:', error.response?.data?.message);
+      message.error('Đã xảy ra lỗi khi bình luận.');
+    }
+  };
+
   const showCancelVoteModal = () => {
     setIsCancelModalVisible(true);
   };
 
-  // Hàm hủy bình chọn
   const handleCancelVote = async () => {
     try {
       const response = await axios.post(`${API_URL}/posts/${post._id}/cancel-vote`, null, {
         headers: {
-          Authorization: `Bearer ${user.token}`
+          Authorization: `Bearer ${user.token}`,
         },
         withCredentials: true,
       });
@@ -116,7 +172,7 @@ const PostDetail = () => {
       setIsCancelModalVisible(false);
     } catch(error) {
       console.error('Lỗi khi hủy bình chọn:', error.response?.data?.message);
-      message.error('Có lỗi xảy ra trong quá trình hủy bình chọn.');
+      message.error('Đã xảy ra lỗi khi hủy bình chọn.');
     }
   };
 
@@ -134,29 +190,28 @@ const PostDetail = () => {
   };
 
   if(userLoading || loading) {
-    return <div>Loading...</div>;
+    return <div>Đang tải...</div>;
   }
 
   if(!post) {
-    return <div>Không tìm thấy bài viết.</div>;
+    return <div>Không tìm thấy bài đăng.</div>;
   }
 
-  // Kiểm tra trạng thái sự kiện
   const isEventCompleted = post.event_id?.status === 'completed';
   const isVotingEnded = new Date(post.event_id?.votingEndTime) < new Date();
-  const isVotingOpen = !isEventCompleted && post.event_id?.votingStatus === 'active';  // Bình chọn chỉ mở khi sự kiện chưa kết thúc và trạng thái bình chọn là 'active'
-  const isEventOngoing = post.event_id?.status === 'active'; // Kiểm tra sự kiện đang diễn ra
+  const isVotingOpen = !isEventCompleted && post.event_id?.votingStatus === 'active';
+  const isEventOngoing = post.event_id?.status === 'active';
 
   return (
     <div className="max-w-screen-lg mx-auto p-6 bg-white h-screen pt-40">
       {post.video && (
-        <Card title="Video liên quan" className="mb-8">
+        <Card title="Video" className="mb-8">
           <div className="mt-4">
             <iframe
               width="100%"
               height="450"
               src={`https://www.youtube.com/embed/${post.video.split('v=')[1].split('&')[0]}`}
-              title="Video Liên Quan"
+              title="Video liên quan"
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
@@ -165,7 +220,6 @@ const PostDetail = () => {
         </Card>
       )}
 
-      {/* Thumbnail Image */}
       <div className="cursor-pointer">
         <img
           src={post.thumbnail || 'https://via.placeholder.com/150'}
@@ -178,17 +232,15 @@ const PostDetail = () => {
         <div className="mb-8">
           <h1 className="text-5xl font-bold mb-4 text-black">{post.title}</h1>
           <div className="flex justify-between text-lg text-gray-700 mb-3">
-            <span className="italic">By {post.accountFullName}</span>
-            <span className="text-gray-600">
-              {new Date(post.createdAt).toLocaleDateString()}
-            </span>
+            <span className="italic">Bởi {post.accountFullName}</span>
+            <span className="text-gray-600">{new Date(post.createdAt).toLocaleDateString()}</span>
           </div>
           <div className="flex space-x-2 justify-between">
             <span className="bg-blue-600 text-white px-4 py-2 rounded">
-              Danh mục: {post.post_category_id?.title || "Không có danh mục"}
+              Thể loại: {post.post_category_id?.title || 'Không có thể loại'}
             </span>
             <span className="bg-green-600 text-white px-4 py-2 rounded">
-              Sự kiện: {post.event_id?.title || "Không có sự kiện"}
+              Sự kiện: {post.event_id?.title || 'Không có sự kiện'}
             </span>
           </div>
         </div>
@@ -198,15 +250,20 @@ const PostDetail = () => {
         <div className="mt-6">
           {isEventOngoing ? (
             <div>
-              <div className='flex items-center'>
+              <div className="flex items-center">
                 <Spin spinning={true} tip="Sự kiện đang diễn ra..." size="small" />
                 <div className="text-xl mt-4">
                   <p>Thời gian còn lại: {formatTime(timeRemaining)}</p>
                 </div>
               </div>
-              {/* Nội dung khi sự kiện đang diễn ra */}
               {isVotingOpen ? (
                 <>
+                  <div className='flex items-center'>
+                    <Spin spinning={true} tip="Bình chọn đang diễn ra" size="small" />
+                    <p className="text-lg mt-2 text-gray-800">
+                      Thời gian bình chọn còn lại: {formatTime(votingTimeRemaining)}
+                    </p>
+                  </div>
                   <button
                     onClick={showVoteModal}
                     disabled={voted}
@@ -232,56 +289,66 @@ const PostDetail = () => {
           )}
         </div>
 
-        {isEventCompleted && post.voters && post.voters.length > 0 && (
-          <>
-            <h3 className="text-2xl font-semibold">Danh sách người đã bình chọn:</h3>
-            <ul className="mt-4">
-              {post.voters.map((voter, index) => (
-                <li key={index} className="text-lg">{voter.fullName}</li>
-              ))}
-            </ul>
-          </>
-        )}
+        {/* Cảm xúc */}
+        <div className="mt-6">
+          <h3 className="text-2xl font-semibold">Chọn cảm xúc của bạn:</h3>
+          <div className="flex space-x-4 mt-4">
+            <Button onClick={() => handleEmotionClick('😊')}>😊 Vui</Button>
+            <Button onClick={() => handleEmotionClick('😢')}>😢 Buồn</Button>
+            <Button onClick={() => handleEmotionClick('❤️')}>❤️ Yêu thích</Button>
+          </div>
+        </div>
 
+        {/* Bình luận */}
         <div className="mt-8">
-          <h3 className="text-2xl font-semibold">Hình ảnh:</h3>
-          <Row gutter={[16, 16]} className="mt-4">
-            {post.images && post.images.length > 0 ? (
-              post.images.map((image, index) => (
-                <Col span={8} key={index}>
-                  <Image
-                    src={image}
-                    alt={`Post Image ${index + 1}`}
-                    preview={true}
-                    style={{ width: '100%', height: 'auto', objectFit: 'cover', aspectRatio: '16/9', cursor: 'pointer' }}
-                  />
-                </Col>
-              ))
+          <h3 className="text-2xl font-semibold">Bình luận:</h3>
+          <Input.TextArea
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            placeholder="Viết bình luận của bạn..."
+            rows={4}
+          />
+          <Button
+            type="primary"
+            onClick={handleCommentSubmit}
+            className="mt-4"
+            disabled={!comment.trim()}
+          >
+            Gửi Bình luận
+          </Button>
+
+          <div className="mt-8">
+            {comments.length > 0 ? (
+              <ul>
+                {comments.map((cmt, index) => (
+                  <li key={index} className="mb-4">
+                    <strong>{cmt.author}</strong>: {cmt.content}
+                  </li>
+                ))}
+              </ul>
             ) : (
-              <p>Không có hình ảnh bổ sung.</p>
+              <p>Chưa có bình luận nào.</p>
             )}
-          </Row>
+          </div>
         </div>
       </div>
 
-      {/* Modal xác nhận bình chọn */}
       <Modal
         title="Xác nhận bình chọn"
         visible={isModalVisible}
         onOk={handleVote}
         onCancel={handleVoteModalCancel}
       >
-        <p>Bạn có chắc chắn muốn bình chọn cho bài viết này không?</p>
+        <p>Bạn có chắc muốn bình chọn cho bài đăng này?</p>
       </Modal>
 
-      {/* Modal xác nhận hủy bình chọn */}
       <Modal
         title="Xác nhận hủy bình chọn"
         visible={isCancelModalVisible}
         onOk={handleCancelVoteConfirm}
         onCancel={handleCancelVoteModal}
       >
-        <p>Bạn có chắc chắn muốn hủy bình chọn cho bài viết này không?</p>
+        <p>Bạn có chắc muốn hủy bình chọn cho bài đăng này?</p>
       </Modal>
     </div>
   );

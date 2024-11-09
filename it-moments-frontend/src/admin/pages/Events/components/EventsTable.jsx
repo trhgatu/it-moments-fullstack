@@ -37,15 +37,28 @@ const EventsTable = ({ events, loading, selectedRowKeys, handleSelectChange, han
       title: "Trạng thái",
       dataIndex: "status",
       key: "status",
-      render: (status) => (
-        <Button
-          type={status === "active" ? "primary" : "default"}
-          style={status === "active" ? { backgroundColor: "green", borderColor: "green" } : {}}
-        >
-          {status === "active" ? "Hoạt động" : "Dừng hoạt động"}
-        </Button>
-      ),
+      render: (status) => {
+        let buttonProps = { type: "default" };
+        if (status === "active") {
+          buttonProps = { type: "primary", style: { backgroundColor: "green", borderColor: "green" } };
+        } else if (status === "inactive") {
+          buttonProps = { type: "default", style: { backgroundColor: "gray", borderColor: "gray" } };
+        } else if (status === "completed") {
+          buttonProps = { type: "default", style: { backgroundColor: "blue", borderColor: "blue" } };
+        }
+
+        const statusText = status === "active" ? "Hoạt động" :
+                           status === "inactive" ? "Dừng hoạt động" :
+                           "Đã kết thúc";
+
+        return (
+          <Button {...buttonProps}>
+            {statusText}
+          </Button>
+        );
+      },
     },
+
     {
       title: "Ngày bắt đầu",
       dataIndex: "startDate",

@@ -5,7 +5,6 @@ cron.schedule('*/1 * * * *', async () => {
     console.log('Cron job "Cập nhật sự kiện" đã được bắt đầu lúc:', new Date().toISOString());
     try {
         const now = new Date();
-
         const eventsToUpdate = await Event.find({
             endTime: { $lt: now },
             status: 'active'

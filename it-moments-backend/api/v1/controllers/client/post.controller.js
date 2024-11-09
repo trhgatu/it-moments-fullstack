@@ -153,7 +153,6 @@ const controller = {
             const eventStatus = event.status;
             const votingEndTime = new Date(event.votingEndTime);
 
-            // Kiểm tra nếu sự kiện không còn mở hoặc không còn cho phép bình chọn
             if(eventStatus !== 'active' || event.votingStatus !== 'active') {
                 return res.status(400).json({
                     success: false,

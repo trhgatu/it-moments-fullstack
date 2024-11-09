@@ -18,12 +18,13 @@ const CreateEvent = () => {
         const formData = {
             title: values.title,
             description: values.description,
-            start_time: values.eventTime[0].toISOString(),
-            end_time: values.eventTime[1].toISOString(),
+            startTime: values.eventTime[0].toISOString(),
+            endTime: values.eventTime[1].toISOString(),
             location: values.location,
             status: values.status,
-            voting_start_time: values.votingTime[0].toISOString(),
-            voting_end_time: values.votingTime[1].toISOString(),
+            votingStartTime: values.votingTime[0].toISOString(),
+            votingEndTime: values.votingTime[1].toISOString(),
+            votingStatus: values.votingStatus,
         };
 
         setLoading(true);
@@ -89,6 +90,7 @@ const CreateEvent = () => {
                         <Select placeholder="Chọn trạng thái">
                             <Option value="active">Hoạt động</Option>
                             <Option value="inactive">Dừng hoạt động</Option>
+                            <Option value="completed">Đã kết thúc</Option>
                         </Select>
                     </Form.Item>
 
@@ -96,6 +98,12 @@ const CreateEvent = () => {
                         <Button type="primary" htmlType="submit" loading={loading}>
                             {loading ? 'Đang tạo...' : 'Tạo sự kiện'}
                         </Button>
+                    </Form.Item>
+                    <Form.Item label="Trạng thái bình chọn" name="votingStatus" initialValue="active">
+                        <Select placeholder="Chọn trạng thái bình chọn">
+                            <Option value="active">Mở bình chọn</Option>
+                            <Option value="closed">Đóng bình chọn</Option>
+                        </Select>
                     </Form.Item>
                 </Form>
             </Card>

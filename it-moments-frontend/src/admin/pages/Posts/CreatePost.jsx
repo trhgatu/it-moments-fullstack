@@ -78,7 +78,7 @@ const CreatePost = () => {
         const formData = new FormData();
         formData.append('title', values.title);
         formData.append('post_category_id', values.post_category_id);
-        formData.append('event_id', values.event_id); // Thêm event_id vào formData
+        formData.append('event_id', values.event_id);
         formData.append('description', values.description);
         const positionValue = values.position ? parseInt(values.position) : '';
         formData.append('position', positionValue);

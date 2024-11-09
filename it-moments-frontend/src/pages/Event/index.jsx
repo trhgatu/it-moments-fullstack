@@ -20,7 +20,7 @@ export default function Event() {
 
             setLoading(true);
             try {
-                const response = await axios.get(`${API_URL}/posts?category=su-kien`); // Dùng category từ URL
+                const response = await axios.get(`${API_URL}/posts?category=su-kien`);
                 setPosts(response.data.data.posts);
                 setCachedPosts((prev) => ({ ...prev, [category]: response.data.data.posts }));
             } catch (error) {
