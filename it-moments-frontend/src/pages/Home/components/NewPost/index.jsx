@@ -19,14 +19,13 @@ export default function NewPost() {
     }, []);
 
     return (
-        <div className="relative block md:col-span-2 h-full min-h-[400px]">
+        <div className="relative block md:col-span-2 min-h-48 h-full">
             {latestPost && (
                 <div
                     className="relative overflow-hidden h-full flex flex-col justify-end p-8 bg-cover bg-center text-white"
                     style={{ backgroundImage: `url(${latestPost.thumbnail})` }}
                 >
                     <div className="absolute inset-0 bg-black bg-opacity-50"></div>
-
                     <div className="relative z-10">
                         <div className="text-lg md:text-3xl font-semibold mt-2">
                             <Link to={`/posts/${latestPost.post_category_id.slug}`} className="text-white font-semibold hover:text-blue-500 transition">
@@ -34,8 +33,8 @@ export default function NewPost() {
                                     {latestPost.post_category_id.title}
                                 </span>
                             </Link>
-                            <span className="mx-2">/</span> {/* Khoảng cách giữa link và dấu '/' */}
-                            <span className="ml-2">{new Date(latestPost.createdAt).toLocaleDateString()}</span> {/* Ngày không bị ảnh hưởng bởi hover */}
+                            <span className="mx-2">/</span>
+                            <span className="ml-2">{new Date(latestPost.createdAt).toLocaleDateString()}</span>
                         </div>
 
                         <h2 className="text-lg md:text-3xl font-semibold mt-2 hover:text-blue-500 transition">
@@ -46,5 +45,6 @@ export default function NewPost() {
                 </div>
             )}
         </div>
+
     );
 }

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Button, Typography } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
@@ -8,8 +8,9 @@ import { notification } from 'antd';
 import axios from 'axios';
 import { API_URL } from '../../../config/config';
 import styles from './Login.module.scss';
-
+import io from 'socket.io-client';
 export default function Login() {
+    const socket = useRef(null);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [passwordShown, setPasswordShown] = useState(false);
@@ -45,14 +46,14 @@ export default function Login() {
             });
 
             const data = response.data;
-
             if(response.status === 200) {
+                localStorage.setItem('client_token', data.token);
                 setUser(data.user);
                 setError("");
                 showNotification("success", "Đăng nhập thành công!", "Bạn sẽ được chuyển hướng trong giây lát.");
 
                 setTimeout(() => {
-                    window.location.href = "/";
+                    navigate("/");
                 }, 3000);
             } else {
                 showNotification("error", "Đăng nhập thất bại!", data.message || "Đã có lỗi xảy ra.");
@@ -64,6 +65,38 @@ export default function Login() {
             setLoading(false);
         }
     };
+// Kết nối WebSocket sau khi đăng nhập thành công (đảm bảo token đã có)
+useEffect(() => {
+    const token = localStorage.getItem('client_token');
+
+    if (token) {
+        socket.current = io('http://localhost:3000', {
+            transports: ['websocket'],
+            withCredentials: true,
+            extraHeaders: {
+                'Authorization': `Bearer ${token}`,
+            }
+        });
+
+        socket.current.on('connect', () => {
+            console.log("Kết nối WebSocket thành công!");
+        });
+
+        socket.current.on('notificationUpdate', (data) => {
+            console.log('Thông báo nhận được:', data);
+        });
+
+        // Cleanup: Ngắt kết nối khi component unmount
+        return () => {
+            if (socket.current) {
+                socket.current.disconnect();
+            }
+        };
+    } else {
+        console.log("Không tìm thấy token để kết nối WebSocket.");
+    }
+}, []);  // Chỉ thực hiện lần đầu khi component mount, token đã được lưu trong localStorage
+
 
     return (
         <div className={styles.wrapper}>

@@ -1,41 +1,63 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styles from './Pagination.module.scss';
-import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';  // Import icon mũi tên
+import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
-const Pagination = ({ totalPages }) => {
-    const [currentPage, setCurrentPage] = useState(1);
+const Pagination = ({ currentPage, totalPages, onPageChange }) => {
+    const navigate = useNavigate();
 
-    const handlePageClick = (page) => {
-        setCurrentPage(page);
+    // Hàm xử lý khi người dùng nhấn vào một trang cụ thể
+    const handlePageChange = (page) => {
+        if (page >= 1 && page <= totalPages) {
+            // Cập nhật URL khi người dùng nhấn vào một trang mới
+            navigate(`?page=${page}`);
+            onPageChange(page);  // Cập nhật trang hiện tại
+        }
+    };
+
+    const renderPageNumbers = () => {
+        const pageNumbers = [];
+        const maxPagesToShow = 5;
+        const startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+        const endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+
+        for (let i = startPage; i <= endPage; i++) {
+            pageNumbers.push(i);
+        }
+
+        return pageNumbers;
     };
 
     return (
         <div className={styles.pagination}>
+            {/* Nút quay lại trang trước */}
             <button
-                onClick={() => handlePageClick(currentPage - 1)}
+                onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
                 className={styles.navButton}
             >
-                <FaAngleLeft /> {/* Icon mũi tên trái */}
+                <FaAngleLeft />
             </button>
-            {[...Array(totalPages)].map((_, index) => {
-                const page = index + 1;
-                return (
-                    <div
-                        key={page}
-                        onClick={() => handlePageClick(page)}
-                        className={currentPage === page ? styles.activePage : styles.pageItem}
-                    >
-                        {page < 10 ? `${page}` : page}
-                    </div>
-                );
-            })}
+
+            {/* Các số trang */}
+            {renderPageNumbers().map((page) => (
+                <button
+                    key={page}
+                    onClick={() => handlePageChange(page)}
+                    className={currentPage === page ? styles.activePage : styles.pageItem}
+                    disabled={currentPage === page} // Vô hiệu hóa nút của trang hiện tại
+                >
+                    {page}
+                </button>
+            ))}
+
+            {/* Nút chuyển tới trang tiếp theo */}
             <button
-                onClick={() => handlePageClick(currentPage + 1)}
+                onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
                 className={styles.navButton}
             >
-                <FaAngleRight /> {/* Icon mũi tên phải */}
+                <FaAngleRight />
             </button>
         </div>
     );

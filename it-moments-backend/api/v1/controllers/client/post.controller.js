@@ -2,13 +2,16 @@ import Post from '../../models/post.model.js';
 import Event from '../../models/event.model.js';
 import PostCategory from '../../models/post-category.model.js';
 import pagination from '../../../../helpers/pagination.js';
+import Notification from '../../models/notification.model.js';
 import search from '../../../../helpers/search.js';
 import filterStatus from '../../../../helpers/filterStatus.js';
 import User from '../../models/user.model.js';
+import { io } from '../../../../server.mjs';
 import Role from '../../models/role.model.js';
 import moment from 'moment';
-const controller = {
+import { usersSocket } from '../../../../server.mjs';
 
+const controller = {
     /* [GET] api/v1/posts */
     index: async (req, res) => {
         const filterStatusList = filterStatus(req.query);
@@ -110,6 +113,14 @@ const controller = {
                 .populate({
                     path: "voters",
                     select: "fullName",
+                })
+                .populate({
+                    path: "comments.user_id",
+                    select: "fullName"
+                })
+                .populate({
+                    path: "comments.replies.user_id",
+                    select: "fullName"
                 })
                 .lean();
 
@@ -280,5 +291,199 @@ const controller = {
             res.status(500).json({ success: false, message: error.message });
         }
     },
+    /* [POST] api/v1/posts/:id/like */
+    likePost: async (req, res) => {
+        try {
+            const { id } = req.params;
+            const user = res.locals.user;
+            const post = await Post.findById(id);
+
+            if(!post) {
+                return res.status(404).json({ success: false, message: 'Post không tồn tại!' });
+            }
+
+            if(post.likes.includes(user._id)) {
+                return res.status(400).json({ success: false, message: 'Bạn đã like bài viết này!' });
+            }
+
+            post.likes.push(user._id);
+            await post.save();
+
+            io.emit('likeUpdate', {
+                postId: post._id,
+                likes: post.likes.length,
+            });
+
+            res.status(200).json({
+                success: true,
+                data: {
+                    likes: post.likes.length,
+                },
+            });
+        } catch(error) {
+            console.error(error);
+            res.status(500).json({ message: 'Có lỗi xảy ra khi like bài viết.' });
+        }
+    },
+    commentPost: async (req, res) => {
+        try {
+            const { id } = req.params;
+            const user = res.locals.user;
+            const { content, parentCommentId } = req.body;
+
+            const post = await Post.findById(id);
+            if(!post) {
+                return res.status(404).json({ success: false, message: 'Post không tồn tại!' });
+            }
+
+            const comment = {
+                user_id: user._id,
+                content: content,
+                createdAt: new Date(),
+                parentCommentId: null
+            };
+
+            post.comments.push(comment);
+            await post.save();
+            res.status(200).json({
+                success: true,
+                data: {
+                    comment: comment,
+                    commentsCount: post.comments.length
+                },
+            });
+        } catch(error) {
+            console.error(error);
+            res.status(500).json({ message: 'Có lỗi xảy ra khi bình luận.' });
+        }
+    },
+    getComments: async (req, res) => {
+        try {
+            const { id } = req.params;
+            const post = await Post.findById(id).populate('comments.user_id', 'fullName');
+
+            if(!post) {
+                return res.status(404).json({ success: false, message: 'Post không tồn tại!' });
+            }
+
+            res.status(200).json({
+                success: true,
+                data: {
+                    comments: post.comments,
+                    commentsCount: post.comments.length,
+                },
+            });
+        } catch(error) {
+            console.error(error);
+            res.status(500).json({ message: 'Có lỗi xảy ra khi lấy bình luận.' });
+        }
+    },
+    deleteComment: async (req, res) => {
+        try {
+            const { id, commentId } = req.params;
+            const user = res.locals.user;
+
+            const post = await Post.findById(id);
+            if(!post) {
+                return res.status(404).json({ success: false, message: 'Post không tồn tại!' });
+            }
+
+            const commentIndex = post.comments.findIndex(comment => comment._id.toString() === commentId);
+            if(commentIndex === -1) {
+                return res.status(404).json({ success: false, message: 'Bình luận không tồn tại!' });
+            }
+
+            const comment = post.comments[commentIndex];
+            if(comment.user_id.toString() !== user._id.toString() && !user.isAdmin) {
+                return res.status(403).json({ success: false, message: 'Bạn không có quyền xóa bình luận này!' });
+            }
+
+            post.comments.splice(commentIndex, 1);
+            await post.save();
+
+            res.status(200).json({
+                success: true,
+                message: 'Bình luận đã được xóa.',
+                commentsCount: post.comments.length,
+            });
+        } catch(error) {
+            console.error(error);
+            res.status(500).json({ message: 'Có lỗi xảy ra khi xóa bình luận.' });
+        }
+    },
+    replyToComment: async (req, res) => {
+        try {
+            const { id } = req.params;
+            const user = res.locals.user;
+            const { content, parentCommentId, toUserId } = req.body;
+            const post = await Post.findById(id);
+            if (!post) {
+                return res.status(404).json({ success: false, message: 'Bài viết không tồn tại!' });
+            }
+
+            const parentComment = post.comments.find(comment => comment._id.toString() === String(parentCommentId));
+            if (!parentComment) {
+                return res.status(404).json({ success: false, message: 'Bình luận mẹ không tồn tại!' });
+            }
+
+            const reply = {
+                user_id: user._id,
+                content: content,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                parentCommentId: parentCommentId
+            };
+            parentComment.replies.push(reply);
+            await post.save();
+
+            let notificationContent = '';
+            let targetUserId = toUserId;
+
+            if (parentComment.replies.length > 1) {
+                const lastReply = parentComment.replies[parentComment.replies.length - 2];
+                if (lastReply.user_id.toString() !== user._id.toString()) {
+                    targetUserId = lastReply.user_id;
+                    notificationContent = `${user.fullName} đã trả lời lại bình luận của bạn: "${content}"`;
+                }
+            } else if (parentComment.user_id.toString() !== user._id.toString()) {
+                notificationContent = `${user.fullName} đã trả lời bình luận của bạn: "${content}"`;
+            }
+
+            if (notificationContent) {
+                const notification = await Notification.create({
+                    user_id: targetUserId,
+                    content: notificationContent,
+                    read: false,
+                });
+
+                await notification.save();
+                const userSocketId = usersSocket[targetUserId.toString()];
+                if (userSocketId) {
+                    io.to(userSocketId).emit('notificationUpdate', {
+                        userId: targetUserId,
+                        notification: {
+                            content: notificationContent,
+                            createdAt: new Date(),
+                        },
+                    });
+                    console.log(`Thông báo đã được gửi cho userId: ${targetUserId}`);
+                } else {
+                    console.log(`Không tìm thấy socket cho userId: ${targetUserId}`);
+                }
+            }
+
+            res.status(200).json({
+                success: true,
+                data: {
+                    reply: reply,
+                    commentsCount: post.comments.length
+                },
+            });
+
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: 'Có lỗi xảy ra khi trả lời bình luận.' });
+        }
+    }
 }
 export default controller;

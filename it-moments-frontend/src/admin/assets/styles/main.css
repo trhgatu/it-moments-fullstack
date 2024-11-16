@@ -6,7 +6,6 @@ body {
   font-size: 14px;
   line-height: 1.6;
   font-weight: 400;
-  font-family: open sans, Helvetica, Arial, sans-serif;
 }
 .ant-layout.ant-layout-has-sider {
   flex-direction: row;

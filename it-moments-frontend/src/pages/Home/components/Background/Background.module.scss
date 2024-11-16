@@ -1,0 +1,109 @@
+.swiperPagination {
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 10;
+    margin-right: 4rem;
+}
+
+:global {
+    .swiper-pagination-bullet {
+        background-color: rgba(255, 255, 255, 0.3);
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        position: relative;
+        cursor: pointer;
+        transition:
+            background-color 0.3s ease,
+            transform 0.3s ease;
+        animation: scaleBullet 0.5s forwards; /* Thêm hiệu ứng khi mới xuất hiện */
+    }
+
+    /* Hiệu ứng khi active */
+    .swiper-pagination-bullet-active {
+        background-color: transparent;
+        border: 2px solid white;
+    }
+
+    /* Tạo dấu chấm trắng ở giữa bullet khi active */
+    .swiper-pagination-bullet-active::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 6px;
+        height: 6px;
+        background-color: white;
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        opacity: 1;
+    }
+
+    /* Tạo dấu chấm trắng ở giữa bullet khi không active */
+    .swiper-pagination-bullet::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 6px;
+        height: 6px;
+        background-color: white;
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    /* Hiển thị dấu chấm trắng khi hover vào bullet không active */
+    .swiper-pagination-bullet:not(
+            .swiper-pagination-bullet-active
+        ):hover::after {
+        opacity: 1;
+    }
+    .swiper-pagination-bullet-active::after {
+        opacity: 1;
+    }
+
+    /* Hiệu ứng hover vào các bullet không active */
+    .swiper-pagination-bullet:not(.swiper-pagination-bullet-active):hover {
+        background-color: transparent;
+        transform: scale(1.2);
+        animation: scaleBullet 0.5s forwards;
+    }
+
+    /* Thêm vòng tròn viền trắng bao quanh bullet khi hover */
+    .swiper-pagination-bullet:not(.swiper-pagination-bullet-active):hover {
+        border: 1px solid white;
+        box-sizing: border-box;
+    }
+
+    /* Hiệu ứng từ to nhỏ thành hình tròn */
+    @keyframes scaleBullet {
+        0% {
+            transform: scale(1.5); /* Bắt đầu lớn */
+            opacity: 0; /* Bắt đầu ẩn */
+            border: 0px solid transparent; /* Không viền khi lớn */
+        }
+        50% {
+            transform: scale(1.2); /* Thu nhỏ một chút */
+            opacity: 0.8; /* Dần dần xuất hiện */
+            border: 2px solid transparent; /* Thêm viền trong quá trình co lại */
+        }
+        100% {
+            transform: scale(1); /* Thu nhỏ về hình tròn */
+            opacity: 1; /* Dần dần xuất hiện hoàn toàn */
+            border: 2px solid white; /* Hiển thị viền hoàn chỉnh khi co lại */
+        }
+    }
+    .highlight-text {
+        color: #f39c12; /* Chọn màu sắc tùy thích */
+        font-weight: bold;
+        text-decoration: underline;
+        font-size: 4rem;
+    }
+}

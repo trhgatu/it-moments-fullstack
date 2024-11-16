@@ -3,8 +3,9 @@ import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import cx from 'classnames';
 import styles from './Header.module.scss';
 import { useClientUser } from '../../../../context/ClientUserContext';
-import { Avatar, Dropdown, Menu, Button, Modal, notification } from 'antd';
-import { UserOutlined } from '@ant-design/icons';
+import { Avatar, Dropdown, Menu, Button, Modal, notification, Badge } from 'antd';
+import NotificationComponent from '../../../../components/Notification';
+import { UserOutlined, BellOutlined } from '@ant-design/icons';
 import { motion } from 'framer-motion';
 import axios from 'axios';
 import { API_URL } from '../../../../config/config';
@@ -17,6 +18,7 @@ export const Header = () => {
     const [isModalVisible, setIsModalVisible] = useState(false); // State for modal
     const location = useLocation();
     const navRef = useRef([]);
+
 
     const handleScroll = () => {
         setIsScrolled(window.scrollY > 50);
@@ -94,7 +96,7 @@ export const Header = () => {
     return (
         <header
             className={cx(
-                'flex items-center justify-between fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-4 md:px-9',
+                'flex items-center justify-between fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-8 sm:px-12 md:px-16 lg:px-24 xl:px-32', // Tăng padding cho các màn hình lớn hơn
                 {
                     'bg-white shadow-md': isScrolled || location.pathname !== '/',
                     'bg-transparent': !isScrolled && location.pathname === '/',
@@ -146,7 +148,7 @@ export const Header = () => {
                             })
                         }
                     >
-                        <span className="text">{item.label}</span>
+                        <span className={cx(styles.textNav, "uppercase")}>{item.label}</span>
                     </NavLink>
                 ))}
 
@@ -179,19 +181,44 @@ export const Header = () => {
                 {loading ? (
                     <div className="loader">Loading...</div>
                 ) : user ? (
-                    <Dropdown overlay={menu} placement="bottomRight" trigger={['click']}>
-                        <Avatar
-                            src={user.avatar}
-                            icon={!user.avatar && <UserOutlined />}
-                            size={40}
-                            style={{
-                                backgroundColor: '#f0f0f0',
-                                color: '#8c8c8c',
-                                border: '1px solid #d9d9d9',
-                                cursor: 'pointer',
-                            }}
-                        />
-                    </Dropdown>
+                    <div className='flex'>
+                        <p className='text-black'>Xin chào {user.fullName}</p>
+                        <Dropdown overlay={menu} placement="bottomRight" trigger={['click']}>
+
+                            <Avatar
+                                src={user.avatar}
+                                icon={!user.avatar && <UserOutlined />}
+                                size={40}
+                                style={{
+                                    backgroundColor: '#f0f0f0',
+                                    color: '#000000',
+                                    cursor: 'pointer',
+                                    transition: 'background-color 0.3s, color 0.3s',
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.backgroundColor = '#e6f7ff'; // Màu nền khi hover
+                                    e.currentTarget.style.color = '#1890ff'; // Màu chữ khi hover
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.backgroundColor = '#f0f0f0';
+                                    e.currentTarget.style.color = '#000000';
+                                }}
+                                onMouseDown={(e) => {
+                                    e.currentTarget.style.backgroundColor = '#b3d8ff';
+                                    e.currentTarget.style.color = '#0050b3';
+                                }}
+                                onMouseUp={(e) => {
+                                    e.currentTarget.style.backgroundColor = '#e6f7ff';
+                                    e.currentTarget.style.color = '#1890ff';
+                                }}
+                            />
+
+                        </Dropdown>
+                        <NotificationComponent/>
+
+                    </div>
+
+
                 ) : (
                     <>
                         <Button

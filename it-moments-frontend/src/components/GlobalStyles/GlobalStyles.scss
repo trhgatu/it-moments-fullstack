@@ -7,14 +7,18 @@
 @import url('https://fonts.googleapis.com/css2?family=Kranky&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Rowdies:wght@300;400;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@100;300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap');
+
 :root{
-    --header-height: 60px;
+    --header-height: 70px;
     --primary : #0066B3;
     --default-layout-header-height: 70px;
     --default-layout-width: 100%;
     --black: #000;
     --white: #fff;
     --text-color: #333;
+    --font-family: 'Montserrat', sans-serif;
 }
 *{
     box-sizing: border-box;
@@ -26,9 +30,13 @@ html{
     overflow-y: scroll;
 
 }
+body, html {
+    overflow-x: hidden;
+}
+
 body{
     font-size: 1.6rem;
-    font-family: 'Roboto', 'san-serif';
+    font-family: var(--font-family);
     line-height: 1.5;
     text-rendering: optimizeSpeed;
 }

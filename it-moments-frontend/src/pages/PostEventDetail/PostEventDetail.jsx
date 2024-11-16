@@ -146,7 +146,14 @@ const PostEventDetail = () => {
               {new Date(post.createdAt).toLocaleDateString()}
             </span>
           </div>
-          <span className="bg-blue-600 text-white px-4 py-2 rounded">Danh mục: {post.post_category_id?.title || "Không có danh mục"}</span>
+          <div className="flex space-x-2 justify-between">
+            <span className="bg-blue-600 text-white px-4 py-2 rounded">
+              Thể loại: {post.post_category_id?.title || 'Không có thể loại'}
+            </span>
+            <span className="bg-green-600 text-white px-4 py-2 rounded">
+              Sự kiện: {post.event_id?.title || 'Không có sự kiện'}
+            </span>
+          </div>
         </div>
 
         <p className="text-lg">{post.description}</p>

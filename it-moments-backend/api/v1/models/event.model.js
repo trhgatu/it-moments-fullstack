@@ -24,7 +24,7 @@ const eventSchema = new mongoose.Schema({
     status: {
         type: String,
         enum: ["active", "inactive", "completed", "canceled"],
-        default: "active",
+        default: "inactive",
     },
     votingStartTime: {
         type: Date,

@@ -1,51 +1,44 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
-const PostSection = ({ postData, activeTab, setActiveTab }) => {
-    const MAX_TITLE_LENGTH = 30;
-
-    const truncateTitle = (title) => {
-        if (title.length > MAX_TITLE_LENGTH) {
-            return title.slice(0, MAX_TITLE_LENGTH) + '...';
-        }
-        return title;
-    };
-
+const PostSection = ({ postData }) => {
     return (
-        <div className="w-full min-h-[400px]">
-            <div className="grid grid-cols-3 gap-2 border-b-2 pb-2 mb-4">
-                {Object.keys(postData).map((tab, index) => (
-                    <button
-                        key={index}
-                        className={`text-center py-2 px-4 font-semibold transition duration-300 ease-in-out ${
-                            activeTab === tab
-                                ? 'bg-blue-600 text-white'
-                                : 'text-gray-500 hover:bg-blue-200 hover:text-gray-800'
-                        }`}
-                        onClick={() => setActiveTab(tab)}
-                    >
-                        {tab}
-                    </button>
-                ))}
-            </div>
-
-            <div className="grid grid-cols-1 gap-4">
-                {postData[activeTab]?.slice(0, 3).map((post, index) => (
+        <div className="w-full min-h-48 h-full">
+            <div className="grid grid-cols-1 gap-8">
+                {postData.map((post, index) => (
                     <div
                         key={index}
-                        className="p-4 bg-white shadow-md hover:shadow-lg transition duration-300 ease-in-out flex items-start"
+
+                        className="relative p-4 h-72 bg-white border border-1 transition duration-300 ease-in-out flex items-start"
                     >
-                        <img
-                            src={post.thumbnail}
-                            alt={post.title}
-                            className="w-24 h-24 object-cover mr-4"
-                        />
-                        <div className="flex flex-col flex-grow">
-                            <h4 className="font-semibold text-lg text-gray-900 hover:text-blue-600 transition duration-300 ease-in-out">
-                                {truncateTitle(post.title)}
-                            </h4>
-                            <p className="text-gray-600 text-sm">
-                                {post.description.slice(0, 100)}...
-                            </p>
+                        {/* Background image */}
+                        <div
+                            className="absolute inset-0 bg-cover bg-center z-0"
+                            style={{ backgroundImage: `url(${post.thumbnail})` }}
+                        ></div>
+
+                        {/* Overlay */}
+                        <div className="absolute inset-0 bg-black bg-opacity-50 z-10"></div>
+
+                        {/* Content */}
+                        <div className="relative z-20 flex flex-col flex-grow">
+                            {/* Badge: Đặt ở góc trên bên trái */}
+                            <div className="absolute top-0 left-0 bg-blue-500 text-white text-xl px-2 py-1 z-20">
+                                {post.post_category_id?.title}
+                            </div>
+
+                            {/* Title and Description: Đặt dưới badge */}
+                            <div className="relative z-10 mt-32">
+                                <Link
+                                    to={`posts/${post.post_category_id?.slug}/${post.slug}`}
+                                    className="font-semibold text-lg text-white hover:text-blue-600 transition duration-300 ease-in-out"
+                                >
+                                    {post.title}
+                                </Link>
+                                <p className="text-white text-sm leading-8 line-clamp-2 m-0">
+                                    {post.description}
+                                </p>
+                            </div>
                         </div>
                     </div>
                 ))}

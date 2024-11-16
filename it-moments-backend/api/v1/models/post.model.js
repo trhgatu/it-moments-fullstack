@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import slug from 'mongoose-slug-updater';
 
 mongoose.plugin(slug);
+
 const postSchema = new mongoose.Schema({
     title: String,
     post_category_id: {
@@ -26,6 +27,27 @@ const postSchema = new mongoose.Schema({
     isFeatured: { type: Boolean, default: false },
     votes: { type: Number, default: 0 },
     voters: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    likes: [
+        {
+            user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+            likedAt: { type: Date, default: Date.now }
+        }
+    ],
+    comments: [
+        {
+            user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+            content: String,
+            createdAt: { type: Date, default: Date.now },
+            parentCommentId: { type: mongoose.Schema.Types.ObjectId, ref: 'Post.comments', required: false },
+            replies: [
+                {
+                    user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+                    content: String,
+                    createdAt: { type: Date, default: Date.now }
+                }
+            ]
+        }
+    ],
     slug: {
         type: String,
         slug: "title",
@@ -52,12 +74,9 @@ const postSchema = new mongoose.Schema({
             updatedAt: Date
         }
     ],
-},
-    {
-        timestamps: true,
-    }
-);
-
+}, {
+    timestamps: true,
+});
 postSchema.methods.isVotingActive = async function () {
     const event = await mongoose.model('Event').findById(this.event_id);
     const now = new Date();

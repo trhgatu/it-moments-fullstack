@@ -6,6 +6,7 @@
     padding: 10px 0;
     margin: 15px 0;
     background-color: transparent;
+    flex-wrap: wrap; /* Đảm bảo rằng các phần tử phân trang tự động xuống dòng nếu không đủ không gian */
 }
 
 .pageItem {
@@ -15,33 +16,27 @@
     cursor: pointer;
     padding: 3px 10px;
     transition: color 0.3s ease, transform 0.3s ease;
-    border: 1px solid;
+    border: 1px solid #ddd;
+    border-radius: 5px;
 }
 
 .pageItem:hover {
     background-color: var(--primary);
     color: var(--white);
 }
-.postImage:hover {
-    transform: scale(1.15);
-}
+
 .activePage {
     font-size: 14px;
     font-weight: bold;
     background-color: var(--primary);
-    position: relative;
-    transition: color 0.3s ease, transform 0.3s ease;
+    color: var(--white);
+    border: 1px solid var(--primary);
     padding: 3px 10px;
-    color: var(--white);
-    border: 1px solid;
+    border-radius: 5px;
+    position: relative;
+    pointer-events: none; /* Đảm bảo không thể click vào trang active */
 }
 
-.activePage:hover {
-    /* transform: scale(1.15); */
-    color: var(--white);
-}
-
-/* Nút điều hướng */
 .navButton {
     border: none;
     background-color: transparent;
