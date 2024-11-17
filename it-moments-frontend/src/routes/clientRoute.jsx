@@ -60,10 +60,6 @@ export const clientRoute = [
                 element: <About />
             },
             {
-                path: "profile",
-                element: <Profile />
-            },
-            {
                 path: "*",
                 element: <Error />
             },
@@ -71,7 +67,10 @@ export const clientRoute = [
                 path: "/profile",
                 element: <PrivateRoutes />,
                 children: [
-
+                    {
+                        path: "",
+                        element: <Profile />
+                    }
                 ]
             },
         ]

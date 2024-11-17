@@ -53,7 +53,6 @@ export default function Home() {
         AOS.init();
     }, []);
 
-    // Thêm overflow-x-hidden cho body
     useEffect(() => {
         document.body.style.overflowX = 'hidden';
         return () => {

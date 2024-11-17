@@ -1,236 +1,59 @@
-import React, { useState, useRef } from 'react';
+import React from 'react';
 import styles from './Profile.module.scss';
-import {
-  FaLock, FaChevronDown, FaChevronUp,
-  FaCamera, FaEnvelope, FaPhone, FaMapMarkerAlt,
-  FaCircle, FaExclamationTriangle, FaSave, FaEye, FaEyeSlash
-} from 'react-icons/fa';
+import { useClientUser } from '../../context/ClientUserContext';
 
 const Profile = () => {
-  const [firstName, setFirstName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("123-456-789");
-  const [address, setAddress] = useState("");
-  const [status, setStatus] = useState("Available");
-  const [isOnline, setIsOnline] = useState(true);
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [passwordStrength, setPasswordStrength] = useState("");
-  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-  const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false);
-  const [isPasswordAccordionOpen, setIsPasswordAccordionOpen] = useState(false);
+  const { user } = useClientUser();
 
-  // Refs for focusing input fields
-  const emailRef = useRef(null);
-  const addressRef = useRef(null);
-
-  const completionPercentage = () => {
-    let completed = 0;
-    if(firstName) completed += 30;
-    if(email) completed += 30;
-    if(phone) completed += 20;
-    if(address) completed += 20;
-    return completed;
-  };
-
-  const evaluatePasswordStrength = (password) => {
-    if(password.length < 6) {
-      setPasswordStrength("Yếu");
-    } else if(password.length < 10) {
-      setPasswordStrength("Trung bình");
-    } else {
-      setPasswordStrength("Mạnh");
-    }
-  };
-
-  const handlePasswordChange = (password) => {
-    setNewPassword(password);
-    evaluatePasswordStrength(password);
-  };
-
-  const togglePasswordVisibility = () => {
-    setIsPasswordVisible(!isPasswordVisible);
-  };
-
-  const toggleConfirmPasswordVisibility = () => {
-    setIsConfirmPasswordVisible(!isConfirmPasswordVisible);
-  };
-
-  const togglePasswordAccordion = () => {
-    setIsPasswordAccordionOpen(!isPasswordAccordionOpen);
-  };
+  const votedPosts = [
+    { title: "Bài viết 1", date: "01/01/2024" },
+    { title: "Bài viết 2", date: "02/01/2024" },
+    { title: "Bài viết 3", date: "03/01/2024" },
+  ];
 
   return (
-    <div className="container mx-auto">
-      <div className={styles.profileContainer}>
-        <div className={styles.profileSidebar}>
-          <div className={styles.profileHeaderSidebar}>
-            <div className={styles.avatarContainer}>
-              <img
-                src="https://via.placeholder.com/180"
-                alt="Profile Avatar"
-                className={styles.avatarImageSidebar}
-              />
-              <button className={styles.changeAvatarButton}>
-                <FaCamera /> Thay đổi ảnh
-              </button>
-              <span className={`${styles.statusIndicator} ${isOnline ? styles.online : styles.offline}`}>
-                <FaCircle /> {status}
-              </span>
-            </div>
-            <div className={styles.profileSidebarName}>
-              <h3 className={styles.userName}>{firstName || "Your Name"}</h3>
-              <p className={styles.userTitle}>Team Manager</p>
-              <div className={styles.userInfo}>
-                {email ? (
-                  <p><FaEnvelope /> {email}</p>
-                ) : (
-                  <p className={styles.warning} onClick={() => emailRef.current?.focus()}>
-                    <FaExclamationTriangle /> Thêm email
-                  </p>
-                )}
-                {phone && <p><FaPhone /> {phone}</p>}
-                {address ? (
-                  <p><FaMapMarkerAlt /> {address}</p>
-                ) : (
-                  <p className={styles.warning} onClick={() => addressRef.current?.focus()}>
-                    <FaExclamationTriangle /> Thêm địa chỉ
-                  </p>
-                )}
-              </div>
-            </div>
+    <div className="container mx-auto bg-white rounded-lg overflow-hidden">
+      <div className={styles.mainContent}>
+        <div className="relative">
+          <img
+            src="https://fullstack.edu.vn/assets/cover-profile-CDYcrPwJ.png"
+            alt="Cover"
+            className="w-full h-auto object-cover rounded-b-3xl"
+          />
+          {/* Căn chỉnh avatar và tên người dùng sang bên trái */}
+          <div className="absolute -bottom-24 md:-bottom-32 left-10">
+            <img
+              src="https://files.fullstack.edu.vn/f8-prod/public-images/6679277183b87.png"
+              alt="Avatar"
+              className="w-40 h-40 md:w-60 md:h-60 rounded-full border-4 border-white ring-8 ring-white"
+            />
           </div>
-
-          <div className={styles.profileProgress}>
-            <p>Hồ sơ của bạn hoàn thành {completionPercentage()}%</p>
-            <div className={styles.progressBar}>
-              <div className={`${styles.progress} ${completionPercentage() < 30 ? styles.lowProgress : completionPercentage() < 70 ? styles.mediumProgress : styles.highProgress}`} style={{ width: `${completionPercentage()}%` }}></div>
-            </div>
-          </div>
-
-          <button className={styles.logOutButton} onClick={() => alert('Đăng xuất thành công')}>
-            <FaLock className={styles.icon} /> Đăng xuất
-          </button>
+          <span className="pt-6 md:pt-8 absolute left-60 md:left-80 text-xl md:text-4xl font-bold text-gray-800">{user.fullName}</span>
         </div>
 
-        <div className={styles.profileMain}>
-          <div className={styles.tabContent}>
-            <h2>My Profile</h2>
-
-            <div className={styles.profileSection}>
-              <h3>Thông tin cá nhân</h3>
-              <div className={styles.profileInfoGrid}>
-                <div className={styles.profileRow}>
-                  <div className={styles.profileLabel}>Tên</div>
-                  <div className={styles.inputContainer}>
-                    <input
-                      type="text"
-                      className={styles.profileInput}
-                      value={firstName}
-                      onChange={(e) => setFirstName(e.target.value)}
-                      placeholder="Nhập tên của bạn"
-                    />
-                  </div>
-                </div>
-
-                <div className={styles.profileRow}>
-                  <div className={styles.profileLabel}>Email</div>
-                  <div className={styles.inputContainer}>
-                    <input
-                      ref={emailRef}
-                      type="email"
-                      className={styles.profileInput}
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="Nhập email của bạn"
-                    />
-                  </div>
-                </div>
-
-                <div className={styles.profileRow}>
-                  <div className={styles.profileLabel}>Số Điện Thoại</div>
-                  <div className={styles.inputContainer}>
-                    <input
-                      type="text"
-                      className={styles.profileInput}
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      placeholder="Nhập số điện thoại"
-                    />
-                  </div>
-                </div>
-
-                <div className={styles.profileRow}>
-                  <div className={styles.profileLabel}>Địa chỉ</div>
-                  <div className={styles.inputContainer}>
-                    <input
-                      ref={addressRef}
-                      type="text"
-                      className={styles.profileInput}
-                      value={address}
-                      onChange={(e) => setAddress(e.target.value)}
-                      placeholder="Nhập địa chỉ"
-                    />
-                  </div>
-                </div>
-              </div>
+        {/* Layout grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-32 md:mt-48 px-4 md:px-10">
+          <div className="shadow-[rgba(0,_0,_0,_0.02)_0px_1px_3px_0px,_rgba(27,_31,_35,_0.15)_0px_0px_0px_1px] p-6 bg-white rounded-lg col-span-1">
+            <div className="mb-8">
+              <h3 className="text-2xl font-semibold text-gray-800">Giới thiệu</h3>
+              <p className="text-gray-600 mt-4">
+                Tôi là một lập trình viên với kinh nghiệm làm việc trong các dự án phần mềm. Tôi đam mê công nghệ và luôn tìm kiếm cơ hội học hỏi và phát triển. Hiện tại, tôi đang làm việc tại một công ty phần mềm lớn.
+              </p>
             </div>
+          </div>
 
-            {/* Password Change Section */}
-            <div className={styles.profileSectionPassword}>
-              <h3>Đổi Mật Khẩu</h3>
-              <div className={styles.accordionHeader} onClick={togglePasswordAccordion}>
-                <h3>Mật Khẩu</h3>
-                {isPasswordAccordionOpen ? <FaChevronUp /> : <FaChevronDown />}
-              </div>
-
-              {isPasswordAccordionOpen && (
-                <div className={styles.accordionContent}>
-                  <div className={styles.profileRow}>
-                    <div className={styles.profileLabel}><FaLock /> Mật Khẩu Mới</div>
-                    <div className={styles.inputContainer}>
-                      <input
-                        type={isPasswordVisible ? "text" : "password"}
-                        className={styles.profileInput}
-                        value={newPassword}
-                        onChange={(e) => handlePasswordChange(e.target.value)}
-                        placeholder="Nhập mật khẩu mới"
-                      />
-                      <button className={styles.togglePasswordVisibilityButton} onClick={togglePasswordVisibility}>
-                        {isPasswordVisible ? <FaEyeSlash /> : <FaEye />}
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className={styles.passwordStrengthContainer}>
-                    <p>Cấp độ bảo mật: <span className={styles[passwordStrength]}>{passwordStrength}</span></p>
-                    <div className={styles.progressBarStrength}>
-                      <div className={`${styles.progressStrength} ${styles[passwordStrength]}`} style={{ width: passwordStrength === "Yếu" ? '30%' : passwordStrength === "Trung bình" ? '60%' : '100%' }}></div>
-                    </div>
-                    <p className={styles.passwordHint}>Mật khẩu mạnh nên có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt.</p>
-                  </div>
-
-                  <div className={styles.profileRow}>
-                    <div className={styles.profileLabel}><FaLock /> Nhập lại mật khẩu</div>
-                    <div className={styles.inputContainer}>
-                      <input
-                        type={isConfirmPasswordVisible ? "text" : "password"}
-                        className={styles.profileInput}
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        placeholder="Nhập lại mật khẩu"
-                      />
-                      <button className={styles.togglePasswordVisibilityButton} onClick={toggleConfirmPasswordVisibility}>
-                        {isConfirmPasswordVisible ? <FaEyeSlash /> : <FaEye />}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
+          <div className="shadow-[rgba(0,_0,_0,_0.02)_0px_1px_3px_0px,_rgba(27,_31,_35,_0.15)_0px_0px_0px_1px] p-6 bg-white rounded-lg col-span-1 md:col-span-2 lg:col-span-2">
+            <div>
+              <h3 className="text-2xl font-semibold text-gray-800">Bài viết đã bình chọn</h3>
+              <ul className="space-y-4 mt-4">
+                {votedPosts.map((post, index) => (
+                  <li key={index} className="flex justify-between items-center">
+                    <span className="text-gray-600">{post.title}</span>
+                    <span className="text-gray-500 text-sm">{post.date}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
-
-            {/* Save Button */}
-            <button className={styles.saveProfileButton}><FaSave /> Lưu</button>
           </div>
         </div>
       </div>
