@@ -10,10 +10,8 @@ const PostEventDetail = () => {
   const { user, loading: userLoading } = useClientUser();
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [voted, setVoted] = useState(false);
-  const [isModalVisible, setIsModalVisible] = useState(false); // Modal bình chọn
-  const [isCancelModalVisible, setIsCancelModalVisible] = useState(false); // Modal hủy bình chọn
-  const [imageModalVisible, setImageModalVisible] = useState(false); // State for image modal
+
+  const [imageModalVisible, setImageModalVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState('');
   const fetchPost = async () => {
     try {
@@ -32,87 +30,13 @@ const PostEventDetail = () => {
     fetchPost();
   }, [slug]);
 
-  // Hàm mở modal xác nhận bình chọn
-  const showVoteModal = () => {
-    if(!user) {
-      alert("Bạn cần đăng nhập để bình chọn!");
-      return;
-    }
-
-    if(voted) {
-      message.warning('Bạn đã bình chọn rồi!');
-      return;
-    }
-
-    setIsModalVisible(true);
-  };
   const showImageModal = (image) => {
     setSelectedImage(image);
     setImageModalVisible(true);
   };
   const handleImageModalCancel = () => {
     setImageModalVisible(false);
-    setSelectedImage(''); // Reset selected image
-  };
-  // Xử lý xác nhận bình chọn
-  const handleVote = async () => {
-    try {
-      const response = await axios.post(`${API_URL}/posts/${post._id}/vote`, null, {
-        headers: {
-          Authorization: `Bearer ${user.token}`
-        },
-        withCredentials: true,
-      });
-      if(response.data.success) {
-        setVoted(true);
-        message.success('Bình chọn thành công!');
-      }
-      setIsModalVisible(false); // Đóng modal sau khi bình chọn thành công
-    } catch(error) {
-      console.error('Lỗi khi bình chọn:', error.response?.data?.message);
-      message.error('Có lỗi xảy ra trong quá trình bình chọn.');
-    }
-  };
-
-  // Hàm mở modal xác nhận hủy bình chọn
-  const showCancelVoteModal = () => {
-    setIsCancelModalVisible(true);
-  };
-
-  // Xử lý hủy bình chọn
-  const handleCancelVote = async () => {
-    try {
-      const response = await axios.post(`${API_URL}/posts/${post._id}/cancel-vote`, null, {
-        headers: {
-          Authorization: `Bearer ${user.token}`
-        },
-        withCredentials: true,
-      });
-      if(response.data.success) {
-        setVoted(false);
-        message.success('Hủy bình chọn thành công!');
-      }
-      setIsCancelModalVisible(false); // Đóng modal hủy bình chọn
-    } catch(error) {
-      console.error('Lỗi khi hủy bình chọn:', error.response?.data?.message);
-      message.error('Có lỗi xảy ra trong quá trình hủy bình chọn.');
-    }
-  };
-
-  // Hàm hủy modal bình chọn
-  const handleVoteModalCancel = () => {
-    setIsModalVisible(false); // Đóng modal bình chọn
-  };
-
-  // Hàm hủy modal hủy bình chọn
-  const handleCancelVoteModal = () => {
-    setIsCancelModalVisible(false);
-  };
-
-  // Xác nhận hủy bình chọn
-  const handleCancelVoteConfirm = () => {
-    setIsCancelModalVisible(false);
-    handleCancelVote(); // Gọi hàm hủy bình chọn
+    setSelectedImage('');
   };
 
   if(userLoading || loading) {
@@ -122,11 +46,6 @@ const PostEventDetail = () => {
   if(!post) {
     return <div>Không tìm thấy bài viết.</div>;
   }
-
-  // Kiểm tra danh mục
-  const isEventCategory = post.post_category_id?.title === 'Sự kiện'; // Kiểm tra xem danh mục có phải là sự kiện không
-  const canVote = !isEventCategory && post.post_category_id?.title !== 'Danh mục không cho bình chọn'; // Kiểm tra khả năng bình chọn
-
   return (
     <div className="max-w-screen-lg mx-auto p-6 bg-white h-screen pt-40">
       <div className="cursor-pointer">
@@ -157,30 +76,6 @@ const PostEventDetail = () => {
         </div>
 
         <p className="text-lg">{post.description}</p>
-
-        <div className="mt-6">
-          {/* Chỉ hiển thị nút bình chọn nếu không phải là danh mục sự kiện */}
-          {!isEventCategory && canVote && (
-            <>
-              <button
-                onClick={showVoteModal}
-                disabled={voted}
-                className={`px-4 py-2 rounded bg-blue-600 text-white ${voted ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700'}`}
-              >
-                {voted ? 'Bạn đã bình chọn' : 'Bình chọn'}
-              </button>
-              {voted && (
-                <button
-                  onClick={showCancelVoteModal}
-                  className="ml-4 px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700"
-                >
-                  Hủy bình chọn
-                </button>
-              )}
-            </>
-          )}
-        </div>
-
         <Row gutter={[16, 16]} className="mt-4">
           {post.images && post.images.length > 0 ? (
             post.images.map((image, index) => (
@@ -218,31 +113,12 @@ const PostEventDetail = () => {
         </div>
       )}
 
-      {/* Modal xác nhận bình chọn */}
-      <Modal
-        title="Xác nhận bình chọn"
-        visible={isModalVisible}
-        onOk={handleVote} // Xác nhận bình chọn
-        onCancel={handleVoteModalCancel} // Hủy bỏ bình chọn
-      >
-        <p>Bạn có chắc chắn muốn bình chọn cho bài viết này không?</p>
-      </Modal>
-
-      {/* Modal xác nhận hủy bình chọn */}
-      <Modal
-        title="Xác nhận hủy bình chọn"
-        visible={isCancelModalVisible}
-        onOk={handleCancelVoteConfirm} // Xác nhận hủy bình chọn
-        onCancel={handleCancelVoteModal} // Hủy bỏ hủy bình chọn
-      >
-        <p>Bạn có chắc chắn muốn hủy bình chọn cho bài viết này không?</p>
-      </Modal>
       <Modal
         visible={imageModalVisible}
         footer={null}
         onCancel={handleImageModalCancel}
         centered
-        width={800} // Width of the image modal
+        width={800}
       >
         <img src={selectedImage} alt="Selected" className="w-full h-auto" />
       </Modal>

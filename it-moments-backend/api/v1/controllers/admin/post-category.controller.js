@@ -95,37 +95,35 @@ const controller = {
     },
     /* [POST] api/v1/admin/post-categories/create */
     createPost: async (req, res) => {
-        // Xử lý vị trí
+
         if(req.body.position === '') {
             const count = await PostCategory.countDocuments();
-            req.body.position = count + 1; // Gán vị trí nếu không có giá trị
+            req.body.position = count + 1;
         } else {
-            req.body.position = parseInt(req.body.position); // Chuyển đổi vị trí sang số nguyên
+            req.body.position = parseInt(req.body.position);
         }
 
-        // Gán thông tin người tạo
         req.body.createdBy = {
             account_id: res.locals.user.id,
         };
 
         try {
-            const category = new PostCategory(req.body); // Tạo mới danh mục
-            const data = await category.save(); // Lưu danh mục vào cơ sở dữ liệu
+            const category = new PostCategory(req.body);
+            const data = await category.save();
 
             // Phản hồi thành công
             return res.status(201).json({
                 success: true,
                 message: "Tạo danh mục bài viết thành công.",
-                data: data, // Trả về dữ liệu danh mục vừa tạo
+                data: data,
             });
         } catch(error) {
-            console.error("Lỗi khi tạo danh mục:", error); // Ghi log lỗi
+            console.error("Lỗi khi tạo danh mục:", error);
 
-            // Phản hồi lỗi
             return res.status(400).json({
                 success: false,
                 message: "Lỗi khi tạo danh mục. Vui lòng thử lại.",
-                error: error.message, // Gửi thông tin lỗi
+                error: error.message,
             });
         }
     },
@@ -147,6 +145,50 @@ const controller = {
                 code: 400,
                 message: "Lỗi"
             })
+        }
+    },
+    /* [PATCH] api/v1/admin/post-categories/edit/:id */
+    editPatch: async (req, res) => {
+        try {
+            const id = req.params.id;
+
+            const category = await PostCategory.findOne({ _id: id, deleted: false });
+            if (!category) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Danh mục không tồn tại hoặc đã bị xóa.",
+                });
+            }
+
+            const updatedData = {
+                ...req.body,
+                updatedBy: [
+                    ...(category.updatedBy || []),
+                    {
+                        account_id: res.locals.user.id,
+                        updatedAt: new Date(),
+                    },
+                ],
+            };
+
+            const updatedCategory = await PostCategory.findByIdAndUpdate(
+                id,
+                updatedData,
+                { new: true, runValidators: true }
+            );
+
+            res.status(200).json({
+                success: true,
+                message: "Cập nhật danh mục bài viết thành công.",
+                data: updatedCategory,
+            });
+        } catch (error) {
+            console.error("Lỗi khi cập nhật danh mục:", error);
+            res.status(400).json({
+                success: false,
+                message: "Lỗi khi cập nhật danh mục. Vui lòng thử lại.",
+                error: error.message,
+            });
         }
     },
 

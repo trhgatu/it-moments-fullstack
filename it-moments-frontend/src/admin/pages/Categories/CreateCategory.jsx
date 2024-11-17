@@ -3,8 +3,8 @@ import { Card, Form, Input, Button, Select, Upload, message, Radio } from 'antd'
 import { useNavigate } from 'react-router-dom';
 import { UploadOutlined } from '@ant-design/icons';
 import axios from 'axios';
-import { useUser } from '../../../context/UserContext'; // Nhập UserContext
-import { API_URL } from '../../../config/config'
+import { useUser } from '../../../context/UserContext';
+import { API_URL } from '../../../config/config';
 const { Option } = Select;
 
 const CreateCategory = () => {
@@ -12,11 +12,11 @@ const CreateCategory = () => {
     const [form] = Form.useForm();
     const [thumbnailFileList, setThumbnailFileList] = useState([]);
     const [allCategories, setAllCategories] = useState([]);
-    const { user } = useUser(); // Lấy user từ context
+    const { user } = useUser();
 
     const fetchCategories = async () => {
         const token = user?.token;
-        if(!token) {
+        if (!token) {
             message.error('Token không hợp lệ.');
             return;
         }
@@ -25,19 +25,19 @@ const CreateCategory = () => {
             const response = await axios.get(`${API_URL}/admin/post-categories`, {
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
+                    'Authorization': `Bearer ${token}`,
                 },
                 withCredentials: true,
             });
             setAllCategories(response.data.data.categories);
-        } catch(error) {
+        } catch (error) {
             console.error('Lỗi khi lấy danh mục:', error);
             message.error('Có lỗi xảy ra khi lấy danh mục.');
         }
     };
 
     useEffect(() => {
-        fetchCategories(); // Gọi hàm để lấy danh mục khi component mount
+        fetchCategories();
     }, [user]);
 
     const handleThumbnailChange = (info) => {
@@ -47,7 +47,7 @@ const CreateCategory = () => {
     const uploadThumbnail = async (formData) => {
         try {
             const token = user?.token;
-            if(!token) {
+            if (!token) {
                 message.error('Token không hợp lệ.');
                 return;
             }
@@ -55,13 +55,13 @@ const CreateCategory = () => {
             await axios.post(`${API_URL}/admin/post-categories/create`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
-                    'Authorization': `Bearer ${token}`
+                    'Authorization': `Bearer ${token}`,
                 },
                 withCredentials: true,
             });
             message.success('Danh mục đã được tạo thành công!');
             navigate('/admin/post-categories');
-        } catch(error) {
+        } catch (error) {
             console.error('Lỗi khi tạo danh mục:', error);
             message.error('Có lỗi xảy ra khi tạo danh mục.');
         }
@@ -70,21 +70,20 @@ const CreateCategory = () => {
     const onFinish = async (values) => {
         const formData = new FormData();
         formData.append('title', values.title);
-        formData.append('parent_id', values.parent_id); // Thêm parent_id cho danh mục cha
+        formData.append('parent_id', values.parent_id);
         formData.append('description', values.description);
 
         const positionValue = values.position ? parseInt(values.position) : '';
         formData.append('position', positionValue);
         formData.append('status', values.status);
 
-        if(thumbnailFileList.length > 0) {
+        if (thumbnailFileList.length > 0) {
             formData.append('thumbnail', thumbnailFileList[0].originFileObj);
         }
 
         await uploadThumbnail(formData);
     };
 
-    // Hàm để xây dựng tên hiển thị cho danh mục
     const renderCategoryLabel = (category) => {
         return category.parent_id ? `-- ${category.title}` : category.title;
     };
@@ -92,7 +91,18 @@ const CreateCategory = () => {
     return (
         <div className="page-inner">
             <Card title="Tạo danh mục" bordered={false}>
-                <Form form={form} layout="vertical" onFinish={onFinish}>
+                <Form
+                    form={form}
+                    layout="vertical"
+                    onFinish={onFinish}
+                    initialValues={{
+                        title: '',
+                        parent_id: '',
+                        description: '',
+                        position: '',
+                        status: 'active',
+                    }}
+                >
                     <Form.Item label="Tiêu đề" name="title" rules={[{ required: true, message: 'Vui lòng nhập tiêu đề!' }]}>
                         <Input placeholder="Nhập tiêu đề" />
                     </Form.Item>
@@ -100,7 +110,7 @@ const CreateCategory = () => {
                     <Form.Item label="Danh mục cha" name="parent_id">
                         <Select placeholder="---- Chọn danh mục cha ----">
                             <Option value="">Không có danh mục cha</Option>
-                            {allCategories.map(category => (
+                            {allCategories.map((category) => (
                                 <Option key={category._id} value={category._id}>
                                     {renderCategoryLabel(category)}
                                 </Option>
@@ -117,7 +127,7 @@ const CreateCategory = () => {
                             accept="image/*"
                             fileList={thumbnailFileList}
                             onChange={handleThumbnailChange}
-                            beforeUpload={() => false} // Prevent auto-upload
+                            beforeUpload={() => false}
                         >
                             <Button icon={<UploadOutlined />}>Tải lên ảnh bìa</Button>
                         </Upload>
@@ -135,7 +145,9 @@ const CreateCategory = () => {
                     </Form.Item>
 
                     <Form.Item>
-                        <Button type="primary" htmlType="submit">Tạo mới</Button>
+                        <Button type="primary" htmlType="submit">
+                            Tạo mới
+                        </Button>
                     </Form.Item>
                 </Form>
             </Card>

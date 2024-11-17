@@ -17,6 +17,7 @@ import CategoryDetail from "../admin/pages/Categories/CategoryDetail";
 import CreateCategory from "../admin/pages/Categories/CreateCategory";
 import CreateEvent from "../admin/pages/Events/CreateEvent";
 import Categories from "../admin/pages/Categories";
+import EditCategory from "../admin/pages/Categories/EditCategory";
 import 'antd/dist/reset.css';
 import Users from "../admin/pages/Users";
 import UsersAll from "../admin/pages/Users/components/UsersAll";
@@ -76,6 +77,10 @@ export const adminRoute = [
                             {
                                 path: "create",
                                 element: <CreateCategory />
+                            },
+                            {
+                                path: "edit/:id",
+                                element : <EditCategory/>
                             }
                         ]
                     },

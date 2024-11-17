@@ -3,8 +3,8 @@ import { ChevronRightIcon } from '@heroicons/react/24/solid';
 import Pagination from './Pagination';
 import styles from './ActivityList.module.scss';
 import PostItem from './PostItem';
-
-const ActivityList = ({ posts, category, totalPages, onPageChange,currentPage }) => {
+import Category from './Category';
+const ActivityList = ({ posts, category, totalPages, onPageChange, currentPage }) => {
     return (
         <div className={styles.activityListContainer}>
             <div className={`${styles.breadcrumb} bg-gray-100 text-gray-700 p-3 shadow`}>
@@ -32,13 +32,14 @@ const ActivityList = ({ posts, category, totalPages, onPageChange,currentPage })
                         />
                     ))}
                 </div>
+                <Category />
             </div>
 
-            {/* Truyền currentPage và totalPages vào Pagination */}
+
             <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}
-                onPageChange={onPageChange}  // Cập nhật trang khi người dùng chọn
+                onPageChange={onPageChange}
             />
         </div>
     );

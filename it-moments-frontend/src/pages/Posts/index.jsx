@@ -14,9 +14,8 @@ export default function Posts() {
     const [totalPages, setTotalPages] = useState(1);
     const [searchParams] = useSearchParams();
 
-    // Lấy page từ query params
     useEffect(() => {
-        const pageFromUrl = parseInt(searchParams.get('page')) || 1; // Nếu không có trang, mặc định là trang 1
+        const pageFromUrl = parseInt(searchParams.get('page')) || 1;
         setCurrentPage(pageFromUrl);
     }, [searchParams]);
 

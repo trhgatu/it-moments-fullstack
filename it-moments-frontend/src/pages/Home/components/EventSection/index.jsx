@@ -56,7 +56,6 @@ export default function EventSection() {
                                             key={index}
                                             className="relative p-8 rounded-3xl overflow-hidden bg-white shadow-[0px_0px_0px_1px_rgba(0,0,0,0.05),inset_0px_0px_0px_1px_rgb(209,213,219)]"
                                         >
-                                            {/* Image with badge overlay */}
                                             <div className="relative">
                                                 <img
                                                     src={event.image}
@@ -68,10 +67,6 @@ export default function EventSection() {
                                                         {event.badge}
                                                     </span>
                                                 )}
-                                                {/* Title overlay with white background */}
-
-
-
                                             </div>
 
                                             <div className="text-black pt-6">

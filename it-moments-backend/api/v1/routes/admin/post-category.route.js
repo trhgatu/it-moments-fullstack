@@ -16,6 +16,7 @@ router.post('/create',
     upload,
     controller.createPost
 );
+router.patch('/edit/:id', controller.editPatch);
 
 router.delete('/delete/:id', controller.delete);
 

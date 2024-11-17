@@ -3,7 +3,6 @@ import { DefaultLayout } from "../components/Layouts";
 import Posts from "../pages/Posts";
 import Home from "../pages/Home";
 import Event from "../pages/Event";
-import InfoUser from "../pages/InfoUser";
 import PostDetail from "../pages/PostDetail/PostDetail";
 import PostEventDetail from "../pages/PostEventDetail/PostEventDetail";
 import Login from "../pages/Authentication/Login";
@@ -72,10 +71,7 @@ export const clientRoute = [
                 path: "/profile",
                 element: <PrivateRoutes />,
                 children: [
-                    {
-                        path: "info-user",
-                        element: <InfoUser />
-                    },
+
                 ]
             },
         ]

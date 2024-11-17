@@ -39,10 +39,7 @@ const controller = {
             sort.position = "desc";
             sort.createdAt = "desc";
         }
-
-
         //End Sort
-
         const posts = await Post.find(find)
             .sort(sort)
             .limit(objectPagination.limitItems)
