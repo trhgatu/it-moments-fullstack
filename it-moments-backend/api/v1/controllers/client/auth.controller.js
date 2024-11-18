@@ -10,7 +10,6 @@ const controller = {
         try {
             const { email, password } = req.body;
             const user = await User.findOne({ email, deleted: false })
-                .select('-refreshToken')
                 .populate('role_id', 'title permissions');
 
             if(!user) {
@@ -109,7 +108,6 @@ const controller = {
     /* [POST] /api/v1/admin/auth/logout */
     logout: async (req, res) => {
         try {
-            // Xóa cookie `admin_token` khỏi trình duyệt
             res.clearCookie("client_token", {
                 httpOnly: true,
                 sameSite: "None",
@@ -151,45 +149,6 @@ const controller = {
                 code: 500,
                 message: 'Lỗi khi xác thực tài khoản',
             });
-        }
-    },
-    /* [POST] /api/v1/auth/refresh-token */
-    refreshToken: async (req, res) => {
-        const refreshToken = req.cookies.refresh_token;
-
-        if(!refreshToken) {
-            return res.status(401).json({ message: "Token không hợp lệ" });
-        }
-
-        try {
-            const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
-
-            const user = await User.findById(decoded.id).select('-password');
-
-            if(!user || user.refreshToken !== refreshToken) {
-                return res.status(403).json({ message: "Refresh token không hợp lệ" });
-            }
-
-            const newAccessToken = jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECRET, { expiresIn: "1h" });
-
-            res.cookie("client_token", newAccessToken, { httpOnly: true, sameSite: "Lax", secure: true });
-            return res.status(200).json({ accessToken: newAccessToken });
-        } catch(error) {
-            console.error("Lỗi xác thực refresh token:", error);
-            return res.status(401).json({ message: "Refresh token không hợp lệ" });
-        }
-    },
-    me: async (req, res) => {
-        try {
-            const user = res.locals.user;
-            if(!user) {
-                return res.status(404).json({ message: "Người dùng không tồn tại" });
-            }
-            const token = req.cookies.client_token;
-            return res.status(200).json({ user, token });
-        } catch(error) {
-            console.error("Lỗi khi lấy thông tin người dùng:", error);
-            return res.status(500).json({ message: "Lỗi khi lấy thông tin người dùng" });
         }
     },
 };

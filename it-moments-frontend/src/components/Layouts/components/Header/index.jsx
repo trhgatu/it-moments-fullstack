@@ -62,7 +62,7 @@ export const Header = () => {
                 Profile
             </Menu.Item>
             <Menu.Divider />
-            <Menu.Item key="logout" onClick={showModal}> {/* Show modal on logout */}
+            <Menu.Item key="logout" onClick={showModal}>
                 Đăng xuất
             </Menu.Item>
         </Menu>
@@ -182,7 +182,7 @@ export const Header = () => {
                     <div className="loader">Loading...</div>
                 ) : user ? (
                     <div className='flex'>
-                        <p className='text-black'>Xin chào {user.fullName}</p>
+                        <p className='text-black'>{user.fullName}</p>
                         <Dropdown overlay={menu} placement="bottomRight" trigger={['click']}>
 
                             <Avatar
@@ -196,8 +196,8 @@ export const Header = () => {
                                     transition: 'background-color 0.3s, color 0.3s',
                                 }}
                                 onMouseEnter={(e) => {
-                                    e.currentTarget.style.backgroundColor = '#e6f7ff'; // Màu nền khi hover
-                                    e.currentTarget.style.color = '#1890ff'; // Màu chữ khi hover
+                                    e.currentTarget.style.backgroundColor = '#e6f7ff';
+                                    e.currentTarget.style.color = '#1890ff';
                                 }}
                                 onMouseLeave={(e) => {
                                     e.currentTarget.style.backgroundColor = '#f0f0f0';

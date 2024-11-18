@@ -5,6 +5,7 @@ const ClientUserContext = createContext();
 
 export const ClientUserProvider = ({ children }) => {
     const [user, setUser] = useState(null);
+    const [slug, setSlug] = useState(null);
     const [token, setToken] = useState(null);
     const [loading, setLoading] = useState(true);
 
@@ -12,7 +13,7 @@ export const ClientUserProvider = ({ children }) => {
         const fetchUser = async () => {
             setLoading(true);
             try {
-                const response = await axios.get(`${API_URL}/auth/me`, {
+                const response = await axios.get(`${API_URL}/users/me`, {
                     withCredentials: true,
                 });
                 if(response.status === 200) {

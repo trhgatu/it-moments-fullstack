@@ -155,13 +155,8 @@ const Background = () => {
                         </motion.div>
                     </Link>
                 </div>
-
-                {/* Right Side (Social Media Links with Heading and Icons) */}
                 <div className="flex flex-col items-center gap-3 w-full sm:w-1/3 z-20 text-white sm:mt-0 mt-8">
-                    {/* Heading above Social Links */}
                     <div className="text-white text-lg font-semibold mb-2 text-center sm:text-left">Cập nhật các thông tin mới nhất tại:</div>
-
-                    {/* Social Media Links */}
                     <div className="flex flex-wrap gap-6 justify-evenly w-full">
                         <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-blue-500">
                             <FacebookOutlined className="text-xl sm:text-2xl" />

@@ -6,10 +6,12 @@ const router = express.Router();
 
 
 router.post('/login', loginPost, controller.login);
+
 router.post('/logout', controller.logout);
+
 router.post('/register', controller.register);
+
 router.get('/verify', controller.verifyEmail);
-router.post('/refresh_token',controller.refreshToken);
-router.get('/me', requireClientAuth, controller.me);
+
 
 export default router;
