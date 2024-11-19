@@ -24,11 +24,7 @@ const controller = {
             if(!user) {
                 return res.status(404).json({ message: "Người dùng không tồn tại" });
             }
-
-            // Cập nhật thông tin người dùng
-            user.bio = bio || user.bio;
-
-            // Xử lý các liên kết xã hội: nếu không có dữ liệu mới, xóa hoặc cập nhật là null
+            user.bio = bio ? bio : null;
             user.socialLinks.facebook = facebook ? facebook : null;
             user.socialLinks.twitter = twitter ? twitter : null;
             user.socialLinks.linkedin = linkedin ? linkedin : null;

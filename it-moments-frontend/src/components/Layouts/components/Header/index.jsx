@@ -148,7 +148,7 @@ export const Header = () => {
                             })
                         }
                     >
-                        <span className={cx(styles.textNav, "uppercase")}>{item.label}</span>
+                        <span className={cx(styles.textNav, )}>{item.label}</span>
                     </NavLink>
                 ))}
 
@@ -181,10 +181,8 @@ export const Header = () => {
                 {loading ? (
                     <div className="loader">Loading...</div>
                 ) : user ? (
-                    <div className='flex'>
-                        <p className='text-black'>{user.fullName}</p>
+                    <div className='flex items-center'>
                         <Dropdown overlay={menu} placement="bottomRight" trigger={['click']}>
-
                             <Avatar
                                 src={user.avatar}
                                 icon={!user.avatar && <UserOutlined />}

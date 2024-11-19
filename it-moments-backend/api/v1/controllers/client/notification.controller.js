@@ -4,7 +4,8 @@ const controller = {
     getNotifications: async (req, res) => {
         try {
             const userId = res.locals.user._id;
-            const notifications = await Notification.find({ user_id: userId }).sort({ createdAt: -1 });
+            const notifications = await Notification.find({ user_id: userId })
+            .sort({ createdAt: -1 });
             res.status(200).json({ success: true, data: notifications });
         } catch(error) {
             console.error('Lỗi khi lấy thông báo:', error);

@@ -23,7 +23,6 @@ const PostDetail = () => {
     try {
       const response = await axios.get(`${API_URL}/posts/detail/${slug}`);
       setPost(response.data.data.post);
-      setComments(response.data.data.post.comments || []);
       if(user && user._id) {
         const hasVoted = response.data.data.post.voters.some(voter => voter._id === user._id);
         setVoted(hasVoted);
@@ -34,6 +33,21 @@ const PostDetail = () => {
       setLoading(false);
     }
   };
+  const fetchComments = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/posts/${post._id}/comments`);
+      console.log(response)
+      setComments(response.data.data.comments || []);
+    } catch(error) {
+      console.error('Lỗi khi tải bình luận:', error);
+    }
+  };
+  useEffect(() => {
+    if(post) {
+      fetchComments();
+    }
+  }, [post]);
+
 
   useEffect(() => {
     fetchPost();
@@ -234,6 +248,7 @@ const PostDetail = () => {
   const renderReplies = (replies) => {
     return replies.map((reply, index) => (
       <div key={index} className="ml-8 mt-4">
+        <img src={reply.user_id?.avatar} className='rounded-full h-40 w-40'></img>
         <strong>{reply.user_id?.fullName}</strong>: {reply.content}
       </div>
     ));
@@ -243,6 +258,9 @@ const PostDetail = () => {
     return comments.map((comment, index) => (
       <div key={index} className="mb-6">
         <div>
+          <img src={comment.user_id?.avatar} className='rounded-full w-40 h-40'>
+
+          </img>
           <strong>{comment.user_id?.fullName}</strong>: {comment.content}
         </div>
         {comment.replies && comment.replies.length > 0 && (
@@ -375,7 +393,6 @@ const PostDetail = () => {
           )}
         </div>
       </div>
-      {/* Phần bình luận */}
       <div className="mt-8">
         <h3 className="text-2xl font-semibold">Bình luận:</h3>
         <Input.TextArea
@@ -412,8 +429,6 @@ const PostDetail = () => {
       >
         <p>Bạn có chắc chắn muốn bình chọn cho bài viết này không?</p>
       </Modal>
-
-      {/* Modal Hủy Bình chọn */}
       <Modal
         title="Hủy bình chọn"
         visible={isCancelModalVisible}

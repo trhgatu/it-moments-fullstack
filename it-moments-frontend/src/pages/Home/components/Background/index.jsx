@@ -59,7 +59,7 @@ const Background = () => {
                             className="bg-cover bg-center h-full"
                             style={{ backgroundImage: `url(${slide.image})` }}
                         >
-                            <div className="overlay absolute top-0 left-0 w-full h-full bg-black bg-opacity-40"></div>
+                            <div className="overlay absolute top-0 left-0 w-full h-full bg-black bg-opacity-50"></div>
 
                             <div className="absolute left-4 top-1/2 sm:left-10 md:left-28 lg:left-28 xl:left-28" style={{ marginTop: '-10rem' }}>
                                 <motion.div
@@ -68,7 +68,7 @@ const Background = () => {
                                     transition={{ duration: 1 }}
                                     className="text-white uppercase"
                                 >
-                                    <span className="text-2xl sm:text-3xl md:text-4xl font-light block ml-1">{slide.title}</span>
+                                    <span className={`${styles.backgroundTitle} text-2xl sm:text-3xl md:text-4xl font-light block ml-1`}>{slide.title}</span>
                                 </motion.div>
 
                                 <motion.div
@@ -77,7 +77,7 @@ const Background = () => {
                                     transition={{ duration: 1, delay: 0.5 }}
                                     className="text-white uppercase"
                                 >
-                                    <span className="text-3xl sm:text-4xl md:text-5xl font-bold block mt-6">{slide.subtitle}</span>
+                                    <span className={`${styles.backgroundTitle} text-3xl sm:text-4xl md:text-5xl font-bold block mt-6`}>{slide.subtitle}</span>
                                 </motion.div>
 
                                 {showDescription && currentSlide === index && (
@@ -85,7 +85,7 @@ const Background = () => {
                                         initial={{ opacity: 0, y: 50 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ duration: 1, delay: 0.2 }}
-                                        className="text-white text-lg sm:text-xl md:text-2xl mt-8"
+                                        className={` ${styles.backgroundTitle} text-white text-lg sm:text-xl md:text-2xl mt-8`}
                                     >
                                         <TypingEffect
                                             text={[slide.description]}

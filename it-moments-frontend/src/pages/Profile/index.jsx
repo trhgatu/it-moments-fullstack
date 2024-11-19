@@ -2,16 +2,19 @@ import React, { useState } from 'react';
 import styles from './Profile.module.scss';
 import { API_URL } from '../../config/config';
 import { useClientUser } from '../../context/ClientUserContext';
-import { FaUserFriends, FaFacebook, FaGithub, FaInstagram } from "react-icons/fa";
-import { Modal, Button, Input, Form, message } from 'antd';
+import { FaUserFriends, FaFacebook, FaInstagram } from "react-icons/fa";
+import { Modal, Button, Input, Form, message, Upload,Divider } from 'antd';
 import { FaCog } from 'react-icons/fa';
 import axios from 'axios';
+import { UploadOutlined } from '@ant-design/icons';
 
 const Profile = () => {
   const { user, setUser } = useClientUser();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
+  const [avatar, setAvatar] = useState(user.avatar || null); // Initialize avatar with user data
+  const [imagePreview, setImagePreview] = useState(user.avatar || null); // Store image preview
 
   const votedPosts = [
     { title: "Bài viết 1", date: "01/01/2024" },
@@ -28,6 +31,8 @@ const Profile = () => {
       youtube: user.socialLinks?.youtube || '',
       instagram: user.socialLinks?.instagram || ''
     });
+    setAvatar(user.avatar || null); // Load avatar from user data
+    setImagePreview(user.avatar || null); // Set image preview for avatar
     setIsModalOpen(true);
   };
 
@@ -48,6 +53,12 @@ const Profile = () => {
           youtube: values.youtube || null,
           instagram: values.instagram || null,
         };
+
+        // If avatar has changed, include it in the request
+        if(avatar) {
+          updatedValues.avatar = avatar;
+        }
+
         try {
           const response = await axios.put(
             `${API_URL}/users/update/${user._id}`, updatedValues,
@@ -68,6 +79,7 @@ const Profile = () => {
                 youtube: values.youtube,
                 instagram: values.instagram
               },
+              avatar: avatar || prevUser.avatar, // Update avatar if changed
             }));
             setIsModalOpen(false);
           }
@@ -84,6 +96,18 @@ const Profile = () => {
       });
   };
 
+  const handleAvatarChange = async (file) => {
+    // Create a preview for the image before uploading
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result);
+    };
+    reader.readAsDataURL(file);
+
+    // Set the selected avatar file to state
+    setAvatar(file);
+  };
+
   return (
     <div className="container mx-auto bg-white rounded-lg overflow-hidden">
       <div className={styles.mainContent}>
@@ -95,12 +119,22 @@ const Profile = () => {
           />
           <div className="absolute -bottom-24 md:-bottom-32 left-10">
             <img
-              src="https://files.fullstack.edu.vn/f8-prod/public-images/6679277183b87.png"
+              src={imagePreview || "https://files.fullstack.edu.vn/f8-prod/public-images/6679277183b87.png"} // Display preview or default avatar
               alt="Avatar"
               className="w-40 h-40 md:w-60 md:h-60 rounded-full border-4 border-white ring-8 ring-white"
             />
           </div>
           <span className="pt-6 md:pt-8 absolute left-60 md:left-80 text-xl md:text-4xl font-bold text-black">{user.fullName}</span>
+          <div className="absolute right-0 pt-6 md:pt-8 md:right-10">
+            <Button
+              type="primary"
+              icon={<FaCog />}
+              onClick={showModal}
+              shape="circle"
+              size="large"
+              className="bg-blue-500 text-white"
+            />
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-32 md:mt-48 px-4 md:px-10">
@@ -142,7 +176,6 @@ const Profile = () => {
                     </a>
                   </div>
                 )}
-
               </div>
 
             </div>
@@ -162,16 +195,7 @@ const Profile = () => {
             </div>
           </div>
         </div>
-        <div className="absolute right-40 top-1/2">
-          <Button
-            type="primary"
-            icon={<FaCog />}
-            onClick={showModal}
-            shape="circle"
-            size="large"
-            className="bg-blue-500 text-white"
-          />
-        </div>
+
         <Modal
           title="Cài đặt Profile"
           visible={isModalOpen}
@@ -186,11 +210,38 @@ const Profile = () => {
           ]}
           width={700}
         >
+          <Divider/>
+          <Form.Item className="flex items-center mt-10">
+            <div className="flex items-center space-x-10">
+              {/* Avatar Preview */}
+              {imagePreview && (
+                <img
+                  src={imagePreview}
+                  alt="Avatar Preview"
+                  className="w-40 h-40 md:w-60 md:h-60 rounded-full border-4 border-white ring-8 ring-blue-500"
+                />
+              )}
+
+              {/* Upload Button */}
+              <Upload
+                customRequest={({ file, onSuccess, onError }) => {
+                  handleAvatarChange(file);
+                  onSuccess();
+                }}
+                showUploadList={false}
+                accept="image/*"
+              >
+                <Button icon={<UploadOutlined />} className="text-blue-500">
+                  Chọn avatar
+                </Button>
+              </Upload>
+            </div>
+          </Form.Item>
+
           <Form form={form} layout="vertical">
             <Form.Item
               label="Tiểu sử"
               name="bio"
-              rules={[{ required: true, message: 'Vui lòng nhập tiểu sử!' }]}
             >
               <Input.TextArea placeholder="Nhập tiểu sử của bạn" rows={4} />
             </Form.Item>
@@ -222,11 +273,13 @@ const Profile = () => {
               <Input placeholder="Nhập link LinkedIn" />
             </Form.Item>
             <Form.Item
-              label="Link LinkedIn"
+              label="Link Youtube"
               name="youtube"
             >
               <Input placeholder="Nhập link Youtube" />
             </Form.Item>
+
+
           </Form>
         </Modal>
       </div>

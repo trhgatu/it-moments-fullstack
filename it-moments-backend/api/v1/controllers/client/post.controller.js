@@ -116,11 +116,11 @@ const controller = {
                 })
                 .populate({
                     path: "comments.user_id",
-                    select: "fullName"
+                    select: "fullName avatar"
                 })
                 .populate({
                     path: "comments.replies.user_id",
-                    select: "fullName"
+                    select: "fullName avatar"
                 })
                 .lean();
 
@@ -345,10 +345,11 @@ const controller = {
 
             post.comments.push(comment);
             await post.save();
+            const populatedPost = await Post.findById(id).populate('comments.user_id', 'fullName avatar');
             res.status(200).json({
                 success: true,
                 data: {
-                    comment: comment,
+                    comment: populatedPost.comments[populatedPost.comments.length - 1],
                     commentsCount: post.comments.length
                 },
             });
@@ -360,7 +361,13 @@ const controller = {
     getComments: async (req, res) => {
         try {
             const { id } = req.params;
-            const post = await Post.findById(id).populate('comments.user_id', 'fullName');
+            const post = await Post.findById(id)
+            .populate('comments.user_id', 'fullName avatar')
+            .populate({
+                path: "comments.replies.user_id",
+                select: "fullName avatar"
+            })
+
 
             if(!post) {
                 return res.status(404).json({ success: false, message: 'Post không tồn tại!' });
@@ -425,9 +432,9 @@ const controller = {
             if (!parentComment) {
                 return res.status(404).json({ success: false, message: 'Bình luận mẹ không tồn tại!' });
             }
-
             const reply = {
                 user_id: user._id,
+                avatar: user.avatar,
                 content: content,
                 createdAt: new Date(),
                 updatedAt: new Date(),
@@ -454,6 +461,7 @@ const controller = {
                     user_id: targetUserId,
                     content: notificationContent,
                     read: false,
+                    avatar: user.avatar
                 });
 
                 await notification.save();
@@ -464,6 +472,7 @@ const controller = {
                         notification: {
                             content: notificationContent,
                             createdAt: new Date(),
+                            avatar: user.avatar,
                         },
                     });
                     console.log(`Thông báo đã được gửi cho userId: ${targetUserId}`);
