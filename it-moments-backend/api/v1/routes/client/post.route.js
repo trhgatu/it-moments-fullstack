@@ -26,8 +26,4 @@ router.delete('/:id/comment/:commentId', requireClientAuth, controller.deleteCom
 router.post('/:id/comment/reply', requireClientAuth, controller.replyToComment);
 
 
-router.delete('/:id/comment/delete/:commentId', requireClientAuth, controller.deleteComment);
-
-router.post('/:id/comment/:commentId/reply', requireClientAuth, controller.replyToComment);
-
 export default router;

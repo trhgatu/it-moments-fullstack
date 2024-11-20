@@ -362,11 +362,11 @@ const controller = {
         try {
             const { id } = req.params;
             const post = await Post.findById(id)
-            .populate('comments.user_id', 'fullName avatar')
-            .populate({
-                path: "comments.replies.user_id",
-                select: "fullName avatar"
-            })
+                .populate('comments.user_id', 'fullName avatar')
+                .populate({
+                    path: "comments.replies.user_id",
+                    select: "fullName avatar"
+                })
 
 
             if(!post) {
@@ -424,12 +424,12 @@ const controller = {
             const user = res.locals.user;
             const { content, parentCommentId, toUserId } = req.body;
             const post = await Post.findById(id);
-            if (!post) {
+            if(!post) {
                 return res.status(404).json({ success: false, message: 'Bài viết không tồn tại!' });
             }
 
             const parentComment = post.comments.find(comment => comment._id.toString() === String(parentCommentId));
-            if (!parentComment) {
+            if(!parentComment) {
                 return res.status(404).json({ success: false, message: 'Bình luận mẹ không tồn tại!' });
             }
             const reply = {
@@ -446,33 +446,43 @@ const controller = {
             let notificationContent = '';
             let targetUserId = toUserId;
 
-            if (parentComment.replies.length > 1) {
+            if(parentComment.replies.length > 1) {
                 const lastReply = parentComment.replies[parentComment.replies.length - 2];
-                if (lastReply.user_id.toString() !== user._id.toString()) {
+                if(lastReply.user_id.toString() !== user._id.toString()) {
                     targetUserId = lastReply.user_id;
                     notificationContent = `${user.fullName} đã trả lời lại bình luận của bạn: "${content}"`;
                 }
-            } else if (parentComment.user_id.toString() !== user._id.toString()) {
+            } else if(parentComment.user_id.toString() !== user._id.toString()) {
                 notificationContent = `${user.fullName} đã trả lời bình luận của bạn: "${content}"`;
             }
 
-            if (notificationContent) {
+            if(notificationContent) {
+                const postCategory = await PostCategory.findById(post.post_category_id);
+                if(!postCategory) {
+                    return res.status(404).json({ success: false, message: 'Danh mục bài viết không tồn tại!' });
+                }
                 const notification = await Notification.create({
                     user_id: targetUserId,
                     content: notificationContent,
                     read: false,
-                    avatar: user.avatar
+                    avatar: user.avatar,
+                    postId: id,
+                    commentId: parentCommentId,
+                    postCategorySlug: postCategory.slug,
+                    postSlug: post.slug,
                 });
 
                 await notification.save();
                 const userSocketId = usersSocket[targetUserId.toString()];
-                if (userSocketId) {
+                if(userSocketId) {
                     io.to(userSocketId).emit('notificationUpdate', {
                         userId: targetUserId,
                         notification: {
                             content: notificationContent,
                             createdAt: new Date(),
                             avatar: user.avatar,
+                            commentId: parentCommentId,
+
                         },
                     });
                     console.log(`Thông báo đã được gửi cho userId: ${targetUserId}`);
@@ -489,7 +499,7 @@ const controller = {
                 },
             });
 
-        } catch (error) {
+        } catch(error) {
             console.error(error);
             res.status(500).json({ message: 'Có lỗi xảy ra khi trả lời bình luận.' });
         }

@@ -12,6 +12,7 @@ import Profile from "../pages/Profile";
 import PrivateRoutes from "../components/PrivateRoutes";
 import VerifyEmail from "../pages/VerifyEmail";
 import Academic from "../pages/Academic";
+import ForgotPassword from "../pages/ForgotPassword";
 export const clientRoute = [
     {
         path: "/",
@@ -73,7 +74,12 @@ export const clientRoute = [
                     }
                 ]
             },
+
         ]
+    },
+    {
+        path: "/forgot-password",
+        element: <ForgotPassword/>
     },
     {
         path: "login",

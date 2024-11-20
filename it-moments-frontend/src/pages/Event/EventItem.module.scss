@@ -1,16 +1,91 @@
 .eventItem {
+    cursor: pointer;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+    padding: 12px;
+    border-radius: 12px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
 
     &:hover {
-        transform: scale(1.02);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        background-color: #f8f8f8;
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
     }
 }
 
 .eventImage {
-    position: relative;
     overflow: hidden;
+    border-radius: 8px;
+    max-height: 180px;
+    position: relative;
+
     img {
-        border-radius: 0.5rem 0 0 0.5rem; // Làm tròn góc bên trái
+        transition: transform 0.3s ease, filter 0.3s ease;
+        filter: brightness(0.9);
+    }
+
+    &:hover .overlay {
+        opacity: 1;
+    }
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.5));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    border-radius: 8px;
+}
+
+/* Tiêu đề với gradient, viền và bóng mờ */
+.eventTitle {
+    font-size: 1.75rem;
+    font-weight: 700;
+    background: linear-gradient(90deg, #1e3c72, #2a5298);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    transition: color 0.3s ease, transform 0.2s;
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid #1e90ff;
+    padding-left: 8px;
+
+    &:hover {
+        text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.15);
+    }
+}
+
+/* Mô tả tinh tế với màu chữ và khoảng cách phù hợp */
+.eventDescription {
+    font-size: 1rem;
+    color: #555;
+    line-height: 1.5;
+    font-weight: 400;
+    transition: transform 0.2s ease;
+
+    &:hover {
+        transform: scale(1.02);
+    }
+}
+
+/* Nút icon tròn cho hiệu ứng "Read More" */
+.iconButton {
+    width: 36px;
+    height: 36px;
+    background-color: #1e90ff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    box-shadow: 0 4px 10px rgba(30, 144, 255, 0.3);
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover {
+        background-color: #1c86ee;
+        box-shadow: 0 6px 12px rgba(30, 144, 255, 0.5);
     }
 }

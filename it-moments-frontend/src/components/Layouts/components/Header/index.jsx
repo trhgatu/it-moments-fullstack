@@ -148,7 +148,7 @@ export const Header = () => {
                             })
                         }
                     >
-                        <span className={cx(styles.textNav, )}>{item.label}</span>
+                        <span className={cx(styles.textNav,)}>{item.label}</span>
                     </NavLink>
                 ))}
 
@@ -212,8 +212,9 @@ export const Header = () => {
                             />
 
                         </Dropdown>
-                        <NotificationComponent/>
-
+                        <div className='ml-4' >
+                            <NotificationComponent />
+                        </div>
                     </div>
 
 

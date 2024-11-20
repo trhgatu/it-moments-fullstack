@@ -9,21 +9,9 @@
     padding-bottom: 100px;  /* Giảm padding dưới */
     box-sizing: border-box;
 }
-.breadcrumb {
-    font-size: 14px;  /* Giảm kích thước chữ */
-    color: #6c757d;
-    margin-bottom: 15px;  /* Giảm khoảng cách */
-    background-color: #d9d9d9;
-    padding: 10px 15px;  /* Giảm padding */
-    width: 100%;
-    height: 50px;  /* Giảm chiều cao */
-    line-height: 50px;  /* Điều chỉnh chiều cao chữ */
-    display: flex;
-    align-items: center;
-}
 
 .eventList {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 20px;
 }

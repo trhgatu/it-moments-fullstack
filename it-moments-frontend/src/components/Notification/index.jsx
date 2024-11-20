@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Badge, Avatar } from 'antd';
 import { BellOutlined } from '@ant-design/icons';
 import io from 'socket.io-client';
@@ -6,10 +7,13 @@ import axios from 'axios';
 import { API_URL } from '../../config/config';
 
 const NotificationComponent = ({ userId }) => {
+    const navigate = useNavigate();
+    const location = useLocation();
     const [notifications, setNotifications] = useState([]);
     const [unreadCount, setUnreadCount] = useState(0);
     const [isVisible, setIsVisible] = useState(false);
     const token = localStorage.getItem('client_token');
+
 
     useEffect(() => {
         const fetchNotifications = async () => {
@@ -19,7 +23,7 @@ const NotificationComponent = ({ userId }) => {
                     withCredentials: true,
                 });
                 if(response.data.success) {
-                    console.log(response.data.data)
+                    console.log(response.data)
                     setNotifications(response.data.data);
                     setUnreadCount(response.data.data.filter((notif) => !notif.read).length);
                 }
@@ -54,6 +58,23 @@ const NotificationComponent = ({ userId }) => {
         }
     }, [userId, token]);
 
+    const handleNotificationClick = (notif) => {
+        if(notif.postId) {
+            navigate(`/posts/${notif.postCategorySlug}/${notif.postSlug}${notif.commentId ? `?commentId=${notif.commentId}` : ''}`);
+        }
+    };
+    useEffect(() => {
+        if (location.search) {
+            const queryParams = new URLSearchParams(location.search);
+            const commentId = queryParams.get('commentId');
+            if (commentId) {
+                const commentElement = document.getElementById(commentId);
+                if (commentElement) {
+                    commentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+        }
+    }, [location.search]);
     const markAllAsRead = async () => {
         try {
             await axios.post(`${API_URL}/notifications/mark-as-read`, {}, {
@@ -76,18 +97,33 @@ const NotificationComponent = ({ userId }) => {
         <div className="relative">
             <div
                 onClick={toggleVisibility}
-                className="cursor-pointer relative flex items-center"
+                className="cursor-pointer relative flex items-center group"
             >
-                <Avatar size={40} style={{ backgroundColor: 'white', cursor: 'pointer' }}>
-                    <BellOutlined style={{ fontSize: '24px', color: 'black' }} />
+                <Avatar
+                    size={40}
+                    style={{
+                        backgroundColor: 'white',
+                        cursor: 'pointer',
+                        transition: 'transform 0.3s, background-color 0.3s',
+                    }}
+                    className="group-hover:bg-blue-100 group-hover:scale-105"
+                >
+                    <BellOutlined
+                        style={{
+                            fontSize: '24px',
+                            color: 'black',
+                            transition: 'color 0.3s',
+                        }}
+                        className="group-hover:text-blue-500 !important"
+                    />
                 </Avatar>
                 <Badge
                     count={unreadCount}
                     overflowCount={99}
                     style={{
                         position: 'absolute',
-                        top: '-6px',
-                        right: '-6px',
+                        top: '-21px',
+                        right: '-2px',
                         backgroundColor: '#ff4d4f',
                         borderRadius: '50%',
                         fontSize: '12px',
@@ -95,6 +131,8 @@ const NotificationComponent = ({ userId }) => {
                     }}
                 />
             </div>
+
+
             {isVisible && (
                 <div className="absolute right-0 mt-2 w-[40rem] p-4 bg-white border border-gray-200 rounded-lg shadow z-50 transform transition-all duration-300 ease-in-out opacity-0 visible opacity-100">
                     <div className="flex justify-between items-center mb-4">
@@ -111,10 +149,11 @@ const NotificationComponent = ({ userId }) => {
                             notifications.map((notif, index) => (
                                 <div
                                     key={index}
-                                    className={`flex items-center p-3 mb-2 rounded-lg ${notif.read
+                                    className={`flex items-center p-3 mb-2 cursor-pointer rounded-lg hover:bg-[#F3F3F4] ${notif.read
                                         ? "bg-gray-100"
                                         : "bg-blue-50 border-l-4 border-blue-500"
                                         }`}
+                                    onClick={() => handleNotificationClick(notif)}
                                 >
                                     <Avatar
                                         src={notif.avatar}

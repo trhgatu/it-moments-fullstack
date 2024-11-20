@@ -1,11 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 import { API_URL } from '../../config/config';
 import { useClientUser } from '../../context/ClientUserContext';
 import { message, Modal, Row, Col, Input, Button, Spin, Card } from 'antd';
+import styles from './PostDetail.module.scss';
 const PostDetail = () => {
   const { slug } = useParams();
+  const location = useLocation();
+  const query = new URLSearchParams(location.search);
+  const commentId = query.get('commentId');
+  const commentRefs = useRef({})
   const { user, loading: userLoading } = useClientUser();
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -18,6 +23,24 @@ const PostDetail = () => {
   const [comments, setComments] = useState([]);
   const [replyCommentId, setReplyCommentId] = useState(null);
   const [replyContent, setReplyContent] = useState('');
+
+  useEffect(() => {
+    if(commentId && commentRefs.current[commentId]) {
+      const commentElement = commentRefs.current[commentId];
+      if(commentElement) {
+        commentElement.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+        });
+
+        commentElement.classList.add(styles.flashEffect);
+
+        setTimeout(() => {
+          commentElement.classList.remove(styles.flashEffect);
+        }, 1000);
+      }
+    }
+  }, [commentId, comments]);
 
   const fetchPost = async () => {
     try {
@@ -36,7 +59,6 @@ const PostDetail = () => {
   const fetchComments = async () => {
     try {
       const response = await axios.get(`${API_URL}/posts/${post._id}/comments`);
-      console.log(response)
       setComments(response.data.data.comments || []);
     } catch(error) {
       console.error('Lỗi khi tải bình luận:', error);
@@ -47,19 +69,15 @@ const PostDetail = () => {
       fetchComments();
     }
   }, [post]);
-
-
   useEffect(() => {
     fetchPost();
   }, [slug]);
-
   useEffect(() => {
     if(post && post.event_id) {
       const countdown = setInterval(() => {
         const endTime = new Date(post.event_id.endTime).getTime();
         const now = new Date().getTime();
         const distance = endTime - now;
-
         if(distance <= 0) {
           clearInterval(countdown);
           setTimeRemaining(0);
@@ -67,7 +85,6 @@ const PostDetail = () => {
           setTimeRemaining(distance);
         }
       }, 1000);
-
       return () => clearInterval(countdown);
     }
   }, [post]);
@@ -78,7 +95,6 @@ const PostDetail = () => {
         const votingEndTime = new Date(post.event_id.votingEndTime).getTime();
         const now = new Date().getTime();
         const votingDistance = votingEndTime - now;
-
         if(votingDistance <= 0) {
           clearInterval(votingCountdown);
           setVotingTimeRemaining(0);
@@ -90,23 +106,18 @@ const PostDetail = () => {
       return () => clearInterval(votingCountdown);
     }
   }, [post]);
-
   const formatTime = (time) => {
     if(time === null) return 'Đang tải...';
-
     const hours = Math.floor(time / (1000 * 60 * 60));
     const minutes = Math.floor((time % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((time % (1000 * 60)) / 1000);
-
     return `${hours} giờ ${minutes} phút ${seconds} giây`;
   };
-
   const showVoteModal = () => {
     if(!user) {
       alert('Bạn cần đăng nhập để bình chọn!');
       return;
     }
-
     if(voted) {
       message.warning('Bạn đã bình chọn!');
       return;
@@ -228,7 +239,6 @@ const PostDetail = () => {
       );
 
       if(response.data.success) {
-        // Cập nhật lại bình luận với phản hồi mới
         const updatedComments = comments.map((comment) => {
           if(comment._id === replyCommentId) {
             return { ...comment, replies: [...comment.replies, response.data.data.reply] };
@@ -247,28 +257,37 @@ const PostDetail = () => {
   };
   const renderReplies = (replies) => {
     return replies.map((reply, index) => (
-      <div key={index} className="ml-8 mt-4">
-        <img src={reply.user_id?.avatar} className='rounded-full h-40 w-40'></img>
+      <div key={comment._id} ref={(el) => commentRefs.current[comment._id] = el} className="ml-8 mt-4">
+        <img src={reply.user_id?.avatar} className="rounded-full w-10 h-10"></img>
         <strong>{reply.user_id?.fullName}</strong>: {reply.content}
       </div>
     ));
   };
 
   const renderComments = () => {
-    return comments.map((comment, index) => (
-      <div key={index} className="mb-6">
-        <div>
-          <img src={comment.user_id?.avatar} className='rounded-full w-40 h-40'>
-
-          </img>
-          <strong>{comment.user_id?.fullName}</strong>: {comment.content}
+    return comments.map((comment) => (
+      <div key={comment._id} ref={(el) => commentRefs.current[comment._id] = el} className="mb-6">
+        <div className="flex items-start space-x-3">
+          <img
+            src={comment.user_id?.avatar}
+            className="rounded-full w-10 h-10"
+            alt={`${comment.user_id?.fullName}'s avatar`}
+          />
+          <div className="flex flex-col space-y-2">
+            <div className="flex items-center space-x-2">
+              <strong>{comment.user_id?.fullName}</strong>
+              <span className="text-sm text-gray-500">
+                {new Date(comment.createdAt).toLocaleString()}
+              </span>
+            </div>
+            <p>{comment.content}</p>
+          </div>
         </div>
         {comment.replies && comment.replies.length > 0 && (
-          <div className="mt-4">
+          <div className="mt-4 pl-10">
             {renderReplies(comment.replies)}
           </div>
         )}
-        {/* Hiển thị nút "Trả lời" cho tất cả người dùng, không hạn chế */}
         <Button
           onClick={() => setReplyCommentId(comment._id)}
           className="mt-2"
@@ -276,9 +295,8 @@ const PostDetail = () => {
         >
           Trả lời
         </Button>
-
         {replyCommentId === comment._id && (
-          <div className="mt-2">
+          <div className="mt-2 pl-10">
             <Input.TextArea
               value={replyContent}
               onChange={(e) => setReplyContent(e.target.value)}
@@ -298,13 +316,9 @@ const PostDetail = () => {
     ));
   };
 
-
-
-
   if(userLoading || loading) {
     return <div>Đang tải...</div>;
   }
-
   if(!post) {
     return <div>Không tìm thấy bài đăng.</div>;
   }
@@ -395,20 +409,37 @@ const PostDetail = () => {
       </div>
       <div className="mt-8">
         <h3 className="text-2xl font-semibold">Bình luận:</h3>
-        <Input.TextArea
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-          placeholder="Viết bình luận của bạn..."
-          rows={4}
-        />
-        <Button
-          type="primary"
-          onClick={handleCommentSubmit}
-          className="mt-4"
-          disabled={!comment.trim()}
-        >
-          Gửi Bình luận
-        </Button>
+        {user ? (
+          <>
+            <Input.TextArea
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              placeholder="Viết bình luận của bạn..."
+              rows={4}
+            />
+            <Button
+              type="primary"
+              onClick={handleCommentSubmit}
+              className="mt-4"
+              disabled={!comment.trim()}
+            >
+              Gửi Bình luận
+            </Button>
+          </>
+        ) : (
+          <div className="mt-4">
+            <p className="text-lg text-gray-600">Bạn cần đăng nhập để bình luận.</p>
+            <Button
+              type="primary"
+              onClick={() => {
+                window.location.href = `/login?redirect=${encodeURIComponent(window.location.pathname)}`;
+              }}
+            >
+              Đăng nhập
+            </Button>
+          </div>
+        )}
+
 
         <div className="mt-8">
           {comments.length > 0 ? renderComments() : <p>Chưa có bình luận nào.</p>}

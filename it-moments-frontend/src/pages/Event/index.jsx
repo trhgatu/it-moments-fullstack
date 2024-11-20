@@ -4,34 +4,44 @@ import { Outlet, useParams } from 'react-router-dom';
 import { Spin } from 'antd';
 import { API_URL } from '../../config/config';
 import EventList from './EventList';
+
 export default function Event() {
     const { category = "su-kien", slug } = useParams();
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [cachedPosts, setCachedPosts] = useState({});
+    const [pagination, setPagination] = useState({
+        currentPage: 1,
+        totalPages: 1,
+        pageSize: 6,
+    });
+
+    const fetchPosts = async (page = 1) => {
+        setLoading(true);
+        try {
+            const response = await axios.get(
+                `${API_URL}/posts?category=${category}&page=${page}&limit=${pagination.pageSize}`
+            );
+            const data = response.data.data;
+            setPosts(data.posts);
+            setPagination((prev) => ({
+                ...prev,
+                currentPage: data.pagination.currentPage,
+                totalPages: data.pagination.totalPage,
+            }));
+        } catch (error) {
+            console.error('Error fetching posts:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchPosts = async () => {
-            if (cachedPosts[category]) {
-                setPosts(cachedPosts[category]);
-                setLoading(false);
-                return;
-            }
+        fetchPosts(pagination.currentPage);
+    }, [category, pagination.currentPage]);
 
-            setLoading(true);
-            try {
-                const response = await axios.get(`${API_URL}/posts?category=su-kien`);
-                setPosts(response.data.data.posts);
-                setCachedPosts((prev) => ({ ...prev, [category]: response.data.data.posts }));
-            } catch (error) {
-                console.error('Error fetching posts:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchPosts();
-    }, [category, cachedPosts]);
+    const handlePageChange = (page) => {
+        setPagination((prev) => ({ ...prev, currentPage: page }));
+    };
 
     if (loading) {
         return (
@@ -39,9 +49,10 @@ export default function Event() {
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
-                height: '100vh'
+                height: '100vh',
+                backgroundColor: '#f2f2f2',
             }}>
-                <Spin size="large" tip="Đang tải dữ liệu..." />
+                <Spin size="large" tip="Loading data..." />
             </div>
         );
     }
@@ -49,7 +60,13 @@ export default function Event() {
     return (
         <div>
             {!slug ? (
-                <EventList posts={posts} category={category} />
+                <EventList
+                    posts={posts}
+                    category={category}
+                    currentPage={pagination.currentPage}
+                    totalPages={pagination.totalPages}
+                    onPageChange={handlePageChange}
+                />
             ) : (
                 <Outlet />
             )}

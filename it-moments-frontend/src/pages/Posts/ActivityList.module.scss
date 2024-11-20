@@ -1,31 +1,27 @@
 .activityListContainer {
     padding-top: 80px;
     width: 100%;
-    max-width: 1200px;  /* Giảm chiều rộng */
+    max-width: 1200px;
     min-width: 320px;
     min-height: 100vh;
     margin: 0 auto;
-    background-color: #f9f9f9;
-    padding-bottom: 100px;  /* Giảm padding dưới */
+    padding-bottom: 100px;
     box-sizing: border-box;
 }
 
-
-/* Đường breadcrumb */
 .breadcrumb {
-    font-size: 14px;  /* Giảm kích thước chữ */
+    font-size: 14px;
     color: #6c757d;
-    margin-bottom: 15px;  /* Giảm khoảng cách */
+    margin-bottom: 15px;
     background-color: #d9d9d9;
-    padding: 10px 15px;  /* Giảm padding */
+    padding: 10px 15px;
     width: 100%;
-    height: 50px;  /* Giảm chiều cao */
-    line-height: 50px;  /* Điều chỉnh chiều cao chữ */
+    height: 50px;
+    line-height: 50px;
     display: flex;
     align-items: center;
 }
 
-/* Layout chính */
 .activityList {
     display: flex;
     justify-content: space-between;

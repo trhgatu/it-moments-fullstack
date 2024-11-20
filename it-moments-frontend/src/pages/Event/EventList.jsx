@@ -1,9 +1,9 @@
 import React from 'react';
 import EventItem from '../Event/EventItem';
 import styles from './EventList.module.scss';
-import { ChevronRightIcon } from '@heroicons/react/24/solid';
+import Pagination from '../Posts/Pagination';
 
-const EventList = ({ posts = [], category }) => {
+const EventList = ({ posts, category, totalPages, onPageChange, currentPage }) => {
     return (
         <div className={styles.eventListContainer}>
             <div className={`${styles.eventList} flex flex-col gap-4`}>
@@ -20,6 +20,11 @@ const EventList = ({ posts = [], category }) => {
                     />
                 ))}
             </div>
+            <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={onPageChange}
+            />
         </div>
     );
 };
