@@ -1,24 +1,39 @@
 import React from 'react';
 import EventItem from '../Event/EventItem';
-import styles from './EventList.module.scss';
 import Pagination from '../Posts/Pagination';
-
-const EventList = ({ posts, category, totalPages, onPageChange, currentPage }) => {
+import Category from './Category';
+import styles from './EventList.module.scss';
+import { ChevronRightIcon } from '@heroicons/react/24/solid';
+const EventList = ({ posts, category, totalPages, onPageChange, currentPage, onCategoryChange }) => {
     return (
         <div className={styles.eventListContainer}>
-            <div className={`${styles.eventList} flex flex-col gap-4`}>
-                {posts.map((post) => (
-                    <EventItem
-                        key={post._id}
-                        title={post.title}
-                        description={post.description}
-                        author={post.accountFullName}
-                        date={new Date(post.createdAt).toLocaleDateString()}
-                        imageUrl={post.thumbnail || 'https://via.placeholder.com/150'}
-                        slug={post.slug}
-                        category={category}
-                    />
-                ))}
+            <div className={`${styles.breadcrumb} bg-gray-100 text-gray-700 p-3 shadow`}>
+                <a href="/" className="hover:text-blue-600 transition-colors duration-200">
+                    Trang chủ
+                </a>
+                <ChevronRightIcon className="w-4 h-4 mx-2" aria-hidden="true" />
+                <a href={`/posts/${category}`} className="hover:text-blue-600 transition-colors duration-200">
+                    Văn nghệ
+                </a>
+            </div>
+            <div className={`${styles.eventList} flex`}>
+                <div className="flex-1 flex flex-wrap gap-4">
+                    {posts.map((post) => (
+                        <EventItem
+                            key={post._id}
+                            title={post.title}
+                            description={post.description}
+                            author={post.accountFullName}
+                            date={new Date(post.createdAt).toLocaleDateString()}
+                            imageUrl={post.thumbnail || 'https://via.placeholder.com/150'}
+                            slug={post.slug}
+                            category={category}
+                        />
+                    ))}
+                </div>
+                <div className="w-64 flex-shrink-0">
+                    <Category onCategoryChange={onCategoryChange} />
+                </div>
             </div>
             <Pagination
                 currentPage={currentPage}

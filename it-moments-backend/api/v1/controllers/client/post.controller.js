@@ -20,6 +20,9 @@ const controller = {
         if(req.query.status) {
             find.status = req.query.status;
         }
+        const eventStatus = req.query.eventStatus ? { status: req.query.eventStatus } : {};
+
+
         const objectSearch = search(req.query);
 
         if(req.query.keyword) {
@@ -68,14 +71,17 @@ const controller = {
         if(req.query.sortKey === 'views') {
             sort.views = -1;
         }
-        const posts = await Post.find(find)
+        let posts = await Post.find(find)
             .sort(sort)
             .limit(objectPagination.limitItems)
             .skip(objectPagination.skip)
             .populate('post_category_id', 'title slug')
-            .populate('event_id')
+            .populate({
+                path: "event_id",
+                match: eventStatus
+            })
             .lean();
-
+        posts = posts.filter((post) => post.event_id !== null);
         for(const post of posts) {
             const user = await User.findOne({ _id: post.createdBy.account_id });
             if(user) {

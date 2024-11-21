@@ -23,7 +23,6 @@ const NotificationComponent = ({ userId }) => {
                     withCredentials: true,
                 });
                 if(response.data.success) {
-                    console.log(response.data)
                     setNotifications(response.data.data);
                     setUnreadCount(response.data.data.filter((notif) => !notif.read).length);
                 }

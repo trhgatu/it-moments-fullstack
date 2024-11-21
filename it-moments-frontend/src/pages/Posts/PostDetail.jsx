@@ -96,13 +96,9 @@ const PostDetail = () => {
           </div>
         </div>
       )}
-
-      {/* Related Posts Section */}
       <div className="mt-12">
         <h3 className="text-2xl font-semibold">Related Posts</h3>
-        {/* Static related posts as placeholders */}
         <div className="flex space-x-8 mt-8">
-          {/* Example of rendering static related posts */}
         </div>
       </div>
     </div>

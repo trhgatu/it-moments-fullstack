@@ -1,8 +1,8 @@
 import cron from 'node-cron';
 import Event from '../api/v1/models/event.model.js';
 
-cron.schedule('*/1 * * * *', async () => {
-    console.log('Cron job "Cập nhật sự kiện" đã được bắt đầu lúc:', new Date().toISOString());
+//cron.schedule('*/1 * * * *', async () => {
+    /* console.log('Cron job "Cập nhật sự kiện" đã được bắt đầu lúc:', new Date().toISOString());
     try {
         const now = new Date();
         const eventsToUpdate = await Event.find({
@@ -18,11 +18,11 @@ cron.schedule('*/1 * * * *', async () => {
         }
     } catch(err) {
         console.error('Lỗi khi cập nhật sự kiện:', err);
-    }
-});
+    } */
+//});
 
-cron.schedule('*/1 * * * *', async () => {
-    console.log('Cron job "Kết thúc bình chọn" đã được bắt đầu lúc:', new Date().toISOString());
+//ron.schedule('*/1 * * * *', async () => {
+    /* console.log('Cron job "Kết thúc bình chọn" đã được bắt đầu lúc:', new Date().toISOString());
     try {
         const now = new Date();
 
@@ -38,10 +38,10 @@ cron.schedule('*/1 * * * *', async () => {
         }
     } catch(err) {
         console.error('Lỗi khi đóng bình chọn:', err);
-    }
-});
-cron.schedule('*/1 * * * *', async () => {
-    console.log('Cron job kích hoạt sự kiện đang chạy:', new Date().toISOString());
+    } */
+//});
+//cron.schedule('*/1 * * * *', async () => {
+    /* console.log('Cron job kích hoạt sự kiện đang chạy:', new Date().toISOString());
     try {
         const now = new Date();
         const eventsToActivate = await Event.find({
@@ -56,7 +56,7 @@ cron.schedule('*/1 * * * *', async () => {
         }
     } catch (err) {
         console.error('Lỗi khi kích hoạt sự kiện:', err);
-    }
-});
+    } */
+//});
 
 export default cron;

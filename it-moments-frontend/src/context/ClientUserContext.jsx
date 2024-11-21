@@ -16,7 +16,6 @@ export const ClientUserProvider = ({ children }) => {
                 const response = await axios.get(`${API_URL}/users/me`, {
                     withCredentials: true,
                 });
-                console.log(response)
                 if(response.status === 200) {
                     const { user: fetchedUser, token } = response.data;
                     setUser({ ...fetchedUser, token });

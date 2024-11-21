@@ -86,7 +86,7 @@ const CreateEvent = () => {
                         />
                     </Form.Item>
 
-                    <Form.Item label="Trạng thái" name="status" initialValue="active">
+                    <Form.Item label="Trạng thái" name="status" initialValue="inactive">
                         <Select placeholder="Chọn trạng thái">
                             <Option value="active">Hoạt động</Option>
                             <Option value="inactive">Dừng hoạt động</Option>
@@ -99,7 +99,7 @@ const CreateEvent = () => {
                             {loading ? 'Đang tạo...' : 'Tạo sự kiện'}
                         </Button>
                     </Form.Item>
-                    <Form.Item label="Trạng thái bình chọn" name="votingStatus" initialValue="active">
+                    <Form.Item label="Trạng thái bình chọn" name="votingStatus" initialValue="closed">
                         <Select placeholder="Chọn trạng thái bình chọn">
                             <Option value="active">Mở bình chọn</Option>
                             <Option value="closed">Đóng bình chọn</Option>
