@@ -13,7 +13,7 @@ const EventList = ({ posts, category, totalPages, onPageChange, currentPage, onC
                 </a>
                 <ChevronRightIcon className="w-4 h-4 mx-2" aria-hidden="true" />
                 <a href={`/posts/${category}`} className="hover:text-blue-600 transition-colors duration-200">
-                    Văn nghệ
+                    Sự kiện
                 </a>
             </div>
             <div className={`${styles.eventList} flex`}>

@@ -13,7 +13,7 @@ const ActivityList = ({ posts, category, totalPages, onPageChange, currentPage }
                 </a>
                 <ChevronRightIcon className="w-4 h-4 mx-2" aria-hidden="true" />
                 <a href={`/posts/${category}`} className="hover:text-blue-600 transition-colors duration-200">
-                    Sự kiện
+                    Văn nghệ
                 </a>
             </div>
 

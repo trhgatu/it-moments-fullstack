@@ -54,7 +54,7 @@ function CategoryDetail() {
     const { title, description, thumbnail, status, createdAt, position } = category;
 
     return (
-        <div style={{ padding: '20px', background: '#f0f2f5' }}>
+        <div style={{ padding: '20px'}}>
             <Card
                 title={<Title level={2}>{title}</Title>}
                 bordered={false}

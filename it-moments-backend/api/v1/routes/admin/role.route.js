@@ -10,12 +10,14 @@ router.get('/', controller.index);
 
 router.post('/create', uploadMulter.none(), controller.createPost);
 
-    /* router.get('/edit/:id', controller.edit); */
-
-/* router.patch('/edit/:id', controller.editPatch); */
-
 router.get('/permissions', controller.permissions);
 
 router.patch('/permissions', controller.permissionsPatch);
+
+router.delete('/:id', controller.deleteRole);
+
+router.get('/detail/:id', controller.detail);
+
+router.patch('/edit/:id', controller.editRole);
 
 export default router;

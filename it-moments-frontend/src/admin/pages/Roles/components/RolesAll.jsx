@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Row, Col, Card, Table, Button, Typography, Alert, Modal, message } from "antd";
+import { Row, Col, Card, Table, Button, Typography, Alert, Modal, message,Tooltip } from "antd";
 import { EyeOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -103,7 +103,11 @@ function RolesAll() {
             title: "Số quyền",
             dataIndex: "permissions",
             key: "permissions",
-            render: (permissions) => permissions.length,
+            render: (permissions) => (
+                <Tooltip title={permissions.join(', ')}>
+                    {permissions.length}
+                </Tooltip>
+            ),
         },
         {
             title: "Ngày tạo",

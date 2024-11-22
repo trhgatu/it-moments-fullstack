@@ -2,7 +2,9 @@ import "../admin/assets/styles/main.css";
 import "../admin/assets/styles/responsive.css";
 import { Navigate } from "react-router-dom";
 import Dashboard from '../admin/pages/Dashboard';
-import PostDetail from "../admin/pages/Posts/PostDetail.jsx";
+import PostDetail from "../admin/pages/Posts/PostDetail";
+import RoleDetail from "../admin/pages/Roles/RoleDetail";
+import EditRole from "../admin/pages/Roles/EditRole";
 import PostAll from "../admin/pages/Posts/components/PostAll";
 import EventAll from "../admin/pages/Events/components/EventAll";
 import Posts from '../admin/pages/Posts';
@@ -110,10 +112,10 @@ export const adminRoute = [
                                 index: true,
                                 element: <RolesAll />
                             },
-                            /* {
+                            {
                                 path: "detail/:id",
-                                element : <UserDetail/>
-                            },*/
+                                element : <RoleDetail/>
+                            },
                             {
                                 path: "create",
                                 element: <CreateRole />
@@ -122,6 +124,10 @@ export const adminRoute = [
                                 path: "permissions",
                                 element: <PermissionForm />
                             },
+                            {
+                                path: "edit/:id",
+                                element: <EditRole/>
+                            }
 
                         ]
                     },
