@@ -25,5 +25,6 @@ router.delete('/:id/comment/:commentId', requireClientAuth, controller.deleteCom
 
 router.post('/:id/comment/reply', requireClientAuth, controller.replyToComment);
 
+router.post('/:id/increment-views', controller.incrementViews);
 
 export default router;

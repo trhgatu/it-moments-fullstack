@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Row, Col, notification, Modal, Spin } from "antd";
-import EventsCard from './EventsCard'; // Giả sử bạn đã tạo một component EventsCard tương tự như PostsCard
+import EventsCard from './EventsCard';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../../../../context/UserContext';
 import { API_URL } from '../../../../config/config';

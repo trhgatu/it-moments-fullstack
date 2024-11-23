@@ -7,9 +7,9 @@ import { useUser } from '../../../context/UserContext';
 
 const EditRole = () => {
     const navigate = useNavigate();
-    const { id } = useParams(); // Lấy ID của nhóm quyền từ URL
+    const { id } = useParams();
     const [form] = Form.useForm();
-    const { user } = useUser(); // Lấy thông tin người dùng từ context
+    const { user } = useUser();
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {

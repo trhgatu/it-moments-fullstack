@@ -56,6 +56,20 @@ const PostDetail = () => {
       setLoading(false);
     }
   };
+  useEffect(() => {
+    const increaseViewCount = async () => {
+      if (!post?._id) return;
+      try {
+        await axios.post(`${API_URL}/posts/${post._id}/increment-views`);
+      } catch (error) {
+        console.error("Lỗi khi tăng lượt xem:", error);
+      }
+    };
+
+    increaseViewCount();
+  }, [post?._id]);
+
+
   const fetchComments = async () => {
     try {
       const response = await axios.get(`${API_URL}/posts/${post._id}/comments`);

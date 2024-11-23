@@ -4,6 +4,7 @@ import { API_URL } from '../../config/config';
 import Background from './components/Background';
 import PostSection from './components/PostSection';
 import NewPost from './components/NewPost';
+import TopPostsSection from './components/TopPostsSection';
 import EventSection from './components/EventSection';
 import 'swiper/css';
 import 'aos/dist/aos.css'; // Import AOS CSS
@@ -49,7 +50,6 @@ export default function Home() {
     }, []);
 
     useEffect(() => {
-        // Khởi tạo AOS
         AOS.init();
     }, []);
 
@@ -111,9 +111,13 @@ export default function Home() {
                                         data-aos-delay="400"
                                     >
                                         <PostSection
-                                            postData={ mostViewPostPerformances}
+                                            postData={mostViewPostPerformances}
                                         />
                                     </div>
+
+                                </div>
+                                <div className='h-full w-full'>
+                                    <TopPostsSection/>
                                 </div>
                             </div>
                         </Element>

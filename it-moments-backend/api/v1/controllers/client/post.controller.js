@@ -12,6 +12,7 @@ import moment from 'moment';
 import { usersSocket } from '../../../../server.mjs';
 
 const controller = {
+
     /* [GET] api/v1/posts */
     index: async (req, res) => {
         const filterStatusList = filterStatus(req.query);
@@ -20,23 +21,43 @@ const controller = {
         if(req.query.status) {
             find.status = req.query.status;
         }
-        const eventStatus = req.query.eventStatus ? { status: req.query.eventStatus } : {};
 
+        const eventStatus = req.query.eventStatus ? { status: req.query.eventStatus } : {};
 
         const objectSearch = search(req.query);
 
         if(req.query.keyword) {
             find.title = objectSearch.regex;
         }
+        const getAllSubcategories = async (parentId) => {
+            // Lấy tất cả danh mục con của danh mục hiện tại
+            const subcategories = await PostCategory.find({ parent_id: parentId, deleted: false });
+            let allSubcategories = [...subcategories];
+
+            // Đệ quy để lấy danh mục con của các danh mục con
+            for(const subcategory of subcategories) {
+                const subsubcategories = await getAllSubcategories(subcategory._id); // Gọi lại hàm để lấy danh mục con của subcategory
+                allSubcategories = [...allSubcategories, ...subsubcategories];
+            }
+
+            return allSubcategories;
+        }
 
         if(req.query.category) {
-            const category = await PostCategory.findOne(
-                {
-                    slug: req.query.category
-                }
-            );
+            // Tìm danh mục cha
+            const category = await PostCategory.findOne({
+                slug: req.query.category,
+            });
+
             if(category) {
-                find.post_category_id = category._id;
+                // Lấy tất cả danh mục con (bao gồm cả các danh mục con của danh mục con)
+                const allSubcategories = await getAllSubcategories(category._id);
+
+                // Thêm danh mục cha vào mảng các danh mục con
+                const allCategoryIds = [category._id, ...allSubcategories.map(sub => sub._id)];
+
+                // Cập nhật tìm kiếm bài viết thuộc tất cả các danh mục con và cha
+                find.post_category_id = { $in: allCategoryIds };
             } else {
                 return res.status(404).json({
                     success: false,
@@ -44,18 +65,13 @@ const controller = {
                 });
             }
         }
-
         // Pagination
         const initPagination = {
             currentPage: 1,
             limitItems: 6,
         };
         const countPosts = await Post.countDocuments(find);
-        const objectPagination = pagination(
-            initPagination,
-            req.query,
-            countPosts
-        );
+        const objectPagination = pagination(initPagination, req.query, countPosts);
 
         // Sort
         const sort = {};
@@ -65,12 +81,16 @@ const controller = {
             sort.position = "desc";
             sort.createdAt = "desc";
         }
+
         if(req.query.isFeatured === 'true') {
             find.isFeatured = true;
         }
+
         if(req.query.sortKey === 'views') {
             sort.views = -1;
         }
+
+        // Lấy danh sách bài viết theo điều kiện tìm kiếm
         let posts = await Post.find(find)
             .sort(sort)
             .limit(objectPagination.limitItems)
@@ -81,7 +101,11 @@ const controller = {
                 match: eventStatus
             })
             .lean();
+
+        // Lọc các bài viết có sự kiện
         posts = posts.filter((post) => post.event_id !== null);
+
+        // Cập nhật thông tin người tạo bài viết và người cập nhật
         for(const post of posts) {
             const user = await User.findOne({ _id: post.createdBy.account_id });
             if(user) {
@@ -94,6 +118,7 @@ const controller = {
             }
         }
 
+        // Trả về kết quả
         res.json({
             success: true,
             data: {
@@ -104,6 +129,8 @@ const controller = {
             },
         });
     },
+
+
     /* [GET] api/v1/posts/detail/:slug */
     detail: async (req, res) => {
         try {
@@ -509,6 +536,27 @@ const controller = {
             console.error(error);
             res.status(500).json({ message: 'Có lỗi xảy ra khi trả lời bình luận.' });
         }
-    }
+    },
+    incrementViews: async (req, res) => {
+        try {
+            const postId = req.params.id;
+
+            const post = await Post.findByIdAndUpdate(
+                postId,
+                { $inc: { views: 1 } },
+                { new: true }
+            );
+
+            if(!post) {
+                return res.status(404).json({ message: 'Bài viết không tồn tại' });
+            }
+
+            res.status(200).json({ message: 'Tăng view thành công', post });
+        } catch(error) {
+            console.error('Error incrementing views:', error);
+            res.status(500).json({ message: 'Internal server error' });
+        }
+    },
+
 }
 export default controller;

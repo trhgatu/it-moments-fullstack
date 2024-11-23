@@ -44,7 +44,7 @@ const EventsTable = ({ events, loading, selectedRowKeys, handleSelectChange, han
         } else if (status === "inactive") {
           buttonProps = { type: "default", style: { backgroundColor: "gray", borderColor: "gray" } };
         } else if (status === "completed") {
-          buttonProps = { type: "default", style: { backgroundColor: "blue", borderColor: "blue" } };
+          buttonProps = { type: "primary", style: { backgroundColor: "blue", borderColor: "blue" } };
         }
 
         const statusText = status === "active" ? "Hoạt động" :

@@ -25,35 +25,31 @@
 .activityList {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
     gap: 15px;
     flex-wrap: wrap;
-    flex-direction: row;
-    max-width: 100%;
-    margin-left: auto;
-    margin-right: auto;
 }
 
 .posts {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 22px;
+    gap: 30px;
     width: 100%;
     padding-right: 10px;
-    flex: 3;
+    flex: 3; /* Chiếm 3/4 chiều rộng */
     box-sizing: border-box;
-    max-width: 1000px;
+    max-width: 75%;  /* Đảm bảo chiếm 3/4 chiều rộng */
     margin: 0 auto;
     max-height: calc(100vh - 150px);
     overflow-y: auto; /* Cho phép cuộn dọc */
 }
+
 .posts::-webkit-scrollbar {
     display: none; /* Ẩn thanh cuộn */
 }
 
 /* Sidebar danh mục */
 .category {
-    width: 180px;  /* Giảm chiều rộng */
+    width: 25%;  /* Chiếm 1/4 chiều rộng */
     background-color: #f9f9f9;
     padding: 10px;
     border-radius: 6px;
@@ -61,25 +57,31 @@
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     text-align: left;
     box-sizing: border-box;
-    overflow-y: scroll;
+    height: 100%; /* Chiều cao danh mục cố định */
+    max-height: 100vh; /* Đảm bảo sidebar không vượt quá chiều cao màn hình */
+    overflow-y: auto; /* Cho phép cuộn dọc nếu nội dung quá dài */
 }
 
 @media (max-width: 1024px) {
     .posts {
         grid-template-columns: repeat(2, 1fr);
+        max-width: 70%; /* Điều chỉnh kích thước khi màn hình nhỏ */
     }
 
     .category {
-        width: 100%;
+        width: 100%;  /* Sidebar chiếm 100% trên các màn hình nhỏ */
+        max-height: calc(100vh - 150px); /* Điều chỉnh chiều cao cho sidebar khi màn hình nhỏ */
     }
 }
 
 @media (max-width: 768px) {
     .posts {
         grid-template-columns: 1fr;
+        max-width: 100%;  /* Chiếm toàn bộ chiều rộng khi màn hình nhỏ */
     }
 
     .category {
         width: 100%;
+        max-height: calc(100vh - 150px); /* Điều chỉnh chiều cao cho sidebar khi màn hình nhỏ */
     }
 }

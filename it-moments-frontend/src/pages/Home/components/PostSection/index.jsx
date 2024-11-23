@@ -11,7 +11,6 @@ const PostSection = ({ postData }) => {
 
                         className="relative p-4 h-72 bg-white border border-1 transition duration-300 ease-in-out flex items-start"
                     >
-                        {/* Background image */}
                         <div
                             className="absolute inset-0 bg-cover bg-center z-0"
                             style={{ backgroundImage: `url(${post.thumbnail})` }}
