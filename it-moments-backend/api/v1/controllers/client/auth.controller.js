@@ -163,24 +163,16 @@ const controller = {
                     message: 'Email không tồn tại',
                 });
             }
-
-            // Tạo token gốc
             const resetToken = crypto.randomBytes(32).toString('hex');
             const resetTokenHash = crypto
                 .createHash('sha256')
                 .update(resetToken)
-                .digest('hex');  // Mã hóa token
-
-            // Lưu token và thời gian hết hạn vào cơ sở dữ liệu
-            user.resetPasswordToken = resetToken;  // Lưu token gốc
-            user.resetPasswordTokenHash = resetTokenHash;  // Lưu token đã mã hóa
-            user.resetPasswordExpires = Date.now() + 3600000;  // Token có hiệu lực trong 1 giờ
+                .digest('hex');
+            user.resetPasswordToken = resetToken;
+            user.resetPasswordTokenHash = resetTokenHash;
+            user.resetPasswordExpires = Date.now() + 3600000;
             await user.save();
-
-            // Tạo liên kết reset mật khẩu
             const resetLink = `${FRONT_END_DOMAIN}/reset-password?token=${resetToken}`;
-
-            // Gửi email chứa liên kết
             await sendEmail(
                 email,
                 'Đặt lại mật khẩu',
@@ -202,34 +194,27 @@ const controller = {
 
     resetPassword : async(req, res) => {
     const { password, token } = req.body;
-
-    // Kiểm tra token và mật khẩu mới
     if(!password || !token) {
         return res.status(400).json({ message: 'Mật khẩu hoặc token bị thiếu.' });
     }
 
     try {
-        // Mã hóa token từ URL mà người dùng gửi
         const hashedToken = crypto
             .createHash('sha256')
             .update(token)
             .digest('hex');
-
-        // Tìm người dùng dựa trên token mã hóa và kiểm tra thời gian hết hạn
         const user = await User.findOne({
             resetPasswordTokenHash: hashedToken,
-            resetPasswordExpires: { $gt: Date.now() }  // Kiểm tra thời gian hết hạn
+            resetPasswordExpires: { $gt: Date.now() }
         });
 
         if(!user) {
             return res.status(400).json({ message: 'Token không hợp lệ hoặc đã hết hạn.' });
         }
 
-        // Mã hóa mật khẩu mới
         const hashedPassword = await bcrypt.hash(password, 10);
         user.password = hashedPassword;
 
-        // Xóa token và thời gian hết hạn sau khi reset mật khẩu
         user.resetPasswordToken = undefined;
         user.resetPasswordTokenHash = undefined;
         user.resetPasswordExpires = undefined;

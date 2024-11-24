@@ -1,3 +1,6 @@
+.titleLogin{
+    font-family: "Montserrat", sans-serif;
+}
 .loginContainer {
     width: 100vw;
     height: 100vh;
@@ -84,7 +87,6 @@
     margin-bottom: 15px;
 }
 
-/* Input fields với hiệu ứng hover và focus */
 .inputIcon {
     position: relative;
     margin-bottom: 15px;
@@ -92,8 +94,8 @@
 
 .inputIcon input {
     width: 100%;
-    height: 50px;
-    padding: 12px 20px;
+    height: 42px;
+    padding: 12px;
     padding-left: 50px;
     border-radius: 25px;
     border: 1px solid #ccc;
@@ -121,8 +123,6 @@
     75% { transform: translateX(-2px); }
     100% { transform: translateX(0); }
 }
-
-/* Hiệu ứng icon khi hover và focus */
 .inputIcon .icon {
     position: absolute;
     top: 50%;
@@ -164,7 +164,6 @@
     transition: transform 0.2s ease;
 }
 
-/* Button đăng nhập với hiệu ứng gradient động */
 form button {
     width: 100%;
     height: 50px;

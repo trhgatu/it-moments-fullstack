@@ -1,14 +1,13 @@
 import { useState, useRef, useEffect } from 'react';
-import { Button, Typography } from '@mui/material';
+import { Button, Typography, message, Divider, Spin } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { useClientUser } from '../../../context/ClientUserContext';
 import { useNavigate } from 'react-router-dom';
-import { notification } from 'antd';
 import axios from 'axios';
 import { API_URL } from '../../../config/config';
-import styles from './Login.module.scss';
 import io from 'socket.io-client';
+import styles from './Login.module.scss';
 
 export default function Login() {
     const socket = useRef(null);
@@ -20,22 +19,28 @@ export default function Login() {
     const { setUser } = useClientUser();
     const navigate = useNavigate();
 
-    const showNotification = (type, message, description) => {
-        notification[type]({
-            message,
-            description,
-            duration: 5,
-            placement: 'topRight',
-        });
-    };
+    // Countdown state
+    const [countdown, setCountdown] = useState(3); // Bắt đầu đếm từ 3 giây
+    const [isRedirecting, setIsRedirecting] = useState(false); // Trạng thái chuyển hướng
 
     const togglePasswordVisibility = () => {
         setPasswordShown(!passwordShown);
     };
 
+    // Countdown logic
+    useEffect(() => {
+        if(isRedirecting && countdown > 0) {
+            const timer = setInterval(() => {
+                setCountdown((prev) => prev - 1);
+            }, 1000);
+
+            return () => clearInterval(timer); // Clean up the interval on unmount or when countdown finishes
+        }
+    }, [isRedirecting, countdown]);
+
     const handleLogin = async (e) => {
         e.preventDefault();
-        setError(""); // Reset lỗi trước khi thử đăng nhập
+        setError("");
         setLoading(true);
 
         try {
@@ -46,15 +51,15 @@ export default function Login() {
                 withCredentials: true,
             });
 
-            const data = response.data;
-
-            if (response.status === 200) {
+            if(response.status === 200) {
+                const data = response.data;
                 localStorage.setItem('client_token', data.token);
                 setUser(data.user);
                 setError("");
 
-                showNotification("success", "Đăng nhập thành công!", "Bạn sẽ được chuyển hướng trong giây lát.");
-                if (socket.current) {
+                message.success("Đăng nhập thành công!");
+
+                if(socket.current) {
                     socket.current.disconnect();
                 }
 
@@ -76,83 +81,52 @@ export default function Login() {
 
                 socket.current.on('connect_error', (err) => {
                     console.error('Lỗi kết nối WebSocket:', err);
-                    showNotification("error", "Lỗi kết nối", "Không thể kết nối WebSocket.");
+                    message.error("Lỗi kết nối. Không thể kết nối WebSocket.");
                 });
 
-                // Điều hướng sau 3 giây (hoặc điều kiện khác)
-                setTimeout(() => {
-                    navigate("/"); // Chuyển hướng về trang chủ sau khi đăng nhập thành công
-                }, 3000);
+                // Start redirect countdown
+                setIsRedirecting(true);
             } else {
-                // Hiển thị thông báo lỗi từ backend nếu không thành công
-                showNotification("error", "Đăng nhập thất bại!", data.message || "Đã có lỗi xảy ra.");
+                message.error(response.data.message || "Đã có lỗi xảy ra.");
             }
-        } catch (error) {
-            // Hiển thị thông báo khi gặp lỗi trong quá trình gọi API
-            showNotification("error", "Đăng nhập thất bại!", error.response?.data?.message || "Đã xảy ra lỗi khi đăng nhập.");
+        } catch(error) {
+            message.error(error.response?.data?.message || "Đã xảy ra lỗi khi đăng nhập.");
             console.error("Lỗi đăng nhập:", error);
         } finally {
             setLoading(false);
         }
     };
-
-
-    useEffect(() => {
-        const token = localStorage.getItem('client_token');
-
-        if (token && !socket.current) {
-            // Kết nối WebSocket nếu token có sẵn
-            /* socket.current = io('https://it-moments-backend-production.up.railway.app', {
-                transports: ['websocket'],
-                withCredentials: true,
-                extraHeaders: {
-                    'Authorization': `Bearer ${token}`,
-                }
-            }); */
-            socket.current = io('http://localhost:3000', {
-                transports: ['websocket'],
-                withCredentials: true,
-                extraHeaders: {
-                    'Authorization': `Bearer ${token}`,
-                }
-            });
-
-            socket.current.on('connect', () => {
-                console.log("Kết nối WebSocket thành công!");
-                socket.current.emit('register', token);
-                showNotification("success", "Kết nối WebSocket thành công!", "");
-            });
-
-            socket.current.on('notificationUpdate', (data) => {
-                console.log('Thông báo nhận được:', data);
-            });
-
-            socket.current.on('connect_error', (err) => {
-                console.error('Lỗi kết nối WebSocket:', err);
-                showNotification("error", "Lỗi kết nối", "Không thể kết nối WebSocket.");
-            });
-
-            return () => {
-                if (socket.current) {
-                    socket.current.disconnect();
-                }
-            };
+    /* useEffect(() => {
+        if(countdown === 0) {
+            navigate("/");
         }
-    }, []);
-
+    }, [countdown, navigate]); */
 
     return (
         <div className={styles.wrapper}>
             <div className={styles.loginContainer}>
                 <div className={styles.loginForm}>
-                    <Typography variant="h3">Đăng nhập</Typography>
-                    <p>Vui lòng nhập thông tin chi tiết của bạn.</p>
+                    <div className='relative'>
+                        <h1 className={`${styles.titleLogin} text-4xl font-extrabold text-center uppercase text-gray-900 `}>
+                            Đăng nhập
+                        </h1>
+                        <Divider/>
+                    </div>
+                    {isRedirecting && (
+                        <div className='flex items-center justify-center'>
+                            <Spin className='mr-2' spinning={true} tip="Đang chuyển hướng" size="small" />
+                        <div className="text-center text-2xl text-blue-700 ">
+                            <span>Chuyển hướng đến trang chủ sau {countdown}...</span>
+                        </div>
+                        </div>
 
+                    )}
                     <form onSubmit={handleLogin}>
+                        <label className='ml-2 text-black text-2xl flex pb-6'>Email: </label>
                         <div className={styles.inputIcon}>
                             <input
                                 type="email"
-                                placeholder="E-mail"
+                                placeholder='Nhập email'
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
@@ -161,7 +135,7 @@ export default function Login() {
                                 <FontAwesomeIcon icon={faEnvelope} />
                             </span>
                         </div>
-
+                        <div className='ml-2 text-black text-2xl flex pb-6'><label >Mật khẩu: </label></div>
                         <div className={styles.inputIcon}>
                             <input
                                 type={passwordShown ? "text" : "password"}
@@ -183,17 +157,23 @@ export default function Login() {
                         </div>
 
                         {error && <p className={styles.error}>{error}</p>}
-
-                        <button type="submit" disabled={loading}>
-                            {loading ? 'Đang đăng nhập...' : 'Đăng nhập'}
-                        </button>
+                        <Button
+                            type="primary"
+                            htmlType="submit"
+                            loading={loading}
+                            disabled={loading}
+                            className={styles.submitButton}
+                        >
+                            Đăng nhập
+                        </Button>
                     </form>
 
                     <p className={styles.signup}>
                         Bạn chưa có tài khoản? <a href="/register">Tạo tài khoản</a>
                     </p>
 
-                    <Typography variant="body1" align="center" style={{ margin: '20px 0' }}>Hoặc</Typography>
+                    {/* Hiển thị thông báo đếm ngược */}
+
                 </div>
             </div>
         </div>

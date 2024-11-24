@@ -1,20 +1,22 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import styles from './Register.module.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope, faUser, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { API_URL } from "../../../config/config";
+import axios from "axios"; // Import axios
+import { message, Divider } from 'antd';
+
 function Register() {
+    const navigate = useNavigate();
     const [passwordShown, setPasswordShown] = useState(false);
     const [confirmPasswordShown, setConfirmPasswordShown] = useState(false);
 
-    // Thêm các state cho form
+    // State cho form
     const [fullName, setFullName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    const [errorMessage, setErrorMessage] = useState('');
-    const [successMessage, setSuccessMessage] = useState('');
 
     useEffect(() => {
         document.body.className = 'register-page';
@@ -34,31 +36,27 @@ function Register() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (password !== confirmPassword) {
-            setErrorMessage('Mật khẩu không khớp');
+        if(password !== confirmPassword) {
+            message.error('Mật khẩu không khớp');
             return;
         }
 
         try {
-            const response = await fetch(`${API_URL}/auth/register`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ fullName, email, password }),
+            const response = await axios.post(`${API_URL}/auth/register`, {
+                fullName,
+                email,
+                password,
             });
 
-            const data = await response.json();
-
-            if (response.ok) {
-                setSuccessMessage(data.message);
-                setErrorMessage('');
+            if(response.status === 200) {
+                message.success(response.data.message || 'Đăng ký thành công');
+                navigate('/login'); // Điều hướng đến trang login sau khi đăng ký thành công
             } else {
-                setErrorMessage(data.message || 'Đăng ký thất bại');
+                message.error(response.data.message || 'Đăng ký thất bại');
             }
-        } catch (error) {
+        } catch(error) {
             console.error("Lỗi:", error);
-            setErrorMessage('Có lỗi xảy ra, vui lòng thử lại');
+            message.error(error.response?.data?.message || 'Có lỗi xảy ra, vui lòng thử lại');
         }
     };
 
@@ -66,8 +64,12 @@ function Register() {
         <div className={styles.registerBackground}>
             <div className={styles.registerContainer}>
                 <div className={styles.registerForm}>
-                    <h1>Đăng ký</h1>
+                    <h1 className={`${styles.titleRegister} text-4xl font-extrabold text-center uppercase text-gray-900 `}>
+                        Đăng ký tài khoản
+                    </h1>
+                    <Divider />
                     <form onSubmit={handleSubmit}>
+                        <label className='ml-2 text-black text-2xl flex pb-6'>Họ tên: </label>
                         <div className={styles.inputIcon}>
                             <input
                                 type="text"
@@ -77,10 +79,12 @@ function Register() {
                                 required
                             />
                             <span className={styles.icon}>
-                                <FontAwesomeIcon icon={faUser} /></span>
+                                <FontAwesomeIcon icon={faUser} />
+                            </span>
                         </div>
-
+                        <label className='ml-2 text-black text-2xl flex pb-6'>Email: </label>
                         <div className={styles.inputIcon}>
+
                             <input
                                 type="email"
                                 placeholder="Email"
@@ -89,9 +93,10 @@ function Register() {
                                 required
                             />
                             <span className={styles.icon}>
-                                <FontAwesomeIcon icon={faEnvelope} /></span>
+                                <FontAwesomeIcon icon={faEnvelope} />
+                            </span>
                         </div>
-
+                        <label className='ml-2 text-black text-2xl flex pb-6'>Mật khẩu:</label>
                         <div className={styles.inputIcon}>
                             <input
                                 type={passwordShown ? "text" : "password"}
@@ -104,7 +109,7 @@ function Register() {
                                 <FontAwesomeIcon icon={passwordShown ? faEyeSlash : faEye} />
                             </span>
                         </div>
-
+                        <label className='ml-2 text-black text-2xl flex pb-6'>Nhập lại mật khẩu: </label>
                         <div className={styles.inputIcon}>
                             <input
                                 type={confirmPasswordShown ? "text" : "password"}
@@ -118,13 +123,21 @@ function Register() {
                             </span>
                         </div>
 
-                        {errorMessage && <p className={styles.errorMessage}>{errorMessage}</p>}
-                        {successMessage && <p className={styles.successMessage}>{successMessage}</p>}
-
                         <button type="submit">Đăng ký</button>
                     </form>
 
-                    <p className="signup">Bạn đã có tài khoản? <Link to="/">Đăng nhập</Link></p>
+                    <div className='py-4 text-center'>
+                        <span className="signup text-2xl">
+                            Bạn đã có tài khoản?{" "}
+                            <span
+                                onClick={() => navigate('/login')}
+                                className="text-blue-500 cursor-pointer hover:underline ml-4"
+                            >
+                                Đăng nhập
+                            </span>
+                        </span>
+                    </div>
+
                 </div>
             </div>
         </div>

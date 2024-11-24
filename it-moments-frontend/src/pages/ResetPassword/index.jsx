@@ -10,13 +10,11 @@ const ResetPassword = () => {
     const [loading, setLoading] = useState(false);
     const [searchParams] = useSearchParams();
     const token = searchParams.get("token");
-    const navigate = useNavigate();  // Hook để chuyển hướng người dùng
-    const [countdown, setCountdown] = useState(3);  // Khởi tạo thời gian đếm ngược
-    const [countdownMessage, setCountdownMessage] = useState("");  // State để lưu thông điệp đếm ngược
+    const navigate = useNavigate();
+    const [countdown, setCountdown] = useState(3);
+    const [countdownMessage, setCountdownMessage] = useState("");
 
-    const [passwordVisible, setPasswordVisible] = useState(false); // Quản lý trạng thái hiển thị mật khẩu
-
-    // Kiểm tra token ngay khi component được render
+    const [passwordVisible, setPasswordVisible] = useState(false);
     useEffect(() => {
         if (!token) {
             message.error("Token không hợp lệ hoặc đã hết hạn.");
@@ -44,10 +42,7 @@ const ResetPassword = () => {
             );
 
             if (response.data.code === 200) {
-                // Hiển thị thông điệp thành công
                 message.success(response.data.message);
-
-                // Bắt đầu đếm ngược và cập nhật thông điệp mỗi giây
                 let time = 3;
                 const interval = setInterval(() => {
                     setCountdown(time);
@@ -56,9 +51,9 @@ const ResetPassword = () => {
 
                     if (time < 0) {
                         clearInterval(interval);
-                        navigate("/login"); // Chuyển hướng đến trang login khi đếm ngược kết thúc
+                        navigate("/login");
                     }
-                }, 1000);  // Cập nhật mỗi giây
+                }, 1000);
             } else {
                 message.error(response.data.message || "Đã xảy ra lỗi, vui lòng thử lại.");
             }
@@ -70,8 +65,6 @@ const ResetPassword = () => {
             setLoading(false);
         }
     };
-
-    // Chuyển đổi trạng thái hiển thị/mất mật khẩu
     const togglePasswordVisibility = () => {
         setPasswordVisible(!passwordVisible);
     };
@@ -80,14 +73,12 @@ const ResetPassword = () => {
         <>
             <div
                 className="min-h-screen flex items-center justify-center bg-cover bg-center"
-                style={{ backgroundImage: `url(${slide1})` }} // Áp dụng ảnh nền
+                style={{ backgroundImage: `url(${slide1})` }}
             >
                 <div className="bg-white p-12 rounded-lg shadow-xl w-full max-w-2xl bg-opacity-80">
                     <h1 className="text-3xl font-semibold mb-6 text-center text-gray-900">Đặt Lại Mật Khẩu</h1>
-
-                    {/* Hiển thị thông điệp đếm ngược */}
                     {countdownMessage && (
-                        <div className="mt-4 text-center text-lg text-yellow-600 font-medium">
+                        <div className="mt-4 text-center text-lg text-blue-500 font-medium">
                             {countdownMessage}
                         </div>
                     )}
@@ -98,7 +89,7 @@ const ResetPassword = () => {
                             name="password"
                             rules={[
                                 { required: true, message: "Vui lòng nhập mật khẩu mới." },
-                                { min: 6, message: "Mật khẩu phải có ít nhất 6 ký tự." },
+                                { min: 8, message: "Mật khẩu phải có ít nhất 8 ký tự." },
                             ]}
                         >
                             <Input.Password
@@ -109,7 +100,7 @@ const ResetPassword = () => {
                                     visible ? <FaEyeSlash onClick={togglePasswordVisibility} /> :
                                     <FaEye onClick={togglePasswordVisibility} />
                                 }
-                                type={passwordVisible ? "text" : "password"} // Thay đổi type của input khi hiển thị/mất mật khẩu
+                                type={passwordVisible ? "text" : "password"}
                             />
                         </Form.Item>
 
