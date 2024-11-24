@@ -18,14 +18,12 @@ const controller = {
     updateUserInfo: async (req, res) => {
         try {
             const { id } = req.params;
-            const { bio, facebook, twitter, linkedin, youtube, instagram, avatar  } = req.body; // Nhận avatarUrl từ middleware
+            const { bio, facebook, twitter, linkedin, youtube, instagram, avatar  } = req.body;
             const user = await User.findById(id);
 
             if(!user) {
                 return res.status(404).json({ message: 'Người dùng không tồn tại' });
             }
-
-            // Cập nhật thông tin
             user.bio = bio || user.bio;
             user.socialLinks.facebook = facebook || user.socialLinks.facebook;
             user.socialLinks.twitter = twitter || user.socialLinks.twitter;

@@ -96,11 +96,11 @@ export default function Login() {
             setLoading(false);
         }
     };
-    /* useEffect(() => {
+    useEffect(() => {
         if(countdown === 0) {
             navigate("/");
         }
-    }, [countdown, navigate]); */
+    }, [countdown, navigate]);
 
     return (
         <div className={styles.wrapper}>

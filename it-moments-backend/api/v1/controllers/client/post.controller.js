@@ -161,6 +161,7 @@ const controller = {
                 const user = await User.findOne({ _id: post.createdBy.account_id });
                 if(user) {
                     post.accountFullName = user.isAdmin ? "Admin" : user.fullName;
+                    post.accountAvatar = user.avatar;
                 }
                 const updatedBy = post.updatedBy.slice(-1)[0];
                 if(updatedBy) {

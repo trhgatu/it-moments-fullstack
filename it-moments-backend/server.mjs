@@ -10,7 +10,7 @@ import adminRoutes from './api/v1/routes/admin/index.route.js';
 import clientRouter from './api/v1/routes/client/index.route.js';
 import cookieParser from 'cookie-parser';
 import { prefixAdmin } from './config/system.js';
-import jwt from 'jsonwebtoken';  // Thêm jwt để xác thực token nếu cần
+import jwt from 'jsonwebtoken';
 
 dotenv.config();
 
@@ -19,7 +19,7 @@ const port = process.env.PORT || 3000;
 const httpServer = http.createServer(app);
 const io = new Server(httpServer, {
     /* cors: {
-        origin: 'https://it-moments-frontend.vercel.app',
+        origin: 'https://it-moments.vercel.app',
         methods: ['GET', 'POST'],
         credentials: true,
     }, */
@@ -40,7 +40,7 @@ const startServer = async () => {
 
         // Cấu hình middlewares
         /* app.use(cors({
-            origin: 'https://it-moments-frontend.vercel.app',
+            origin: 'https://it-moments.vercel.app',
             credentials: true,
         })); */
         app.use(cors({

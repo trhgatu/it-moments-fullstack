@@ -4,6 +4,7 @@ import { useParams, useLocation } from 'react-router-dom';
 import { API_URL } from '../../config/config';
 import { useClientUser } from '../../context/ClientUserContext';
 import { message, Modal, Row, Col, Input, Button, Spin, Card } from 'antd';
+import { FaUser } from 'react-icons/fa';
 import styles from './PostDetail.module.scss';
 const PostDetail = () => {
   const { slug } = useParams();
@@ -58,10 +59,10 @@ const PostDetail = () => {
   };
   useEffect(() => {
     const increaseViewCount = async () => {
-      if (!post?._id) return;
+      if(!post?._id) return;
       try {
         await axios.post(`${API_URL}/posts/${post._id}/increment-views`);
-      } catch (error) {
+      } catch(error) {
         console.error("Lỗi khi tăng lượt xem:", error);
       }
     };
@@ -285,31 +286,57 @@ const PostDetail = () => {
 
   const renderReplies = (replies) => {
     return replies.map((reply, index) => (
-      <div key={reply._id} ref={(el) => commentRefs.current[reply._id] = el} className="ml-8 mt-4">
-        <img src={reply.user_id?.avatar || user.avatar} className="rounded-full w-10 h-10" alt="user-avatar" />
-        <strong>{reply.user_id?.fullName || user.fullName}</strong>: {reply.content}
+      <div
+        key={reply._id}
+        ref={(el) => commentRefs.current[reply._id] = el}
+        className="ml-8 mt-4"
+      >
+        <div className="flex items-start space-x-4">
+          {reply.user_id?.avatar ? (
+            <img
+              src={reply.user_id.avatar}
+              className="rounded-full w-14 h-14"
+              alt="user-avatar"
+            />
+          ) : (
+            <FaUser className="w-14 h-14 text-gray-400 rounded-full border" />
+          )}
+          <div className='bg-gray-100 rounded-2xl p-6'>
+            <strong className="text-lg block">{reply.user_id?.fullName}</strong>
+            <p className="mt-1 text-gray-700">{reply.content}</p>
+          </div>
+        </div>
       </div>
     ));
   };
 
 
+
   const renderComments = () => {
     return comments.map((comment) => (
-      <div key={comment._id} ref={(el) => commentRefs.current[comment._id] = el} className="mb-6">
-        <div className="flex items-start space-x-3">
-          <img
-            src={comment.user_id?.avatar}
-            className="rounded-full w-10 h-10"
-            alt={`${comment.user_id?.fullName}'s avatar`}
-          />
-          <div className="flex flex-col space-y-2">
-            <div className="flex items-center space-x-2">
-              <strong>{comment.user_id?.fullName}</strong>
-              <span className="text-sm text-gray-500">
-                {new Date(comment.createdAt).toLocaleString()}
-              </span>
+      <div
+        key={comment._id}
+        ref={(el) => commentRefs.current[comment._id] = el}
+        className="mb-6 rounded-lg"
+      >
+
+        <div className="flex items-start space-x-4">
+          {comment.user_id?.avatar ? (
+            <img
+              src={comment.user_id.avatar}
+              className="rounded-full w-14 h-14"
+              alt={`${comment.user_id.fullName || 'Người dùng'}'s avatar`}
+            />
+          ) : (
+            <FaUser className="w-14 h-14 text-gray-400 rounded-full border" />
+          )}
+          <div className='bg-gray-50 rounded-2xl p-6'>
+            <div className="flex-1">
+              <div className="flex items-center space-x-2">
+                <strong className="text-lg">{comment.user_id?.fullName}</strong>
+              </div>
+              <p className="mt-2 text-gray-700">{comment.content}</p>
             </div>
-            <p>{comment.content}</p>
           </div>
         </div>
         {comment.replies && comment.replies.length > 0 && (
@@ -319,13 +346,13 @@ const PostDetail = () => {
         )}
         <Button
           onClick={() => setReplyCommentId(comment._id)}
-          className="mt-2"
+          className="mt-4"
           type="link"
         >
           Trả lời
         </Button>
         {replyCommentId === comment._id && (
-          <div className="mt-2 pl-10">
+          <div className="mt-4 pl-10">
             <Input.TextArea
               value={replyContent}
               onChange={(e) => setReplyContent(e.target.value)}
@@ -345,6 +372,7 @@ const PostDetail = () => {
     ));
   };
 
+
   if(userLoading || loading) {
     return <div>Đang tải...</div>;
   }
@@ -356,9 +384,14 @@ const PostDetail = () => {
   const isVotingOpen = !isEventCompleted && post.event_id?.votingStatus === 'active';
   const isEventOngoing = post.event_id?.status === 'active';
   return (
-    <div className="max-w-screen-lg mx-auto p-6 bg-white pt-40">
-      {post.video && (
-        <Card title="Video" className="mb-8">
+    <div className="max-w-screen-lg mx-auto pt-56 ">
+      <div className='shadow-lg p-12 '>
+        <div className="flex text-2xl mb-3 items-start">
+          <img className="rounded-full w-20 h-20" src={post.accountAvatar}></img>
+          <strong className="ml-4">{post.accountFullName}</strong>
+        </div>
+        <span className="text-gray-600">{new Date(post.createdAt).toLocaleDateString()}</span>
+        {post.video && (
           <div className="mt-4">
             <iframe
               width="100%"
@@ -370,140 +403,138 @@ const PostDetail = () => {
               allowFullScreen
             ></iframe>
           </div>
-        </Card>
-      )}
-      <img
-        src={post.thumbnail || 'https://via.placeholder.com/150'}
-        alt={post.title}
-        className="w-full h-96 object-cover hover:scale-105 transition-transform duration-300 shadow-lg"
-      />
-      <div className="mt-6 leading-relaxed text-gray-900">
-        <div className="mb-8">
-          <h1 className="text-5xl font-bold mb-4 text-black">{post.title}</h1>
-          <div className="flex justify-between text-lg text-gray-700 mb-3">
-            <span className="italic">Bởi {post.accountFullName}</span>
-            <span className="text-gray-600">{new Date(post.createdAt).toLocaleDateString()}</span>
-          </div>
-          <div className="flex space-x-2 justify-between">
-            <span className="bg-blue-600 text-white px-4 py-2 rounded">
-              Thể loại: {post.post_category_id?.title || 'Không có thể loại'}
-            </span>
-            <span className="bg-green-600 text-white px-4 py-2 rounded">
-              Sự kiện: {post.event_id?.title || 'Không có sự kiện'}
-            </span>
-          </div>
-        </div>
-        <p className="text-lg">{post.description}</p>
-        <div className="mt-6">
-          {isEventOngoing ? (
-            <div>
-              <div className="flex items-center">
-                <Spin spinning={true} tip="Sự kiện đang diễn ra..." size="small" />
-                <div className="text-xl mt-4">
-                  <p>Thời gian còn lại của sự kiện: {formatTime(timeRemaining)}</p>
-                </div>
-              </div>
-              {isVotingOpen ? (
-                <>
-                  <div className='flex items-center'>
-                    <Spin spinning={true} tip="Bình chọn đang diễn ra" size="small" />
-                    <p className="text-lg mt-2 text-gray-800">
-                      Thời gian bình chọn còn lại: {formatTime(votingTimeRemaining)}
-                    </p>
-                  </div>
-                  <button
-                    onClick={showVoteModal}
-                    disabled={voted}
-                    className={`px-4 py-2 rounded bg-blue-600 text-white ${voted ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700'}`}
-                  >
-                    {voted ? 'Đã bình chọn' : 'Bình chọn'}
-                  </button>
-                  {voted && (
-                    <button
-                      onClick={showCancelVoteModal}
-                      className="ml-4 px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700"
-                    >
-                      Hủy bình chọn
-                    </button>
-                  )}
-                </>
-              ) : (
-                <p className="text-lg text-gray-600">Bình chọn đã kết thúc</p>
-              )}
-            </div>
-          ) : (
-            <p className="text-lg text-gray-600">Sự kiện đã kết thúc.</p>
-          )}
-        </div>
-      </div>
-      <div className="mt-8">
-        <h3 className="text-2xl font-semibold">Bình luận:</h3>
-        {user ? (
-          <>
-            <Input.TextArea
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              placeholder="Viết bình luận của bạn..."
-              rows={4}
-            />
-            <Button
-              type="primary"
-              onClick={handleCommentSubmit}
-              className="mt-4"
-              disabled={!comment.trim()}
-            >
-              Gửi Bình luận
-            </Button>
-          </>
-        ) : (
-          <div className="mt-4">
-            <p className="text-lg text-gray-600">Bạn cần đăng nhập để bình luận.</p>
-            <Button
-              type="primary"
-              onClick={() => {
-                window.location.href = `/login?redirect=${encodeURIComponent(window.location.pathname)}`;
-              }}
-            >
-              Đăng nhập
-            </Button>
-          </div>
         )}
+        <img
+          src={post.thumbnail || 'https://via.placeholder.com/150'}
+          alt={post.title}
+          className="w-full h-96 object-cover hover:scale-105 transition-transform duration-300 shadow-lg"
+        />
+        <div className="mt-6 leading-relaxed text-gray-900">
+          <div className="mb-8">
+            <h1 className="text-5xl font-bold mb-4 text-black">{post.title}</h1>
 
-
-        <div className="mt-8">
-          {comments.length > 0 ? renderComments() : <p>Chưa có bình luận nào.</p>}
+            <div className="flex space-x-2 justify-between">
+              <span className="bg-blue-600 text-white px-4 py-2 rounded">
+                Thể loại: {post.post_category_id?.title || 'Không có thể loại'}
+              </span>
+              <span className="bg-green-600 text-white px-4 py-2 rounded">
+                Sự kiện: {post.event_id?.title || 'Không có sự kiện'}
+              </span>
+            </div>
+          </div>
+          <p className="text-lg">{post.description}</p>
+          <div className="mt-6">
+            {isEventOngoing ? (
+              <div>
+                <div className="flex items-center">
+                  <Spin spinning={true} tip="Sự kiện đang diễn ra..." size="small" />
+                  <div className="text-xl mt-4">
+                    <p>Thời gian còn lại của sự kiện: {formatTime(timeRemaining)}</p>
+                  </div>
+                </div>
+                {isVotingOpen ? (
+                  <>
+                    <div className='flex items-center'>
+                      <Spin spinning={true} tip="Bình chọn đang diễn ra" size="small" />
+                      <p className="text-lg mt-2 text-gray-800">
+                        Thời gian bình chọn còn lại: {formatTime(votingTimeRemaining)}
+                      </p>
+                    </div>
+                    <button
+                      onClick={showVoteModal}
+                      disabled={voted}
+                      className={`px-4 py-2 rounded bg-blue-600 text-white ${voted ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700'}`}
+                    >
+                      {voted ? 'Đã bình chọn' : 'Bình chọn'}
+                    </button>
+                    {voted && (
+                      <button
+                        onClick={showCancelVoteModal}
+                        className="ml-4 px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700"
+                      >
+                        Hủy bình chọn
+                      </button>
+                    )}
+                  </>
+                ) : (
+                  <p className="text-lg text-gray-600">Bình chọn đã kết thúc</p>
+                )}
+              </div>
+            ) : (
+              <p className="text-lg text-gray-600">Sự kiện đã kết thúc.</p>
+            )}
+          </div>
         </div>
+        <div className="mt-8">
+          <h3 className="text-2xl font-semibold">Bình luận:</h3>
+          {user ? (
+            <>
+              <Input.TextArea
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                placeholder="Viết bình luận của bạn..."
+                rows={4}
+              />
+              <Button
+                type="primary"
+                onClick={handleCommentSubmit}
+                className="mt-4"
+                disabled={!comment.trim()}
+              >
+                Gửi Bình luận
+              </Button>
+            </>
+          ) : (
+            <div className="mt-4">
+              <p className="text-lg text-gray-600">Bạn cần đăng nhập để bình luận.</p>
+              <Button
+                type="primary"
+                onClick={() => {
+                  window.location.href = `/login?redirect=${encodeURIComponent(window.location.pathname)}`;
+                }}
+              >
+                Đăng nhập
+              </Button>
+            </div>
+          )}
+
+
+          <div className="mt-8">
+            {comments.length > 0 ? renderComments() : <p>Chưa có bình luận nào.</p>}
+          </div>
+        </div>
+        <Modal
+          title="Xác nhận bình chọn"
+          visible={isModalVisible}
+          onCancel={handleVoteModalCancel}
+          footer={[
+            <Button key="back" onClick={handleVoteModalCancel}>
+              Hủy
+            </Button>,
+            <Button key="submit" type="primary" onClick={handleVote}>
+              Xác nhận
+            </Button>,
+          ]}
+        >
+          <p>Bạn có chắc chắn muốn bình chọn cho bài viết này không?</p>
+        </Modal>
+        <Modal
+          title="Hủy bình chọn"
+          visible={isCancelModalVisible}
+          onCancel={handleCancelVoteModal}
+          footer={[
+            <Button key="back" onClick={handleCancelVoteModal}>
+              Hủy
+            </Button>,
+            <Button key="submit" type="primary" onClick={handleCancelVoteConfirm}>
+              Xác nhận
+            </Button>,
+          ]}
+        >
+          <p>Bạn có chắc chắn muốn hủy bình chọn cho bài viết này không?</p>
+        </Modal>
       </div>
-      <Modal
-        title="Xác nhận bình chọn"
-        visible={isModalVisible}
-        onCancel={handleVoteModalCancel}
-        footer={[
-          <Button key="back" onClick={handleVoteModalCancel}>
-            Hủy
-          </Button>,
-          <Button key="submit" type="primary" onClick={handleVote}>
-            Xác nhận
-          </Button>,
-        ]}
-      >
-        <p>Bạn có chắc chắn muốn bình chọn cho bài viết này không?</p>
-      </Modal>
-      <Modal
-        title="Hủy bình chọn"
-        visible={isCancelModalVisible}
-        onCancel={handleCancelVoteModal}
-        footer={[
-          <Button key="back" onClick={handleCancelVoteModal}>
-            Hủy
-          </Button>,
-          <Button key="submit" type="primary" onClick={handleCancelVoteConfirm}>
-            Xác nhận
-          </Button>,
-        ]}
-      >
-        <p>Bạn có chắc chắn muốn hủy bình chọn cho bài viết này không?</p>
-      </Modal>
+
     </div>
   );
 };
