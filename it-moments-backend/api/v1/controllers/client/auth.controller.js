@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import User from "../../models/user.model.js";
 import { sendEmail } from '../../../../helpers/sendMail.js';
 import { FRONT_END_DOMAIN } from '../../../../config/system.js';
+const saltRounds = 10;
 import crypto from 'crypto';
 const controller = {
     /* [POST] /api/v1/auth/login */
@@ -151,6 +152,101 @@ const controller = {
             });
         }
     },
+    forgotPassword: async (req, res) => {
+        try {
+            const { email } = req.body;
+
+            const user = await User.findOne({ email, deleted: false });
+            if(!user) {
+                return res.status(400).json({
+                    code: 400,
+                    message: 'Email không tồn tại',
+                });
+            }
+
+            // Tạo token gốc
+            const resetToken = crypto.randomBytes(32).toString('hex');
+            const resetTokenHash = crypto
+                .createHash('sha256')
+                .update(resetToken)
+                .digest('hex');  // Mã hóa token
+
+            // Lưu token và thời gian hết hạn vào cơ sở dữ liệu
+            user.resetPasswordToken = resetToken;  // Lưu token gốc
+            user.resetPasswordTokenHash = resetTokenHash;  // Lưu token đã mã hóa
+            user.resetPasswordExpires = Date.now() + 3600000;  // Token có hiệu lực trong 1 giờ
+            await user.save();
+
+            // Tạo liên kết reset mật khẩu
+            const resetLink = `${FRONT_END_DOMAIN}/reset-password?token=${resetToken}`;
+
+            // Gửi email chứa liên kết
+            await sendEmail(
+                email,
+                'Đặt lại mật khẩu',
+                `Xin chào ${user.fullName},\n\nVui lòng nhấp vào liên kết sau để đặt lại mật khẩu của bạn:\n${resetLink}\n\nNếu bạn không yêu cầu đặt lại mật khẩu, vui lòng bỏ qua email này.`
+            );
+
+            return res.status(200).json({
+                code: 200,
+                message: 'Email đặt lại mật khẩu đã được gửi. Vui lòng kiểm tra hộp thư của bạn.',
+            });
+        } catch(error) {
+            console.error("Lỗi:", error);
+            return res.status(500).json({
+                code: 500,
+                message: 'Có lỗi xảy ra khi gửi email đặt lại mật khẩu.',
+            });
+        }
+    },
+
+    resetPassword : async(req, res) => {
+    const { password, token } = req.body;
+
+    // Kiểm tra token và mật khẩu mới
+    if(!password || !token) {
+        return res.status(400).json({ message: 'Mật khẩu hoặc token bị thiếu.' });
+    }
+
+    try {
+        // Mã hóa token từ URL mà người dùng gửi
+        const hashedToken = crypto
+            .createHash('sha256')
+            .update(token)
+            .digest('hex');
+
+        // Tìm người dùng dựa trên token mã hóa và kiểm tra thời gian hết hạn
+        const user = await User.findOne({
+            resetPasswordTokenHash: hashedToken,
+            resetPasswordExpires: { $gt: Date.now() }  // Kiểm tra thời gian hết hạn
+        });
+
+        if(!user) {
+            return res.status(400).json({ message: 'Token không hợp lệ hoặc đã hết hạn.' });
+        }
+
+        // Mã hóa mật khẩu mới
+        const hashedPassword = await bcrypt.hash(password, 10);
+        user.password = hashedPassword;
+
+        // Xóa token và thời gian hết hạn sau khi reset mật khẩu
+        user.resetPasswordToken = undefined;
+        user.resetPasswordTokenHash = undefined;
+        user.resetPasswordExpires = undefined;
+
+        await user.save();
+
+        return res.status(200).json({
+            code: 200,
+            message: 'Mật khẩu đã được đặt lại thành công!'
+        });
+
+    } catch(error) {
+        console.error("Lỗi khi đặt lại mật khẩu:", error);
+        return res.status(500).json({ message: 'Có lỗi xảy ra khi đặt lại mật khẩu.' });
+    }
+},
+
 };
 
 export default controller;

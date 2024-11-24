@@ -253,12 +253,25 @@ const PostDetail = () => {
       );
 
       if(response.data.success) {
+        const newReply = response.data.data.reply;
+
+        // Cập nhật mảng comments với phản hồi mới và thêm thông tin người dùng vào đó
         const updatedComments = comments.map((comment) => {
           if(comment._id === replyCommentId) {
-            return { ...comment, replies: [...comment.replies, response.data.data.reply] };
+            return {
+              ...comment,
+              replies: [
+                ...comment.replies,
+                {
+                  ...newReply, // Thêm dữ liệu phản hồi đã nhận từ API
+                  user_id: user  // Gắn thêm thông tin người dùng vào phản hồi
+                }
+              ]
+            };
           }
           return comment;
         });
+
         setComments(updatedComments);
         setReplyContent('');
         setReplyCommentId(null);
@@ -269,14 +282,16 @@ const PostDetail = () => {
       message.error('Đã xảy ra lỗi khi phản hồi.');
     }
   };
+
   const renderReplies = (replies) => {
     return replies.map((reply, index) => (
-      <div key={comment._id} ref={(el) => commentRefs.current[comment._id] = el} className="ml-8 mt-4">
-        <img src={reply.user_id?.avatar} className="rounded-full w-10 h-10"></img>
-        <strong>{reply.user_id?.fullName}</strong>: {reply.content}
+      <div key={reply._id} ref={(el) => commentRefs.current[reply._id] = el} className="ml-8 mt-4">
+        <img src={reply.user_id?.avatar || user.avatar} className="rounded-full w-10 h-10" alt="user-avatar" />
+        <strong>{reply.user_id?.fullName || user.fullName}</strong>: {reply.content}
       </div>
     ));
   };
+
 
   const renderComments = () => {
     return comments.map((comment) => (

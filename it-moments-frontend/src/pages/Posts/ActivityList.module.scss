@@ -41,6 +41,7 @@
     margin: 0 auto;
     max-height: calc(100vh - 150px);
     overflow-y: auto; /* Cho phép cuộn dọc */
+    height: 100%;
 }
 
 .posts::-webkit-scrollbar {

@@ -9,6 +9,7 @@ import axios from 'axios';
 import { API_URL } from '../../../config/config';
 import styles from './Login.module.scss';
 import io from 'socket.io-client';
+
 export default function Login() {
     const socket = useRef(null);
     const [email, setEmail] = useState("");
@@ -34,7 +35,7 @@ export default function Login() {
 
     const handleLogin = async (e) => {
         e.preventDefault();
-        setError("");
+        setError(""); // Reset lỗi trước khi thử đăng nhập
         setLoading(true);
 
         try {
@@ -46,56 +47,98 @@ export default function Login() {
             });
 
             const data = response.data;
-            if(response.status === 200) {
+
+            if (response.status === 200) {
                 localStorage.setItem('client_token', data.token);
                 setUser(data.user);
                 setError("");
-                showNotification("success", "Đăng nhập thành công!", "Bạn sẽ được chuyển hướng trong giây lát.");
 
+                showNotification("success", "Đăng nhập thành công!", "Bạn sẽ được chuyển hướng trong giây lát.");
+                if (socket.current) {
+                    socket.current.disconnect();
+                }
+
+                socket.current = io('https://it-moments-backend-production.up.railway.app', {
+                    transports: ['websocket'],
+                    withCredentials: true,
+                    extraHeaders: {
+                        'Authorization': `Bearer ${data.token}`,
+                    }
+                });
+
+                socket.current.on('connect', () => {
+                    socket.current.emit('register', data.token);
+                });
+
+                socket.current.on('notificationUpdate', (data) => {
+                    console.log('Thông báo nhận được:', data);
+                });
+
+                socket.current.on('connect_error', (err) => {
+                    console.error('Lỗi kết nối WebSocket:', err);
+                    showNotification("error", "Lỗi kết nối", "Không thể kết nối WebSocket.");
+                });
+
+                // Điều hướng sau 3 giây (hoặc điều kiện khác)
                 setTimeout(() => {
-                    navigate("/");
+                    navigate("/"); // Chuyển hướng về trang chủ sau khi đăng nhập thành công
                 }, 3000);
             } else {
+                // Hiển thị thông báo lỗi từ backend nếu không thành công
                 showNotification("error", "Đăng nhập thất bại!", data.message || "Đã có lỗi xảy ra.");
             }
-        } catch(error) {
-            showNotification("error", "Đăng nhập thất bại!", "Đã xảy ra lỗi khi đăng nhập.");
+        } catch (error) {
+            // Hiển thị thông báo khi gặp lỗi trong quá trình gọi API
+            showNotification("error", "Đăng nhập thất bại!", error.response?.data?.message || "Đã xảy ra lỗi khi đăng nhập.");
             console.error("Lỗi đăng nhập:", error);
         } finally {
             setLoading(false);
         }
     };
-// Kết nối WebSocket sau khi đăng nhập thành công (đảm bảo token đã có)
-useEffect(() => {
-    const token = localStorage.getItem('client_token');
 
-    if (token) {
-        socket.current = io('http://localhost:3000', {
-            transports: ['websocket'],
-            withCredentials: true,
-            extraHeaders: {
-                'Authorization': `Bearer ${token}`,
-            }
-        });
 
-        socket.current.on('connect', () => {
-            console.log("Kết nối WebSocket thành công!");
-        });
+    useEffect(() => {
+        const token = localStorage.getItem('client_token');
 
-        socket.current.on('notificationUpdate', (data) => {
-            console.log('Thông báo nhận được:', data);
-        });
+        if (token && !socket.current) {
+            // Kết nối WebSocket nếu token có sẵn
+            /* socket.current = io('https://it-moments-backend-production.up.railway.app', {
+                transports: ['websocket'],
+                withCredentials: true,
+                extraHeaders: {
+                    'Authorization': `Bearer ${token}`,
+                }
+            }); */
+            socket.current = io('http://localhost:3000', {
+                transports: ['websocket'],
+                withCredentials: true,
+                extraHeaders: {
+                    'Authorization': `Bearer ${token}`,
+                }
+            });
 
-        // Cleanup: Ngắt kết nối khi component unmount
-        return () => {
-            if (socket.current) {
-                socket.current.disconnect();
-            }
-        };
-    } else {
-        console.log("Không tìm thấy token để kết nối WebSocket.");
-    }
-}, []);  // Chỉ thực hiện lần đầu khi component mount, token đã được lưu trong localStorage
+            socket.current.on('connect', () => {
+                console.log("Kết nối WebSocket thành công!");
+                socket.current.emit('register', token);
+                showNotification("success", "Kết nối WebSocket thành công!", "");
+            });
+
+            socket.current.on('notificationUpdate', (data) => {
+                console.log('Thông báo nhận được:', data);
+            });
+
+            socket.current.on('connect_error', (err) => {
+                console.error('Lỗi kết nối WebSocket:', err);
+                showNotification("error", "Lỗi kết nối", "Không thể kết nối WebSocket.");
+            });
+
+            return () => {
+                if (socket.current) {
+                    socket.current.disconnect();
+                }
+            };
+        }
+    }, []);
 
 
     return (

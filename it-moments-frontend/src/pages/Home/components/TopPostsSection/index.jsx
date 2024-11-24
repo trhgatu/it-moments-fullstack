@@ -99,7 +99,7 @@ export default function TopPostsSection() {
 
             <div className="text-center mt-6">
                 <Link
-                    to="/van-nghe"
+                    to="/posts/van-nghe"
                     className="inline-block px-6 py-3 bg-blue-500 text-white font-bold rounded hover:bg-blue-600"
                 >
                     Xem tất cả

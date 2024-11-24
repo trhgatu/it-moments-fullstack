@@ -24,23 +24,36 @@ export const Header = () => {
         setIsScrolled(window.scrollY > 50);
     };
 
-    const handleLogout = async () => {
-        try {
-            await axios.post(`${API_URL}/auth/logout`, {}, { withCredentials: true });
 
-            // Show success notification
+
+    const handleLogout = async () => {
+
+        try {
+
+            await axios.post(`${API_URL}/auth/logout`, {}, { withCredentials: true });
+            localStorage.clear();
+            sessionStorage.clear();
             notification.success({
                 message: 'Đăng xuất thành công',
                 description: 'Bạn đã đăng xuất khỏi tài khoản.',
                 placement: 'bottomRight',
             });
+
             setTimeout(() => {
                 window.location.reload();
             }, 2000);
+
         } catch(error) {
             console.error('Đăng xuất thất bại:', error);
+            notification.error({
+                message: 'Đăng xuất thất bại',
+                description: 'Đã xảy ra lỗi khi đăng xuất, vui lòng thử lại.',
+                placement: 'bottomRight',
+            });
         }
     };
+
+
 
 
     const showModal = () => {

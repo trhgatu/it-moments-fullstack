@@ -18,6 +18,11 @@ const app = express();
 const port = process.env.PORT || 3000;
 const httpServer = http.createServer(app);
 const io = new Server(httpServer, {
+    /* cors: {
+        origin: 'https://it-moments-frontend.vercel.app',
+        methods: ['GET', 'POST'],
+        credentials: true,
+    }, */
     cors: {
         origin: 'http://localhost:5173',
         methods: ['GET', 'POST'],
@@ -34,11 +39,14 @@ const startServer = async () => {
         console.log('Kết nối MongoDB thành công');
 
         // Cấu hình middlewares
+        /* app.use(cors({
+            origin: 'https://it-moments-frontend.vercel.app',
+            credentials: true,
+        })); */
         app.use(cors({
             origin: 'http://localhost:5173',
             credentials: true,
         }));
-
         app.use(bodyParser.urlencoded({ extended: false }));
         app.use(express.json());
         app.use(cookieParser());  // Đảm bảo cookieParser được sử dụng
@@ -69,9 +77,14 @@ const startServer = async () => {
                         console.error('Không tìm thấy userId trong token');
                         return;
                     }
-                    usersSocket[userId] = socket.id;
-                    console.log(`User ${userId} connected with socket ID ${socket.id}`);
 
+                    if(!usersSocket[userId]) {
+                        usersSocket[userId] = [];
+                    }
+
+                    // Lưu socket.id mới
+                    usersSocket[userId].push(socket.id);
+                    console.log(`User ${userId} connected with socket ID ${socket.id}`);
                 } catch(error) {
                     console.error('Lỗi xác thực token:', error);
                 }
@@ -79,15 +92,14 @@ const startServer = async () => {
 
             socket.on('disconnect', () => {
                 for(const userId in usersSocket) {
-                    if(usersSocket[userId] === socket.id) {
+                    usersSocket[userId] = usersSocket[userId].filter(id => id !== socket.id);
+                    if(usersSocket[userId].length === 0) {
                         delete usersSocket[userId];
-                        break;
                     }
                 }
                 console.log('User disconnected: ' + socket.id);
             });
         });
-
     } catch(error) {
         console.error('Lỗi khi kết nối cơ sở dữ liệu:', error);
     }

@@ -1,22 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom'; // To get the post ID from the URL
+import { useParams } from 'react-router-dom';
 import Gravatar from 'react-gravatar';
 import { API_URL } from '../../config/config';
 const PostDetail = () => {
-  const { id } = useParams(); // Get the post ID from the route
-  const [post, setPost] = useState(null); // State to store the post data
-  const [loading, setLoading] = useState(true); // State to manage loading state
+  const { id } = useParams();
+  const [post, setPost] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchPost = async () => {
       try {
-        const response = await axios.get(`${API_URL}v1/posts/detail/${id}`);
-        setPost(response.data); // Set the fetched post data
-        setLoading(false); // Stop loading
+        const response = await axios.get(`${API_URL}/posts/detail/${id}`);
+        setPost(response.data);
+        setLoading(false);
       } catch (error) {
         console.error('Error fetching post details:', error);
-        setLoading(false); // Stop loading even if there's an error
+        setLoading(false);
       }
     };
 

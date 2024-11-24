@@ -11,6 +11,10 @@
     text-overflow: ellipsis;
     max-width: 100%;
     position: relative;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Number of lines to display */
+    -webkit-box-orient: vertical;
+    word-wrap: break-word;
 }
 
 

@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import styles from './PostItem.module.scss';
 import { FaRegCalendarAlt } from "react-icons/fa";
 import { IoPersonOutline } from "react-icons/io5";
-const PostItem = ({ title, description, author, date, imageUrl, slug, category}) => {
+const PostItem = ({ title, description, author, date, imageUrl, slug, category }) => {
     const navigate = useNavigate();
 
     const handlePostItemClick = () => {
@@ -21,13 +21,17 @@ const PostItem = ({ title, description, author, date, imageUrl, slug, category})
             </div>
             <div className={styles.postContent}>
 
-                <h3 className={styles.postTitle} style={{ cursor: 'pointer' }}>
+                <h3
+                    className="text-lg font-semibold line-clamp-2 cursor-pointer"
+                    style={{ cursor: 'pointer' }}
+                >
                     {title}
                 </h3>
+
                 <p className={styles.postDescription}>{description}</p>
                 <div className={styles.postMeta}>
-                    <span className={styles.postAuthor}><IoPersonOutline className={styles.personIcon}/>{author}</span>
-                    <span className={styles.postDate}><FaRegCalendarAlt className={styles.calendarIcon}/>{date}</span>
+                    <span className={styles.postAuthor}><IoPersonOutline className={styles.personIcon} />{author}</span>
+                    <span className={styles.postDate}><FaRegCalendarAlt className={styles.calendarIcon} />{date}</span>
                 </div>
             </div>
         </div>

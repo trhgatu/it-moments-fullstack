@@ -5,7 +5,7 @@ mongoose.plugin(slug);
 
 const userSchema = new mongoose.Schema({
     fullName: String,
-    isAdmin : Boolean,
+    isAdmin: Boolean,
     email: String,
     password: String,
     token: String,
@@ -43,6 +43,10 @@ const userSchema = new mongoose.Schema({
         default: "active"
     },
     deletedAt: Date,
+    resetPasswordToken: String,
+    resetPasswordTokenHash: String,
+    resetPasswordExpires: Date,
+
 }, {
     timestamps: true
 })

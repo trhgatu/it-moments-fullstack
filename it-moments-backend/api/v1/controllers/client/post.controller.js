@@ -507,21 +507,23 @@ const controller = {
 
                 await notification.save();
                 const userSocketId = usersSocket[targetUserId.toString()];
-                if(userSocketId) {
-                    io.to(userSocketId).emit('notificationUpdate', {
-                        userId: targetUserId,
-                        notification: {
-                            content: notificationContent,
-                            createdAt: new Date(),
-                            avatar: user.avatar,
-                            commentId: parentCommentId,
-
-                        },
+                if (userSocketId) {
+                    userSocketId.forEach(socketId => {
+                        io.to(socketId).emit('notificationUpdate', {
+                            userId: targetUserId,
+                            notification: {
+                                content: notificationContent,
+                                createdAt: new Date(),
+                                avatar: user.avatar,
+                                commentId: parentCommentId,
+                            },
+                        });
+                        console.log(`Thông báo đã được gửi cho userId: ${targetUserId}`);
                     });
-                    console.log(`Thông báo đã được gửi cho userId: ${targetUserId}`);
                 } else {
                     console.log(`Không tìm thấy socket cho userId: ${targetUserId}`);
                 }
+
             }
 
             res.status(200).json({

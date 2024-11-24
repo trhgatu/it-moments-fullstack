@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { FaChevronDown, FaChevronRight } from 'react-icons/fa';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { API_URL } from '../../config/config';
 
 const Category = ({ onCategoryChange }) => {
     const [categories, setCategories] = useState([]);
-    const [activeCategory, setActiveCategory] = useState(null);
+    const [activeCategorySlug, setActiveCategorySlug] = useState(null); // Trạng thái lưu slug của category active
+    const [activeCategoryId, setActiveCategoryId] = useState(null); // Trạng thái lưu ID của category active
+    const navigate = useNavigate();
+    const location = useLocation(); // Lấy thông tin từ URL
 
     useEffect(() => {
+        // Fetch categories từ API
         const fetchCategories = async () => {
             try {
                 const response = await fetch(`${API_URL}/post-categories`);
@@ -20,25 +25,34 @@ const Category = ({ onCategoryChange }) => {
         };
 
         fetchCategories();
-    }, []);
 
-    const handleCategoryClick = (categorySlug, categoryTitle, parentCategorySlug = null) => {
-        // Truyền thêm parentCategorySlug khi có danh mục con
-        onCategoryChange(categorySlug, categoryTitle, parentCategorySlug);
+        // Lấy slug danh mục từ URL khi trang tải
+        const { pathname } = location;
+        const categorySlug = pathname.split('/').pop(); // Lấy slug từ URL
+
+        if (categorySlug) {
+            setActiveCategorySlug(categorySlug); // Lưu slug vào state
+        }
+    }, [location]); // Khi location thay đổi (URL thay đổi), cập nhật lại trạng thái active
+
+    const handleCategoryClick = (categorySlug, categoryTitle) => {
+        setActiveCategorySlug(categorySlug); // Cập nhật slug của category được chọn
+        navigate(`/posts/${categorySlug}`); // Thay đổi URL mà không reload trang
+        onCategoryChange(categorySlug, categoryTitle);
     };
 
     const toggleSubcategories = (categoryId) => {
-        setActiveCategory(activeCategory === categoryId ? null : categoryId);  // Chuyển đổi mở/đóng danh mục con
+        setActiveCategoryId(activeCategoryId === categoryId ? null : categoryId);
     };
 
-    const renderSubcategories = (parentId, parentSlug) => {
+    const renderSubcategories = (parentId, parentTitle) => {
         return categories
             .filter((category) => category.parent_id === parentId)
             .map((category) => (
                 <div key={category._id} className="mt-2">
                     <button
-                        onClick={() => handleCategoryClick(category.slug, category.title, parentSlug)}  // Truyền cả slug và title của cha
-                        className="text-gray-700 hover:text-blue-600 hover:underline transition-all duration-300 focus:outline-none text-lg p-2 rounded-md"
+                        onClick={() => handleCategoryClick(category.slug, category.title, parentTitle)}
+                        className={`text-gray-700 hover:text-blue-600 hover:underline transition-all duration-300 focus:outline-none text-lg p-2 rounded-md ${activeCategorySlug === category.slug ? 'bg-blue-100' : ''}`}
                     >
                         <FaChevronRight className="inline mr-2 text-gray-500" />
                         {category.title}
@@ -55,7 +69,7 @@ const Category = ({ onCategoryChange }) => {
                     <div className="flex items-center justify-between">
                         <button
                             onClick={() => handleCategoryClick(category.slug, category.title, parentSlug)}
-                            className="text-2xl text-gray-800 hover:text-blue-600 hover:bg-gray-200 p-4 rounded-lg transition-all duration-300 focus:outline-none transform hover:scale-105"
+                            className={`text-2xl text-gray-800 hover:text-blue-600 hover:bg-gray-200 p-4 rounded-lg transition-all duration-300 focus:outline-none transform hover:scale-105 ${activeCategorySlug === category.slug ? 'bg-blue-100' : ''}`}
                         >
                             {category.title}
                         </button>
@@ -71,12 +85,12 @@ const Category = ({ onCategoryChange }) => {
 
                     <div
                         style={{
-                            maxHeight: activeCategory === category._id ? '500px' : '0px',
+                            maxHeight: activeCategoryId === category._id ? '500px' : '0px',
                             overflow: 'hidden',
                         }}
                         className="transition-all duration-300 ease-in-out"
                     >
-                        {activeCategory === category._id && renderSubcategories(category._id, category.slug)}
+                        {activeCategoryId === category._id && renderSubcategories(category._id, category.slug)}
                     </div>
                 </div>
             ));
@@ -86,7 +100,7 @@ const Category = ({ onCategoryChange }) => {
         <div className="w-112 mx-auto font-sans">
             <h3 className="text-3xl font-semibold mb-8 text-gray-800">Danh mục</h3>
             <div className="border border-gray-300 rounded-lg p-8 bg-white shadow-lg">
-                {renderCategories("67134482580ad1dc01c9a120")}  {/* Sử dụng ID cha mặc định */}
+                {renderCategories("67134482580ad1dc01c9a120")} {/* Sử dụng ID cha mặc định */}
             </div>
         </div>
     );

@@ -62,7 +62,7 @@ export const upload = async (req, res, next) => {
     try {
       const result = await uploadToCloudinary(avatar);
       req.body.avatar = result.secure_url;
-      console.log('Tải lên avatar thành công:', result.secure_url);
+      console.log('URL Avatar sau khi tải lên:', req.body.avatar);
     } catch (error) {
       console.error('Lỗi tải lên avatar:', error);
       return next(error);

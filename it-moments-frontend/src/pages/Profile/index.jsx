@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import styles from './Profile.module.scss';
 import { API_URL } from '../../config/config';
 import { useClientUser } from '../../context/ClientUserContext';
-import { FaUserFriends, FaFacebook, FaInstagram } from "react-icons/fa";
-import { Modal, Button, Input, Form, message, Upload,Divider } from 'antd';
+import { FaUserFriends, FaFacebook, FaInstagram, FaUser } from "react-icons/fa";
+import { Modal, Button, Input, Form, message, Upload, Divider } from 'antd';
 import { FaCog } from 'react-icons/fa';
 import axios from 'axios';
 import { UploadOutlined } from '@ant-design/icons';
@@ -45,25 +45,28 @@ const Profile = () => {
       .validateFields()
       .then(async (values) => {
         setLoading(true);
-        const updatedValues = {
-          bio: values.bio || null,
-          facebook: values.facebook || null,
-          twitter: values.twitter || null,
-          linkedin: values.linkedin || null,
-          youtube: values.youtube || null,
-          instagram: values.instagram || null,
-        };
 
-        // If avatar has changed, include it in the request
+        // Chuẩn bị dữ liệu FormData
+        const formData = new FormData();
+        formData.append('bio', values.bio || '');
+        formData.append('facebook', values.facebook || '');
+        formData.append('twitter', values.twitter || '');
+        formData.append('linkedin', values.linkedin || '');
+        formData.append('youtube', values.youtube || '');
+        formData.append('instagram', values.instagram || '');
         if(avatar) {
-          updatedValues.avatar = avatar;
+          formData.append('avatar', avatar); // Gửi file avatar
         }
 
         try {
           const response = await axios.put(
-            `${API_URL}/users/update/${user._id}`, updatedValues,
+            `${API_URL}/users/update/${user._id}`,
+            formData,
             {
               withCredentials: true,
+              headers: {
+                'Content-Type': 'multipart/form-data', // Đảm bảo gửi dạng FormData
+              },
             }
           );
 
@@ -77,9 +80,9 @@ const Profile = () => {
                 twitter: values.twitter,
                 linkedin: values.linkedin,
                 youtube: values.youtube,
-                instagram: values.instagram
+                instagram: values.instagram,
               },
-              avatar: avatar || prevUser.avatar, // Update avatar if changed
+              avatar: response.data.user.avatar,
             }));
             setIsModalOpen(false);
           }
@@ -87,24 +90,22 @@ const Profile = () => {
           console.error('Lỗi khi cập nhật thông tin:', error);
           message.error('Có lỗi xảy ra, vui lòng thử lại.');
         } finally {
-          setLoading(false); // Tắt loading khi kết thúc
+          setLoading(false);
         }
       })
       .catch((info) => {
         console.log('Validate failed:', info);
-        setLoading(false); // Tắt loading nếu validation thất bại
+        setLoading(false);
       });
   };
 
+
   const handleAvatarChange = async (file) => {
-    // Create a preview for the image before uploading
     const reader = new FileReader();
     reader.onloadend = () => {
       setImagePreview(reader.result);
     };
     reader.readAsDataURL(file);
-
-    // Set the selected avatar file to state
     setAvatar(file);
   };
 
@@ -118,11 +119,20 @@ const Profile = () => {
             className="w-full h-auto object-cover rounded-b-3xl"
           />
           <div className="absolute -bottom-24 md:-bottom-32 left-10">
-            <img
-              src={imagePreview || "https://files.fullstack.edu.vn/f8-prod/public-images/6679277183b87.png"} // Display preview or default avatar
-              alt="Avatar"
-              className="w-40 h-40 md:w-60 md:h-60 rounded-full border-4 border-white ring-8 ring-white"
-            />
+            {imagePreview ? (
+              <img
+                src={imagePreview}
+                alt="Avatar"
+                className="w-40 h-40 md:w-60 md:h-60 rounded-full border-4 border-white ring-8 ring-white"
+              />
+            ) : (
+              <div className="w-40 h-40 md:w-60 md:h-60 rounded-full border-4 border-white ring-8 ring-white bg-gray-200 flex items-center justify-center">
+                <FaUser
+                  size={50}
+                  className="text-gray-500"
+                />
+              </div>
+            )}
           </div>
           <span className="pt-6 md:pt-8 absolute left-60 md:left-80 text-xl md:text-4xl font-bold text-black">{user.fullName}</span>
           <div className="absolute right-0 pt-6 md:pt-8 md:right-10">
@@ -210,34 +220,46 @@ const Profile = () => {
           ]}
           width={700}
         >
-          <Divider/>
+          <Divider />
           <Form.Item className="flex items-center mt-10">
-            <div className="flex items-center space-x-10">
-              {/* Avatar Preview */}
-              {imagePreview && (
-                <img
-                  src={imagePreview}
-                  alt="Avatar Preview"
-                  className="w-40 h-40 md:w-60 md:h-60 rounded-full border-4 border-white ring-8 ring-blue-500"
-                />
+            <div className="flex items-center space-x-10 relative">
+              {imagePreview ? (
+                <div className="relative">
+                  <img
+                    src={imagePreview}
+                    alt="Avatar"
+                    className="w-40 h-40 md:w-60 md:h-60 rounded-full border-4 border-white ring-8 ring-white"
+                  />
+                  <Button
+                    className="absolute top-2 right-2 bg-red-500 text-white hover:bg-red-600"
+                    size="small"
+                    onClick={() => {
+                      setImagePreview(null);
+                      setAvatar(null); // Đặt lại avatar
+                    }}
+                  >
+                    Xóa
+                  </Button>
+                </div>
+              ) : (
+                <div className="w-40 h-40 md:w-60 md:h-60 rounded-full border-4 border-white ring-8 ring-white bg-gray-200 flex items-center justify-center">
+                  <FaUser size={50} className="text-gray-500" />
+                </div>
               )}
-
-              {/* Upload Button */}
-              <Upload
-                customRequest={({ file, onSuccess, onError }) => {
-                  handleAvatarChange(file);
-                  onSuccess();
-                }}
-                showUploadList={false}
-                accept="image/*"
-              >
-                <Button icon={<UploadOutlined />} className="text-blue-500">
-                  Chọn avatar
-                </Button>
-              </Upload>
             </div>
+            <Upload
+              beforeUpload={(file) => {
+                handleAvatarChange(file);
+                return false;
+              }}
+              showUploadList={false}
+              accept="image/*"
+            >
+              <Button icon={<UploadOutlined />} className="text-blue-500">
+                Chọn avatar
+              </Button>
+            </Upload>
           </Form.Item>
-
           <Form form={form} layout="vertical">
             <Form.Item
               label="Tiểu sử"
@@ -283,7 +305,7 @@ const Profile = () => {
           </Form>
         </Modal>
       </div>
-    </div>
+    </div >
   );
 };
 

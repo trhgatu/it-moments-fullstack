@@ -13,5 +13,9 @@ router.post('/register', controller.register);
 
 router.get('/verify', controller.verifyEmail);
 
+router.post('/forgot-password', controller.forgotPassword);
+
+router.post('/reset-password', controller.resetPassword);
+
 
 export default router;
