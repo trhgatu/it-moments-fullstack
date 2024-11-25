@@ -63,7 +63,14 @@ export default function Login() {
                     socket.current.disconnect();
                 }
 
-                socket.current = io('https://it-moments-backend-production.up.railway.app', {
+                /* socket.current = io('https://it-moments-backend-production.up.railway.app', {
+                    transports: ['websocket'],
+                    withCredentials: true,
+                    extraHeaders: {
+                        'Authorization': `Bearer ${data.token}`,
+                    }
+                }); */
+                socket.current = io('http://localhost:3000', {
                     transports: ['websocket'],
                     withCredentials: true,
                     extraHeaders: {
@@ -81,7 +88,6 @@ export default function Login() {
 
                 socket.current.on('connect_error', (err) => {
                     console.error('Lỗi kết nối WebSocket:', err);
-                    message.error("Lỗi kết nối. Không thể kết nối WebSocket.");
                 });
 
                 // Start redirect countdown

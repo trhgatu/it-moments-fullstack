@@ -44,11 +44,14 @@ const EventsTable = ({ events, loading, selectedRowKeys, handleSelectChange, han
         } else if (status === "inactive") {
           buttonProps = { type: "default", style: { backgroundColor: "gray", borderColor: "gray" } };
         } else if (status === "completed") {
-          buttonProps = { type: "primary", style: { backgroundColor: "blue", borderColor: "blue" } };
+          buttonProps = { type: "primary", style: { backgroundColor: "red"} };
+        } else if (status === "pending") {
+          buttonProps = { type: "primary", style: { backgroundColor: "blue" } };
         }
 
         const statusText = status === "active" ? "Hoạt động" :
                            status === "inactive" ? "Dừng hoạt động" :
+                           status === "pending" ?  "Chờ bắt đầu":
                            "Đã kết thúc";
 
         return (

@@ -508,7 +508,7 @@ const controller = {
 
                 await notification.save();
                 const userSocketId = usersSocket[targetUserId.toString()];
-                if (userSocketId) {
+                if(userSocketId) {
                     userSocketId.forEach(socketId => {
                         io.to(socketId).emit('notificationUpdate', {
                             userId: targetUserId,

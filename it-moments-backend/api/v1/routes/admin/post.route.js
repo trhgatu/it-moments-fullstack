@@ -22,7 +22,13 @@ router.post('/create',
     controller.createPost
 );
 
-router.patch('/edit/:id', controller.editPatch);
+router.patch('/edit/:id',
+    uploadMulter.fields([
+        { name: 'thumbnail', maxCount: 1 },
+        { name: 'images', maxCount: 8 },
+    ]),
+    upload, controller.edit
+);
 
 router.delete('/delete/:id', controller.delete);
 

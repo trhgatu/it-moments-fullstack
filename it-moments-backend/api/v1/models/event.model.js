@@ -23,8 +23,8 @@ const eventSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ["active", "inactive", "completed", "canceled"],
-        default: "inactive",
+        enum: ["active", "inactive", "completed", "pending"],
+        default: "pending",
     },
     votingStartTime: {
         type: Date,

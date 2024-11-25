@@ -16,10 +16,10 @@ const Category = ({ onCategoryChange }) => {
             try {
                 const response = await fetch(`${API_URL}/post-categories`);
                 const data = await response.json();
-                if (data.success) {
+                if(data.success) {
                     setCategories(data.data.categories);
                 }
-            } catch (error) {
+            } catch(error) {
                 console.error('Error fetching categories:', error);
             }
         };
@@ -30,16 +30,20 @@ const Category = ({ onCategoryChange }) => {
         const { pathname } = location;
         const categorySlug = pathname.split('/').pop(); // Lấy slug từ URL
 
-        if (categorySlug) {
+        if(categorySlug) {
             setActiveCategorySlug(categorySlug); // Lưu slug vào state
         }
     }, [location]); // Khi location thay đổi (URL thay đổi), cập nhật lại trạng thái active
 
     const handleCategoryClick = (categorySlug, categoryTitle) => {
-        setActiveCategorySlug(categorySlug); // Cập nhật slug của category được chọn
-        navigate(`/posts/${categorySlug}`); // Thay đổi URL mà không reload trang
-        onCategoryChange(categorySlug, categoryTitle);
+        if(categorySlug !== activeCategorySlug) {
+            setActiveCategorySlug(categorySlug); // Cập nhật trạng thái active
+            navigate(`/posts/${categorySlug}`, { replace: true }); // Điều hướng mà không thêm vào lịch sử
+            onCategoryChange(categorySlug, categoryTitle); // Thông báo tới ActivityList
+        }
     };
+
+
 
     const toggleSubcategories = (categoryId) => {
         setActiveCategoryId(activeCategoryId === categoryId ? null : categoryId);
@@ -51,12 +55,14 @@ const Category = ({ onCategoryChange }) => {
             .map((category) => (
                 <div key={category._id} className="mt-2">
                     <button
-                        onClick={() => handleCategoryClick(category.slug, category.title, parentTitle)}
-                        className={`text-gray-700 hover:text-blue-600 hover:underline transition-all duration-300 focus:outline-none text-lg p-2 rounded-md ${activeCategorySlug === category.slug ? 'bg-blue-100' : ''}`}
+                        onClick={() => handleCategoryClick(category.slug, category.title)}
+                        className={`text-gray-700 hover:text-blue-600 hover:underline transition-all duration-300 focus:outline-none text-lg p-2 rounded-md ${activeCategorySlug === category.slug ? 'bg-blue-100' : ''
+                            }`}
                     >
                         <FaChevronRight className="inline mr-2 text-gray-500" />
                         {category.title}
                     </button>
+
                 </div>
             ));
     };

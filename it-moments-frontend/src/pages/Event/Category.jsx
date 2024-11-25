@@ -1,5 +1,3 @@
-import React from 'react';
-
 const Category = ({ onCategoryChange }) => {
     return (
         <div className="bg-white shadow-md rounded-lg p-4">
@@ -15,13 +13,12 @@ const Category = ({ onCategoryChange }) => {
                 </li>
                 <li>
                     <button
-                        onClick={() => onCategoryChange("upcoming")}
+                        onClick={() => onCategoryChange("completed")}
                         className="text-blue-600 hover:underline"
                     >
-                        Sự kiện sắp diễn ra
+                        Sự kiện đã kết thúc
                     </button>
                 </li>
-
             </ul>
         </div>
     );

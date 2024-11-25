@@ -5,6 +5,7 @@ import Dashboard from '../admin/pages/Dashboard';
 import PostDetail from "../admin/pages/Posts/PostDetail";
 import RoleDetail from "../admin/pages/Roles/RoleDetail";
 import EditRole from "../admin/pages/Roles/EditRole";
+import PostEdit from "../admin/pages/Posts/PostEdit";
 import PostAll from "../admin/pages/Posts/components/PostAll";
 import EventAll from "../admin/pages/Events/components/EventAll";
 import Posts from '../admin/pages/Posts';
@@ -61,6 +62,10 @@ export const adminRoute = [
                             {
                                 path: "create",
                                 element: <CreatePost />
+                            },
+                            {
+                                path: "edit/:id",
+                                element: <PostEdit />
                             }
                         ]
                     },
@@ -82,7 +87,7 @@ export const adminRoute = [
                             },
                             {
                                 path: "edit/:id",
-                                element : <EditCategory/>
+                                element: <EditCategory />
                             }
                         ]
                     },
@@ -114,7 +119,7 @@ export const adminRoute = [
                             },
                             {
                                 path: "detail/:id",
-                                element : <RoleDetail/>
+                                element: <RoleDetail />
                             },
                             {
                                 path: "create",
@@ -126,13 +131,13 @@ export const adminRoute = [
                             },
                             {
                                 path: "edit/:id",
-                                element: <EditRole/>
+                                element: <EditRole />
                             }
 
                         ]
                     },
                     {
-                        path :"events",
+                        path: "events",
                         element: <Event />,
                         children: [
                             {

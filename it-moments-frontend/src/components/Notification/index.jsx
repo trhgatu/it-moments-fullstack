@@ -33,10 +33,10 @@ const NotificationComponent = ({ userId }) => {
         fetchNotifications();
 
         if(token) {
-            const socket = io('https://it-moments-backend-production.up.railway.app');
-            socket.emit('register', token);
-            /* const socket = io('http://localhost:3000');
+           /*  const socket = io('https://it-moments-backend-production.up.railway.app');
             socket.emit('register', token); */
+            const socket = io('http://localhost:3000');
+            socket.emit('register', token);
             socket.on('notificationUpdate', (data) => {
                 const { notification } = data;
                 if(notification.userId === userId) {

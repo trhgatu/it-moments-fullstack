@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams, Link } from 'react-router-dom'; // Import Link
 import Pagination from './Pagination';
 import styles from './ActivityList.module.scss';
 import PostItem from './PostItem';
@@ -8,7 +8,7 @@ import { API_URL } from '../../config/config';
 import { Spin } from 'antd';
 
 const ActivityList = ({ totalPages, onPageChange, currentPage }) => {
-    const { category } = useParams(); // Lấy category từ URL
+    const { category } = useParams();
     const [posts, setPosts] = useState([]);
     const [categoryTitle, setCategoryTitle] = useState('');
     const [loading, setLoading] = useState(false);
@@ -42,18 +42,28 @@ const ActivityList = ({ totalPages, onPageChange, currentPage }) => {
         if (category) {
             fetchPosts();
         }
-    }, [category, currentPage]);
+    }, [category, currentPage]); // Chỉ fetch khi category hoặc currentPage thay đổi
+
+
+
 
     const handleCategoryChange = (categorySlug, categoryTitle) => {
-        // Cập nhật URL mà không làm reload trang
         navigate(`/posts/${categorySlug}`, { state: { categorySlug } });
     };
 
     return (
         <div className={styles.activityListContainer}>
-            <div className={`${styles.breadcrumb} bg-gray-100 text-gray-700 p-3 shadow`}>
-                <a href={`/posts/van-nghe`} className=''>Văn nghệ</a>
+            <div className={`${styles.breadcrumb} bg-gray-100 text-gray-700 p-3 shadow flex items-center`}>
+                <span className="w-1 h-full bg-blue-500 mr-2"></span>
+                <Link
+
+                    to="/posts/van-nghe"
+                    className="text-3xl uppercase font-semibold text-gray-700 hover:text-blue-600 transition duration-300"
+                >
+                    Văn nghệ
+                </Link>
             </div>
+
 
             <div className={styles.activityList}>
                 {loading ? (

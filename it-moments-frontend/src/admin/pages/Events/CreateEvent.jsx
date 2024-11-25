@@ -30,7 +30,7 @@ const CreateEvent = () => {
         setLoading(true);
         try {
             const token = user?.token;
-            if (!token) {
+            if(!token) {
                 message.error('Token không hợp lệ.');
                 return;
             }
@@ -43,10 +43,10 @@ const CreateEvent = () => {
             message.success('Sự kiện đã được tạo thành công!');
             form.resetFields();
             navigate('/admin/events');
-        } catch (error) {
+        } catch(error) {
             console.error('Lỗi khi tạo sự kiện:', error);
             message.error('Có lỗi xảy ra khi tạo sự kiện.');
-            if (error.response) {
+            if(error.response) {
                 message.error(`Lỗi từ máy chủ: ${error.response.data.message || 'Vui lòng thử lại.'}`);
             }
         } finally {
@@ -86,8 +86,9 @@ const CreateEvent = () => {
                         />
                     </Form.Item>
 
-                    <Form.Item label="Trạng thái" name="status" initialValue="inactive">
+                    <Form.Item label="Trạng thái" name="status" initialValue="pending">
                         <Select placeholder="Chọn trạng thái">
+                            <Option value="pending">Chờ bắt đầu</Option>
                             <Option value="active">Hoạt động</Option>
                             <Option value="inactive">Dừng hoạt động</Option>
                             <Option value="completed">Đã kết thúc</Option>

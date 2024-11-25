@@ -183,25 +183,40 @@ const controller = {
             });
         }
     },
-    editPatch: async (req, res) => {
+    edit: async (req, res, next) => {
         try {
             const id = req.params.id;
-            await Post.updateOne({
-                _id: id,
+            const updateData = { ...req.body };
 
-            },
-                req.body
-            );
+            // Kiểm tra và xử lý ảnh bìa (thumbnail)
+            if (req.body.thumbnail) {
+                updateData.thumbnail = req.body.thumbnail; // Giữ lại ảnh bìa mới nếu có
+            } else {
+                // Nếu không có ảnh bìa mới và ảnh đã xóa, set thumbnail là null
+                updateData.thumbnail = null;
+            }
+
+            // Kiểm tra và xử lý ảnh thư viện (images)
+            if (req.body.images && req.body.images.length > 0) {
+                updateData.images = req.body.images;  // Giữ lại các ảnh mới
+            } else {
+                // Nếu không có ảnh mới, xóa ảnh trong thư viện
+                updateData.images = [];
+            }
+
+            // Cập nhật bài viết trong cơ sở dữ liệu
+            await Post.updateOne({ _id: id }, updateData);
 
             res.json({
                 code: 200,
-                message: "Cập nhật thành công",
-            })
-        } catch(error) {
-            res.json({
+                message: "Cập nhật bài viết thành công",
+            });
+        } catch (error) {
+            console.error('Lỗi khi cập nhật bài viết:', error);
+            res.status(400).json({
                 code: 400,
-                message: "Lỗi",
-            })
+                message: "Có lỗi xảy ra khi cập nhật bài viết.",
+            });
         }
     },
     delete: async (req, res) => {

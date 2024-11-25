@@ -3,7 +3,8 @@ import axios from 'axios';
 import { useParams, useLocation } from 'react-router-dom';
 import { API_URL } from '../../config/config';
 import { useClientUser } from '../../context/ClientUserContext';
-import { message, Modal, Row, Col, Input, Button, Spin, Card } from 'antd';
+import { message, Modal, Row, Col, Input, Button, Spin, Image } from 'antd';
+import { FaRegCalendarAlt } from "react-icons/fa";
 import { FaUser } from 'react-icons/fa';
 import styles from './PostDetail.module.scss';
 const PostDetail = () => {
@@ -24,6 +25,7 @@ const PostDetail = () => {
   const [comments, setComments] = useState([]);
   const [replyCommentId, setReplyCommentId] = useState(null);
   const [replyContent, setReplyContent] = useState('');
+  const [startTimeRemaining, setStartTimeRemaining] = useState(null);
 
   useEffect(() => {
     if(commentId && commentRefs.current[commentId]) {
@@ -121,6 +123,24 @@ const PostDetail = () => {
       return () => clearInterval(votingCountdown);
     }
   }, [post]);
+  useEffect(() => {
+    if(post && post.event_id && post.event_id.startTime) {
+      const countdown = setInterval(() => {
+        const startTime = new Date(post.event_id.startTime).getTime();
+        const now = new Date().getTime();
+        const distance = startTime - now;
+        if(distance <= 0) {
+          clearInterval(countdown);
+          setStartTimeRemaining(0);
+        } else {
+          setStartTimeRemaining(distance);
+        }
+      }, 1000);
+
+      return () => clearInterval(countdown);
+    }
+  }, [post]);
+
   const formatTime = (time) => {
     if(time === null) return 'Đang tải...';
     const hours = Math.floor(time / (1000 * 60 * 60));
@@ -285,79 +305,73 @@ const PostDetail = () => {
   };
 
   const renderReplies = (replies) => {
-    return replies.map((reply, index) => (
+    return replies.map((reply) => (
       <div
         key={reply._id}
         ref={(el) => commentRefs.current[reply._id] = el}
-        className="ml-8 mt-4"
+        className="ml-6 border-l-2 border-gray-200 pl-4 mt-4"
       >
         <div className="flex items-start space-x-4">
           {reply.user_id?.avatar ? (
             <img
               src={reply.user_id.avatar}
-              className="rounded-full w-14 h-14"
+              className="rounded-full w-10 h-10"
               alt="user-avatar"
             />
           ) : (
-            <FaUser className="w-14 h-14 text-gray-400 rounded-full border" />
+            <FaUser className="w-10 h-10 text-gray-400 rounded-full border" />
           )}
-          <div className='bg-gray-100 rounded-2xl p-6'>
-            <strong className="text-lg block">{reply.user_id?.fullName}</strong>
-            <p className="mt-1 text-gray-700">{reply.content}</p>
+          <div className="bg-gray-50 rounded-lg p-4 w-full">
+            <strong className="block text-lg">{reply.user_id?.fullName || 'Người dùng'}</strong>
+            <p className="text-gray-700 mt-2">{reply.content}</p>
           </div>
         </div>
       </div>
     ));
   };
 
-
-
   const renderComments = () => {
     return comments.map((comment) => (
       <div
         key={comment._id}
         ref={(el) => commentRefs.current[comment._id] = el}
-        className="mb-6 rounded-lg"
+        className="mb-6"
       >
-
         <div className="flex items-start space-x-4">
           {comment.user_id?.avatar ? (
             <img
               src={comment.user_id.avatar}
-              className="rounded-full w-14 h-14"
+              className="rounded-full w-12 h-12"
               alt={`${comment.user_id.fullName || 'Người dùng'}'s avatar`}
             />
           ) : (
-            <FaUser className="w-14 h-14 text-gray-400 rounded-full border" />
+            <FaUser className="w-12 h-12 text-gray-400 rounded-full border" />
           )}
-          <div className='bg-gray-50 rounded-2xl p-6'>
-            <div className="flex-1">
-              <div className="flex items-center space-x-2">
-                <strong className="text-lg">{comment.user_id?.fullName}</strong>
-              </div>
-              <p className="mt-2 text-gray-700">{comment.content}</p>
-            </div>
+          <div className="bg-gray-50 rounded-lg p-4 w-full">
+            <strong className="block text-lg">{comment.user_id?.fullName || 'Người dùng'}</strong>
+            <p className="text-gray-700 mt-2">{comment.content}</p>
+            <Button
+              onClick={() => setReplyCommentId(comment._id)}
+              className="mt-2 text-blue-600"
+              type="link"
+            >
+              Trả lời
+            </Button>
           </div>
         </div>
         {comment.replies && comment.replies.length > 0 && (
-          <div className="mt-4 pl-10">
+          <div className="mt-4">
             {renderReplies(comment.replies)}
           </div>
         )}
-        <Button
-          onClick={() => setReplyCommentId(comment._id)}
-          className="mt-4"
-          type="link"
-        >
-          Trả lời
-        </Button>
         {replyCommentId === comment._id && (
-          <div className="mt-4 pl-10">
+          <div className="mt-4 ml-6">
             <Input.TextArea
               value={replyContent}
               onChange={(e) => setReplyContent(e.target.value)}
               rows={3}
               placeholder="Nhập phản hồi của bạn..."
+              className="w-full"
             />
             <Button
               type="primary"
@@ -373,6 +387,8 @@ const PostDetail = () => {
   };
 
 
+
+
   if(userLoading || loading) {
     return <div>Đang tải...</div>;
   }
@@ -383,62 +399,118 @@ const PostDetail = () => {
   const isVotingEnded = new Date(post.event_id?.votingEndTime) < new Date();
   const isVotingOpen = !isEventCompleted && post.event_id?.votingStatus === 'active';
   const isEventOngoing = post.event_id?.status === 'active';
-  return (
-    <div className="max-w-screen-lg mx-auto pt-56 ">
-      <div className='shadow-lg p-12 '>
-        <div className="flex text-2xl mb-3 items-start">
-          <img className="rounded-full w-20 h-20" src={post.accountAvatar}></img>
-          <strong className="ml-4">{post.accountFullName}</strong>
-        </div>
-        <span className="text-gray-600">{new Date(post.createdAt).toLocaleDateString()}</span>
-        {post.video && (
-          <div className="mt-4">
-            <iframe
-              width="100%"
-              height="450"
-              src={`https://www.youtube.com/embed/${post.video.split('v=')[1].split('&')[0]}`}
-              title="Video liên quan"
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            ></iframe>
-          </div>
-        )}
-        <img
-          src={post.thumbnail || 'https://via.placeholder.com/150'}
-          alt={post.title}
-          className="w-full h-96 object-cover hover:scale-105 transition-transform duration-300 shadow-lg"
-        />
-        <div className="mt-6 leading-relaxed text-gray-900">
-          <div className="mb-8">
-            <h1 className="text-5xl font-bold mb-4 text-black">{post.title}</h1>
+  const isEventNotStarted = post.event_id?.status === 'pending';
 
-            <div className="flex space-x-2 justify-between">
-              <span className="bg-blue-600 text-white px-4 py-2 rounded">
-                Thể loại: {post.post_category_id?.title || 'Không có thể loại'}
-              </span>
-              <span className="bg-green-600 text-white px-4 py-2 rounded">
-                Sự kiện: {post.event_id?.title || 'Không có sự kiện'}
-              </span>
-            </div>
+  return (
+    <div className="max-w-screen-lg mx-auto pt-56">
+      <div className='shadow-2xl  rounded-xl p-12 '>
+        <div className='flex justify-between mb-4'>
+          <div className="flex text-2xl mb-3 items-center">
+            <img className="rounded-full w-20 h-20 " src={post.accountAvatar}></img>
+            <strong className="ml-4">{post.accountFullName}</strong>
           </div>
-          <p className="text-lg">{post.description}</p>
+          <div className='flex items-center'>
+            <FaRegCalendarAlt className='mr-2' />
+            <span className="text-gray-600">{new Date(post.createdAt).toLocaleDateString()}</span>
+          </div>
+        </div>
+        <div className='border p-8 rounded-3xl'>
+          <div className="mt-6 leading-relaxed text-gray-900">
+            <div className="mb-8">
+              <h1 className="text-5xl font-bold mb-4 text-black">{post.title}</h1>
+              <div className="flex space-x-2">
+                <span className="bg-blue-600 text-white px-4 py-2 rounded-full">
+                  {post.post_category_id?.title || 'Không có thể loại'}
+                </span>
+                <span className="bg-green-600 text-white px-4 py-2 rounded-full">
+                  {post.event_id?.title || 'Không có sự kiện'}
+                </span>
+              </div>
+            </div>
+            <p className="text-2xl">{post.description}</p>
+            {post.video && (
+              <div className="mt-4">
+                <iframe
+                  width="100%"
+                  height="450"
+                  src={`https://www.youtube.com/embed/${post.video.split('v=')[1].split('&')[0]}`}
+                  title="Video liên quan"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                ></iframe>
+              </div>
+            )}
+            <h3 className='text-2xl py-6'>Hình ảnh bài viết:</h3>
+            <Row gutter={[16, 16]}>
+              {/* Thumbnail lớn */}
+              <Col span={12}>
+                <Image
+                  src={post.thumbnail || 'https://via.placeholder.com/150'}
+                  alt={post.title}
+                  style={{
+                    width: '100%',
+                    height: '100%', // Chiều cao cố định
+                    objectFit: 'cover', // Đảm bảo ảnh không bị méo
+                    aspectRatio: '16/9', // Duy trì tỷ lệ khung hình
+                  }}
+                  preview={true}
+                />
+              </Col>
+
+              <Col span={12}>
+                <Row gutter={[16, 16]}>
+                  {post.images && post.images.length > 0 ? (
+                    post.images.map((image, index) => (
+                      <Col span={8} key={index}>
+                        <Image
+                          src={image}
+                          alt={`Post Image ${index + 1}`}
+                          preview={true}
+                          style={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover',
+                            aspectRatio: '16/9',
+                          }}
+                        />
+                      </Col>
+                    ))
+                  ) : (
+                    <p>Không có hình ảnh bổ sung.</p>
+                  )}
+                </Row>
+              </Col>
+            </Row>
+
+
+
+          </div>
           <div className="mt-6">
-            {isEventOngoing ? (
+            {isEventNotStarted ? (
+              <div>
+                <div className="flex items-center">
+                  <Spin spinning={true} tip="Sự kiện chưa bắt đầu..." size="small" />
+                  <span className='text-black'>
+                    Sự kiện bắt đầu sau: {formatTime(startTimeRemaining)}
+                  </span>
+                </div>
+              </div>
+            ) : isEventOngoing ? (
               <div>
                 <div className="flex items-center">
                   <Spin spinning={true} tip="Sự kiện đang diễn ra..." size="small" />
-                  <div className="text-xl mt-4">
-                    <p>Thời gian còn lại của sự kiện: {formatTime(timeRemaining)}</p>
-                  </div>
+                  <span className='text-black'>
+                    Thời gian còn lại của sự kiện: {formatTime(timeRemaining)}
+                  </span>
                 </div>
                 {isVotingOpen ? (
                   <>
-                    <div className='flex items-center'>
+                    <div className="flex items-center">
                       <Spin spinning={true} tip="Bình chọn đang diễn ra" size="small" />
-                      <p className="text-lg mt-2 text-gray-800">
+                      <span className="text-black">
                         Thời gian bình chọn còn lại: {formatTime(votingTimeRemaining)}
-                      </p>
+                      </span>
                     </div>
                     <button
                       onClick={showVoteModal}
@@ -464,75 +536,75 @@ const PostDetail = () => {
               <p className="text-lg text-gray-600">Sự kiện đã kết thúc.</p>
             )}
           </div>
-        </div>
-        <div className="mt-8">
-          <h3 className="text-2xl font-semibold">Bình luận:</h3>
-          {user ? (
-            <>
-              <Input.TextArea
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-                placeholder="Viết bình luận của bạn..."
-                rows={4}
-              />
-              <Button
-                type="primary"
-                onClick={handleCommentSubmit}
-                className="mt-4"
-                disabled={!comment.trim()}
-              >
-                Gửi Bình luận
-              </Button>
-            </>
-          ) : (
-            <div className="mt-4">
-              <p className="text-lg text-gray-600">Bạn cần đăng nhập để bình luận.</p>
-              <Button
-                type="primary"
-                onClick={() => {
-                  window.location.href = `/login?redirect=${encodeURIComponent(window.location.pathname)}`;
-                }}
-              >
-                Đăng nhập
-              </Button>
-            </div>
-          )}
-
 
           <div className="mt-8">
-            {comments.length > 0 ? renderComments() : <p>Chưa có bình luận nào.</p>}
+            <h3 className="text-2xl font-semibold">Bình luận:</h3>
+            {user ? (
+              <>
+                <Input.TextArea
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                  placeholder={`Trả lời dưới tên ${user.fullName}`}
+                  rows={4}
+                />
+                <Button
+                  type="primary"
+                  onClick={handleCommentSubmit}
+                  className="mt-4"
+                  disabled={!comment.trim()}
+                >
+                  Gửi Bình luận
+                </Button>
+              </>
+            ) : (
+              <div className="mt-4">
+                <p className="text-lg text-gray-600">Bạn cần đăng nhập để bình luận.</p>
+                <Button
+                  type="primary"
+                  onClick={() => {
+                    window.location.href = `/login?redirect=${encodeURIComponent(window.location.pathname)}`;
+                  }}
+                >
+                  Đăng nhập
+                </Button>
+              </div>
+            )}
+            <div className="mt-8">
+              {comments.length > 0 ? renderComments() : <p>Chưa có bình luận nào.</p>}
+            </div>
           </div>
+          <Modal
+            title="Xác nhận bình chọn"
+            visible={isModalVisible}
+            onCancel={handleVoteModalCancel}
+            footer={[
+              <Button key="back" onClick={handleVoteModalCancel}>
+                Hủy
+              </Button>,
+              <Button key="submit" type="primary" onClick={handleVote}>
+                Xác nhận
+              </Button>,
+            ]}
+          >
+            <p>Bạn có chắc chắn muốn bình chọn cho bài viết này không?</p>
+          </Modal>
+          <Modal
+            title="Hủy bình chọn"
+            visible={isCancelModalVisible}
+            onCancel={handleCancelVoteModal}
+            footer={[
+              <Button key="back" onClick={handleCancelVoteModal}>
+                Hủy
+              </Button>,
+              <Button key="submit" type="primary" onClick={handleCancelVoteConfirm}>
+                Xác nhận
+              </Button>,
+            ]}
+          >
+            <p>Bạn có chắc chắn muốn hủy bình chọn cho bài viết này không?</p>
+          </Modal>
         </div>
-        <Modal
-          title="Xác nhận bình chọn"
-          visible={isModalVisible}
-          onCancel={handleVoteModalCancel}
-          footer={[
-            <Button key="back" onClick={handleVoteModalCancel}>
-              Hủy
-            </Button>,
-            <Button key="submit" type="primary" onClick={handleVote}>
-              Xác nhận
-            </Button>,
-          ]}
-        >
-          <p>Bạn có chắc chắn muốn bình chọn cho bài viết này không?</p>
-        </Modal>
-        <Modal
-          title="Hủy bình chọn"
-          visible={isCancelModalVisible}
-          onCancel={handleCancelVoteModal}
-          footer={[
-            <Button key="back" onClick={handleCancelVoteModal}>
-              Hủy
-            </Button>,
-            <Button key="submit" type="primary" onClick={handleCancelVoteConfirm}>
-              Xác nhận
-            </Button>,
-          ]}
-        >
-          <p>Bạn có chắc chắn muốn hủy bình chọn cho bài viết này không?</p>
-        </Modal>
+
       </div>
 
     </div>
