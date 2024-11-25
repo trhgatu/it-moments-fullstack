@@ -183,42 +183,41 @@ const controller = {
             });
         }
     },
-    edit: async (req, res, next) => {
+    edit: async (req, res) => {
         try {
             const id = req.params.id;
             const updateData = { ...req.body };
 
-            // Kiểm tra và xử lý ảnh bìa (thumbnail)
-            if (req.body.thumbnail) {
-                updateData.thumbnail = req.body.thumbnail; // Giữ lại ảnh bìa mới nếu có
-            } else {
-                // Nếu không có ảnh bìa mới và ảnh đã xóa, set thumbnail là null
+            if(!req.body.thumbnail) {
                 updateData.thumbnail = null;
             }
 
-            // Kiểm tra và xử lý ảnh thư viện (images)
-            if (req.body.images && req.body.images.length > 0) {
-                updateData.images = req.body.images;  // Giữ lại các ảnh mới
-            } else {
-                // Nếu không có ảnh mới, xóa ảnh trong thư viện
-                updateData.images = [];
+            updateData.images = req.body.existingImages || [];
+            if(req.body.images) {
+                updateData.images = [...updateData.images, ...req.body.images];
             }
+            const result = await Post.updateOne({ _id: id }, updateData);
 
-            // Cập nhật bài viết trong cơ sở dữ liệu
-            await Post.updateOne({ _id: id }, updateData);
-
-            res.json({
-                code: 200,
-                message: "Cập nhật bài viết thành công",
-            });
-        } catch (error) {
+            if(result.modifiedCount > 0) {
+                res.json({
+                    code: 200,
+                    message: 'Cập nhật bài viết thành công',
+                });
+            } else {
+                res.status(400).json({
+                    code: 400,
+                    message: 'Không tìm thấy bài viết hoặc không có thay đổi nào được thực hiện.',
+                });
+            }
+        } catch(error) {
             console.error('Lỗi khi cập nhật bài viết:', error);
-            res.status(400).json({
-                code: 400,
-                message: "Có lỗi xảy ra khi cập nhật bài viết.",
+            res.status(500).json({
+                code: 500,
+                message: 'Có lỗi xảy ra khi cập nhật bài viết.',
             });
         }
     },
+
     delete: async (req, res) => {
         try {
             const id = req.params.id;

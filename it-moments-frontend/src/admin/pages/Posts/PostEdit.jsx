@@ -73,7 +73,12 @@ const PostEdit = () => {
                                 url: post.thumbnail,
                             },
                         ]);
+                        form.setFieldsValue({ thumbnail: post.thumbnail });
+                    } else {
+                        setThumbnailFileList([]);
+                        form.setFieldsValue({ thumbnail: null });
                     }
+
                     if(post.images && post.images.length > 0) {
                         setImageFileList(
                             post.images.map((image, index) => ({
@@ -141,24 +146,29 @@ const PostEdit = () => {
         formData.append('video', videoURL);
         formData.append('isFeatured', isFeatured);
 
-        if (thumbnailFileList.length > 0 && thumbnailFileList[0].originFileObj) {
+        // Kiểm tra `thumbnail`
+        if(thumbnailFileList.length > 0 && thumbnailFileList[0].originFileObj) {
+            // Nếu có thumbnail mới
             formData.append('thumbnail', thumbnailFileList[0].originFileObj);
-        } else if (thumbnailFileList.length === 0 && !form.getFieldValue('thumbnail')) {
+        } else if(thumbnailFileList.length > 0) {
+            // Nếu không có file mới, gửi lại URL của thumbnail hiện tại
+            formData.append('thumbnail', thumbnailFileList[0].url);
+        } else {
+            // Nếu không có thumbnail, đặt giá trị null
             formData.append('thumbnail', null);
         }
 
-
-
-        if (imageFileList.length > 0) {
+        if(imageFileList.length > 0) {
             imageFileList.forEach(file => {
-                if (file.originFileObj) {
+                if(file.originFileObj) {
                     formData.append('images', file.originFileObj);
+                } else {
+                    formData.append('existingImages', file.url);
                 }
             });
         } else {
             formData.append('images', []);
         }
-
 
         setLoading(true);
         try {
