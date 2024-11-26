@@ -10,12 +10,12 @@ function DefaultLayout({ children }) {
         <div className={cx('wrapper')}>
             <Header />
             <div className={cx('container')}>
-                <div className={cx('content')}>
+                <div className={cx('content bg-gray-200')}>
                     {children}
                     <Outlet />
                 </div>
             </div>
-            {/* <Footer/> */}
+            <Footer/>
         </div>
     );
 }

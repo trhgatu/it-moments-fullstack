@@ -29,34 +29,23 @@ const controller = {
         if(req.query.keyword) {
             find.title = objectSearch.regex;
         }
+
         const getAllSubcategories = async (parentId) => {
-            // Lấy tất cả danh mục con của danh mục hiện tại
             const subcategories = await PostCategory.find({ parent_id: parentId, deleted: false });
             let allSubcategories = [...subcategories];
-
-            // Đệ quy để lấy danh mục con của các danh mục con
             for(const subcategory of subcategories) {
-                const subsubcategories = await getAllSubcategories(subcategory._id); // Gọi lại hàm để lấy danh mục con của subcategory
+                const subsubcategories = await getAllSubcategories(subcategory._id);
                 allSubcategories = [...allSubcategories, ...subsubcategories];
             }
-
             return allSubcategories;
-        }
+        };
 
         if(req.query.category) {
-            // Tìm danh mục cha
-            const category = await PostCategory.findOne({
-                slug: req.query.category,
-            });
+            const category = await PostCategory.findOne({ slug: req.query.category });
 
             if(category) {
-                // Lấy tất cả danh mục con (bao gồm cả các danh mục con của danh mục con)
                 const allSubcategories = await getAllSubcategories(category._id);
-
-                // Thêm danh mục cha vào mảng các danh mục con
                 const allCategoryIds = [category._id, ...allSubcategories.map(sub => sub._id)];
-
-                // Cập nhật tìm kiếm bài viết thuộc tất cả các danh mục con và cha
                 find.post_category_id = { $in: allCategoryIds };
             } else {
                 return res.status(404).json({
@@ -65,6 +54,10 @@ const controller = {
                 });
             }
         }
+        if(req.query.event_id){
+            find.event_id = req.query.event_id;
+        }
+
         // Pagination
         const initPagination = {
             currentPage: 1,
@@ -90,7 +83,6 @@ const controller = {
             sort.views = -1;
         }
 
-        // Lấy danh sách bài viết theo điều kiện tìm kiếm
         let posts = await Post.find(find)
             .sort(sort)
             .limit(objectPagination.limitItems)
@@ -98,11 +90,11 @@ const controller = {
             .populate('post_category_id', 'title slug')
             .populate({
                 path: "event_id",
-                match: eventStatus
+                match: eventStatus,
             })
             .lean();
 
-        // Lọc các bài viết có sự kiện
+        // Lọc các bài viết có sự kiện (chắc chắn không phải null)
         posts = posts.filter((post) => post.event_id !== null);
 
         // Cập nhật thông tin người tạo bài viết và người cập nhật
@@ -129,6 +121,8 @@ const controller = {
             },
         });
     },
+
+
 
 
     /* [GET] api/v1/posts/detail/:slug */

@@ -1,8 +1,9 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Layout, Button, Row, Col, Typography, Form, Input, message } from "antd";
+import { Layout, Button, Row, Col, Typography, Form, Input, message, Checkbox } from "antd";
 import signinbg from "../../../assets/images/img-signin.jpg";
-import { useUser } from '../../../../context/UserContext';
+import adminIcon from "../../../assets/images/img-authen.png";
+import { useUser } from "../../../../context/UserContext";
 import axios from "axios";
 import { API_URL } from "../../../../config/config";
 
@@ -46,40 +47,115 @@ const SignIn = () => {
     };
 
     return (
-        <Layout className="layout-default layout-signin">
-            <Content className="signin">
-                <Row gutter={[24, 0]} justify="space-around">
-                    <Col xs={{ span: 24, offset: 0 }} lg={{ span: 6, offset: 2 }} md={{ span: 12 }}>
-                        <Title className="mb-15">Đăng nhập</Title>
-                        <Form onFinish={onFinish} onFinishFailed={onFinishFailed} layout="vertical" className="row-col">
+        <Layout style={{
+            height: '100vh',
+            background: `url(${signinbg})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat'
+        }}>
+            <Content style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                padding: '40px',
+                height: '100%'
+            }}>
+                <div style={{
+                    padding: '0',
+                    width: '100%',
+                    maxWidth: '900px',
+                    background: '#fff',
+                    borderRadius: '20px',
+                    overflow: 'hidden',
+                    display: 'flex',
+                    boxShadow: '0 10px 20px rgba(0,0,0,0.1)'
+                }}>
+                    {/* Left side - Image */}
+                    <div style={{
+                        flex: '0 0 40%',
+                        background: '#fff',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        padding: '40px',
+
+                    }}>
+                        <img
+                            src={adminIcon}
+alt="Admin"
+                            style={{
+                                width: '80%',
+                                maxWidth: '240px'
+                            }}
+                        />
+                    </div>
+
+                    <div className="bg-blue-50" style={{
+                        flex: '1',
+                        padding: '40px',
+                    }}>
+                        <Title level={2} style={{
+                            marginBottom: '30px',
+                            fontSize: '28px',
+                            color: '#333'
+                        }}>
+                            Đăng nhập
+                        </Title>
+
+                        <Form
+                            name="basic"
+                            onFinish={onFinish}
+                            onFinishFailed={onFinishFailed}
+                            layout="vertical"
+                            initialValues={{ remember: true }}
+                        >
                             <Form.Item
-                                className="username"
-                                label="Email"
                                 name="email"
-                                rules={[{ required: true, message: "Vui lòng nhập email!" }]}
+                                rules={[
+                                    { required: true, message: "Vui lòng nhập email!" },
+                                    { type: 'email', message: "Email không hợp lệ!" }
+                                ]}
                             >
-                                <Input placeholder="Email" />
+                                <Input
+                                    placeholder="Email"
+                                    style={{
+                                        height: '45px',
+                                        borderRadius: '8px'
+                                    }}
+                                />
                             </Form.Item>
 
                             <Form.Item
-                                className="username"
-                                label="Mật khẩu"
                                 name="password"
                                 rules={[{ required: true, message: "Vui lòng nhập mật khẩu!" }]}
                             >
-                                <Input type="password" placeholder="Mật khẩu" />
+                                <Input.Password
+                                    placeholder="Mật khẩu"
+                                    style={{
+                                        borderRadius: '8px'
+                                    }}
+                                />
                             </Form.Item>
                             <Form.Item>
-                                <Button type="primary" htmlType="submit" style={{ width: "100%" }}>
-                                    Đăng nhập
+                                <Button
+                                    type="primary"
+                                    htmlType="submit"
+                                    size="large"
+style={{
+                                        width: '100%',
+                                        height: '45px',
+                                        borderRadius: '8px',
+                                        background: '#1890ff',
+                                        fontSize: '16px'
+                                    }}
+                                >
+                                    ĐĂNG NHẬP
                                 </Button>
                             </Form.Item>
                         </Form>
-                    </Col>
-                    <Col className="sign-img" style={{ padding: 12 }} xs={{ span: 24 }} lg={{ span: 12 }} md={{ span: 12 }}>
-                        <img src={signinbg} alt="" />
-                    </Col>
-                </Row>
+                    </div>
+                </div>
             </Content>
         </Layout>
     );

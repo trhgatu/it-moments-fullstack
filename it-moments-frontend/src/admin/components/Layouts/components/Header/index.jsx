@@ -1,7 +1,9 @@
-import { Row, Col, Breadcrumb, Button, Input, Avatar, Dropdown, Menu } from "antd";
+import { useState } from "react";
+import { Row, Col, Breadcrumb, Button, Input, Avatar, Dropdown, Menu, Modal, notification } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { NavLink, Link, useNavigate, useLocation } from "react-router-dom";
 import { useUser } from "../../../../../context/UserContext";
+import { API_URL } from "../../../../../config/config";
 
 const profileIcon = (
   <svg
@@ -20,7 +22,6 @@ const profileIcon = (
   </svg>
 );
 
-// Khai báo biểu tượng cho nút bật/tắt sidebar
 const togglerIcon = (
   <svg
     width="20"
@@ -36,18 +37,44 @@ function Header({ name, subName, onPress }) {
   const { user, setUser } = useUser();
   const navigate = useNavigate();
   const location = useLocation();
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   const handleLogout = async () => {
     try {
-      await fetch("/api/logout", {
+      const response = await fetch(`${API_URL}/admin/auth/logout`, {
         method: "POST",
         credentials: "include",
       });
-      setUser(null);
-      navigate("/sign-in");
-    } catch(error) {
+
+      if (response.ok) {
+        setUser(null);
+        notification.success({
+          message: "Đăng xuất thành công!",
+          description: "Bạn đã đăng xuất khỏi hệ thống.",
+        });
+        navigate("/admin/auth/login");
+      } else {
+        console.error("Lỗi khi đăng xuất");
+      }
+    } catch (error) {
       console.error("Lỗi khi đăng xuất:", error);
     }
+  };
+
+  // Hiển thị Modal xác nhận đăng xuất
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  // Xử lý khi người dùng đồng ý đăng xuất
+  const handleOk = () => {
+    handleLogout();
+    setIsModalVisible(false);
+  };
+
+  // Xử lý khi người dùng hủy đăng xuất
+  const handleCancel = () => {
+    setIsModalVisible(false);
   };
 
   const breadcrumbItems = location.pathname
@@ -56,7 +83,7 @@ function Header({ name, subName, onPress }) {
 
   const breadcrumbDisplay = breadcrumbItems.map((item, index) => {
     const isDetailPage = item === "detail";
-    if(isDetailPage) {
+    if (isDetailPage) {
       return (
         <Breadcrumb.Item key={index}>
           <span>Detail</span>
@@ -77,44 +104,58 @@ function Header({ name, subName, onPress }) {
       <Menu.Item key="profile">
         <Link to="/admin/profile">Profile</Link>
       </Menu.Item>
-      <Menu.Item key="logout" onClick={handleLogout}>
+      <Menu.Item key="logout" onClick={showModal}>
         Đăng xuất
       </Menu.Item>
     </Menu>
   );
 
   return (
-    <Row gutter={[24, 0]}>
-      <Col span={24} md={6}>
-        <Breadcrumb>
-          <Breadcrumb.Item>
-            <span>Pages</span>
-          </Breadcrumb.Item>
-          {breadcrumbDisplay}
-        </Breadcrumb>
-      </Col>
-      <Col span={24} md={18} className="header-control">
-        <Button type="link" className="sidebar-toggler" onClick={onPress}>
-          {togglerIcon}
-        </Button>
-        {user ? (
-          <Dropdown overlay={menu} trigger={["click"]}>
-            <Avatar
-              src={user.avatar || "https://example.com/default-avatar.png"}
-              alt="avatar"
-              style={{ cursor: "pointer" }}
-            />
-          </Dropdown>
-        ) : (
-          <Link to="/sign-in" className="btn-sign-in">
-            {profileIcon}
-            <span>Đăng nhập</span>
-          </Link>
-        )}
+    <>
+      <Row gutter={[24, 0]}>
+        <Col span={24} md={6}>
+          <Breadcrumb>
+            <Breadcrumb.Item>
+              <span>Pages</span>
+            </Breadcrumb.Item>
+            {breadcrumbDisplay}
+          </Breadcrumb>
+        </Col>
+        <Col span={24} md={18} className="header-control">
+          <Button type="link" className="sidebar-toggler" onClick={onPress}>
+            {togglerIcon}
+          </Button>
+          {user ? (
+            <Dropdown overlay={menu} trigger={["click"]}>
+              <Avatar
+                src={user.avatar || "https://example.com/default-avatar.png"}
+                alt="avatar"
+                style={{ cursor: "pointer" }}
+              />
+            </Dropdown>
+          ) : (
+            <Link to="/sign-in" className="btn-sign-in">
+              {profileIcon}
+              <span>Đăng nhập</span>
+            </Link>
+          )}
 
-        <Input className="header-search" placeholder="Type here..." prefix={<SearchOutlined />} />
-      </Col>
-    </Row>
+          <Input className="header-search" placeholder="Type here..." prefix={<SearchOutlined />} />
+        </Col>
+      </Row>
+
+      {/* Modal xác nhận đăng xuất */}
+      <Modal
+        title="Xác nhận đăng xuất"
+        visible={isModalVisible}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        okText="Đăng xuất"
+        cancelText="Hủy"
+      >
+        <p>Bạn có chắc chắn muốn đăng xuất không?</p>
+      </Modal>
+    </>
   );
 }
 

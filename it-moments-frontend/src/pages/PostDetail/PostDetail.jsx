@@ -6,6 +6,7 @@ import { useClientUser } from '../../context/ClientUserContext';
 import { message, Modal, Row, Col, Input, Button, Spin, Image } from 'antd';
 import { FaRegCalendarAlt } from "react-icons/fa";
 import { FaUser } from 'react-icons/fa';
+import RelatedPosts from './RelatedPosts';
 import styles from './PostDetail.module.scss';
 const PostDetail = () => {
   const { slug } = useParams();
@@ -402,212 +403,221 @@ const PostDetail = () => {
   const isEventNotStarted = post.event_id?.status === 'pending';
 
   return (
-    <div className="max-w-screen-lg mx-auto pt-56">
-      <div className='shadow-2xl  rounded-xl p-12 '>
-        <div className='flex justify-between mb-4'>
-          <div className="flex text-2xl mb-3 items-center">
-            <img className="rounded-full w-20 h-20 " src={post.accountAvatar}></img>
-            <strong className="ml-4">{post.accountFullName}</strong>
-          </div>
-          <div className='flex items-center'>
-            <FaRegCalendarAlt className='mr-2' />
-            <span className="text-gray-600">{new Date(post.createdAt).toLocaleDateString()}</span>
-          </div>
-        </div>
-        <div className='border p-8 rounded-3xl'>
-          <div className="mt-6 leading-relaxed text-gray-900">
-            <div className="mb-8">
-              <h1 className="text-5xl font-bold mb-4 text-black">{post.title}</h1>
-              <div className="flex space-x-2">
-                <span className="bg-blue-600 text-white px-4 py-2 rounded-full">
-                  {post.post_category_id?.title || 'Không có thể loại'}
-                </span>
-                <span className="bg-green-600 text-white px-4 py-2 rounded-full">
-                  {post.event_id?.title || 'Không có sự kiện'}
-                </span>
+    <div className="max-w-screen-2xl mx-auto pt-48">
+      <div className="grid grid-cols-4 gap-6">
+        <div className="col-span-3">
+          <div className="bg-white rounded-xl p-12">
+            <div className="flex justify-between mb-4">
+              <div className="flex text-2xl mb-3 items-center">
+                <img className="rounded-full w-20 h-20" src={post.accountAvatar}></img>
+                <strong className="ml-4">{post.accountFullName}</strong>
+              </div>
+              <div className="flex items-center">
+                <FaRegCalendarAlt className="mr-2" />
+                <span className="text-gray-600">{new Date(post.createdAt).toLocaleDateString()}</span>
               </div>
             </div>
-            <p className="text-2xl">{post.description}</p>
-            {post.video && (
-              <div className="mt-4">
-                <iframe
-                  width="100%"
-                  height="450"
-                  src={`https://www.youtube.com/embed/${post.video.split('v=')[1].split('&')[0]}`}
-                  title="Video liên quan"
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                ></iframe>
-              </div>
-            )}
-            <h3 className='text-2xl py-6'>Hình ảnh bài viết:</h3>
-            <Row gutter={[16, 16]}>
-              {/* Thumbnail lớn */}
-              <Col span={12}>
-                <Image
-                  src={post.thumbnail || 'https://via.placeholder.com/150'}
-                  alt={post.title}
-                  style={{
-                    width: '100%',
-                    height: '100%', // Chiều cao cố định
-                    objectFit: 'cover', // Đảm bảo ảnh không bị méo
-                    aspectRatio: '16/9', // Duy trì tỷ lệ khung hình
+            <div className="border p-8 rounded-3xl">
+              <div className="mt-6 leading-relaxed text-gray-900">
+                <div className="mb-8">
+                  <h1 className="text-5xl font-bold mb-4 text-black">{post.title}</h1>
+                  <div className="flex space-x-2">
+                    <span className="bg-blue-600 text-white px-4 py-2 rounded-full">
+                      {post.post_category_id?.title || 'Không có thể loại'}
+                    </span>
+                    <span className="bg-green-600 text-white px-4 py-2 rounded-full">
+                      {post.event_id?.title || 'Không có sự kiện'}
+                    </span>
+                  </div>
+                </div>
+                <div className='text-2xl'
+                  dangerouslySetInnerHTML={{
+                    __html: post.description,
                   }}
-                  preview={true}
                 />
-              </Col>
-
-              <Col span={12}>
+                {post.video && (
+                  <div className="mt-4">
+                    <iframe
+                      width="100%"
+                      height="450"
+                      src={`https://www.youtube.com/embed/${post.video.split('v=')[1].split('&')[0]}`}
+                      title="Video liên quan"
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    ></iframe>
+                  </div>
+                )}
+                <h3 className="text-2xl py-6">Hình ảnh bài viết:</h3>
                 <Row gutter={[16, 16]}>
-                  {post.images && post.images.length > 0 ? (
-                    post.images.map((image, index) => (
-                      <Col span={8} key={index}>
-                        <Image
-                          src={image}
-                          alt={`Post Image ${index + 1}`}
-                          preview={true}
-                          style={{
-                            width: '100%',
-                            height: '100%',
-                            objectFit: 'cover',
-                            aspectRatio: '16/9',
-                          }}
-                        />
-                      </Col>
-                    ))
-                  ) : (
-                    <p>Không có hình ảnh bổ sung.</p>
-                  )}
+                  <Col span={12}>
+                    <Image
+                      src={post.thumbnail || 'https://via.placeholder.com/150'}
+                      alt={post.title}
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        aspectRatio: '16/9',
+                      }}
+                      preview={true}
+                    />
+                  </Col>
+
+                  <Col span={12}>
+                    <Row gutter={[16, 16]}>
+                      {post.images && post.images.length > 0 ? (
+                        post.images.map((image, index) => (
+                          <Col span={8} key={index}>
+                            <Image
+                              src={image}
+                              alt={`Post Image ${index + 1}`}
+                              preview={true}
+                              style={{
+                                width: '100%',
+                                height: '100%',
+                                objectFit: 'cover',
+                                aspectRatio: '16/9',
+                              }}
+                            />
+                          </Col>
+                        ))
+                      ) : (
+                        <p>Không có hình ảnh bổ sung.</p>
+                      )}
+                    </Row>
+                  </Col>
                 </Row>
-              </Col>
-            </Row>
-
-
-
-          </div>
-          <div className="mt-6">
-            {isEventNotStarted ? (
-              <div>
-                <div className="flex items-center">
-                  <Spin spinning={true} tip="Sự kiện chưa bắt đầu..." size="small" />
-                  <span className='text-black'>
-                    Sự kiện bắt đầu sau: {formatTime(startTimeRemaining)}
-                  </span>
-                </div>
               </div>
-            ) : isEventOngoing ? (
-              <div>
-                <div className="flex items-center">
-                  <Spin spinning={true} tip="Sự kiện đang diễn ra..." size="small" />
-                  <span className='text-black'>
-                    Thời gian còn lại của sự kiện: {formatTime(timeRemaining)}
-                  </span>
-                </div>
-                {isVotingOpen ? (
-                  <>
+              <div className="mt-6">
+                {isEventNotStarted ? (
+                  <div>
                     <div className="flex items-center">
-                      <Spin spinning={true} tip="Bình chọn đang diễn ra" size="small" />
-                      <span className="text-black">
-                        Thời gian bình chọn còn lại: {formatTime(votingTimeRemaining)}
+                      <Spin spinning={true} tip="Sự kiện chưa bắt đầu..." size="small" />
+                      <span className='text-black'>
+                        Sự kiện bắt đầu sau: {formatTime(startTimeRemaining)}
                       </span>
                     </div>
-                    <button
-                      onClick={showVoteModal}
-                      disabled={voted}
-                      className={`px-4 py-2 rounded bg-blue-600 text-white ${voted ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700'}`}
-                    >
-                      {voted ? 'Đã bình chọn' : 'Bình chọn'}
-                    </button>
-                    {voted && (
-                      <button
-                        onClick={showCancelVoteModal}
-                        className="ml-4 px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700"
-                      >
-                        Hủy bình chọn
-                      </button>
+                  </div>
+                ) : isEventOngoing ? (
+                  <div>
+                    <div className="flex items-center">
+                      <Spin spinning={true} tip="Sự kiện đang diễn ra..." size="small" />
+                      <span className='text-black'>
+                        Thời gian còn lại của sự kiện: {formatTime(timeRemaining)}
+                      </span>
+                    </div>
+                    {isVotingOpen ? (
+                      <>
+                        <div className="flex items-center">
+                          <Spin spinning={true} tip="Bình chọn đang diễn ra" size="small" />
+                          <span className="text-black">
+                            Thời gian bình chọn còn lại: {formatTime(votingTimeRemaining)}
+                          </span>
+                        </div>
+                        <button
+                          onClick={showVoteModal}
+                          disabled={voted}
+                          className={`px-4 py-2 rounded bg-blue-600 text-white ${voted ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700'}`}
+                        >
+                          {voted ? 'Đã bình chọn' : 'Bình chọn'}
+                        </button>
+                        {voted && (
+                          <button
+                            onClick={showCancelVoteModal}
+                            className="ml-4 px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700"
+                          >
+                            Hủy bình chọn
+                          </button>
+                        )}
+                      </>
+                    ) : (
+                      <p className="text-lg text-gray-600">Bình chọn đã kết thúc</p>
                     )}
-                  </>
+                  </div>
                 ) : (
-                  <p className="text-lg text-gray-600">Bình chọn đã kết thúc</p>
+                  <p className="text-lg text-gray-600">Sự kiện đã kết thúc.</p>
                 )}
               </div>
-            ) : (
-              <p className="text-lg text-gray-600">Sự kiện đã kết thúc.</p>
-            )}
-          </div>
-
-          <div className="mt-8">
-            <h3 className="text-2xl font-semibold">Bình luận:</h3>
-            {user ? (
-              <>
-                <Input.TextArea
-                  value={comment}
-                  onChange={(e) => setComment(e.target.value)}
-                  placeholder={`Trả lời dưới tên ${user.fullName}`}
-                  rows={4}
-                />
-                <Button
-                  type="primary"
-                  onClick={handleCommentSubmit}
-                  className="mt-4"
-                  disabled={!comment.trim()}
-                >
-                  Gửi Bình luận
-                </Button>
-              </>
-            ) : (
-              <div className="mt-4">
-                <p className="text-lg text-gray-600">Bạn cần đăng nhập để bình luận.</p>
-                <Button
-                  type="primary"
-                  onClick={() => {
-                    window.location.href = `/login?redirect=${encodeURIComponent(window.location.pathname)}`;
-                  }}
-                >
-                  Đăng nhập
-                </Button>
+              <div className="mt-8">
+                <h3 className="text-2xl font-semibold">Bình luận:</h3>
+                {user ? (
+                  <>
+                    <Input.TextArea
+                      value={comment}
+                      onChange={(e) => setComment(e.target.value)}
+                      placeholder={`Trả lời dưới tên ${user.fullName}`}
+                      rows={4}
+                    />
+                    <Button
+                      type="primary"
+                      onClick={handleCommentSubmit}
+                      className="mt-4"
+                      disabled={!comment.trim()}
+                    >
+                      Gửi Bình luận
+                    </Button>
+                  </>
+                ) : (
+                  <div className="mt-4">
+                    <p className="text-lg text-gray-600">Bạn cần đăng nhập để bình luận.</p>
+                    <Button
+                      type="primary"
+                      onClick={() => {
+                        window.location.href = `/login?redirect=${encodeURIComponent(window.location.pathname)}`;
+                      }}
+                    >
+                      Đăng nhập
+                    </Button>
+                  </div>
+                )}
+                <div className="mt-8">
+                  {comments.length > 0 ? renderComments() : <p>Chưa có bình luận nào.</p>}
+                </div>
               </div>
-            )}
-            <div className="mt-8">
-              {comments.length > 0 ? renderComments() : <p>Chưa có bình luận nào.</p>}
+              <Modal
+                title="Xác nhận bình chọn"
+                visible={isModalVisible}
+                onCancel={handleVoteModalCancel}
+                footer={[
+                  <Button key="back" onClick={handleVoteModalCancel}>
+                    Hủy
+                  </Button>,
+                  <Button key="submit" type="primary" onClick={handleVote}>
+                    Xác nhận
+                  </Button>,
+                ]}
+              >
+                <p>Bạn có chắc chắn muốn bình chọn cho bài viết này không?</p>
+              </Modal>
+
+              {/* Modal for Cancel Vote */}
+              <Modal
+                title="Hủy bình chọn"
+                visible={isCancelModalVisible}
+                onCancel={handleCancelVoteModal}
+                footer={[
+                  <Button key="back" onClick={handleCancelVoteModal}>
+                    Hủy
+                  </Button>,
+                  <Button key="submit" type="primary" onClick={handleCancelVoteConfirm}>
+                    Xác nhận
+                  </Button>,
+                ]}
+              >
+                <p>Bạn có chắc chắn muốn hủy bình chọn cho bài viết này không?</p>
+              </Modal>
             </div>
           </div>
-          <Modal
-            title="Xác nhận bình chọn"
-            visible={isModalVisible}
-            onCancel={handleVoteModalCancel}
-            footer={[
-              <Button key="back" onClick={handleVoteModalCancel}>
-                Hủy
-              </Button>,
-              <Button key="submit" type="primary" onClick={handleVote}>
-                Xác nhận
-              </Button>,
-            ]}
-          >
-            <p>Bạn có chắc chắn muốn bình chọn cho bài viết này không?</p>
-          </Modal>
-          <Modal
-            title="Hủy bình chọn"
-            visible={isCancelModalVisible}
-            onCancel={handleCancelVoteModal}
-            footer={[
-              <Button key="back" onClick={handleCancelVoteModal}>
-                Hủy
-              </Button>,
-              <Button key="submit" type="primary" onClick={handleCancelVoteConfirm}>
-                Xác nhận
-              </Button>,
-            ]}
-          >
-            <p>Bạn có chắc chắn muốn hủy bình chọn cho bài viết này không?</p>
-          </Modal>
         </div>
 
+        {/* Right column for Related Posts */}
+        <div className="col-span-1">
+          <RelatedPosts eventId={post.event_id._id} />
+        </div>
       </div>
-
     </div>
+
   );
 };
 

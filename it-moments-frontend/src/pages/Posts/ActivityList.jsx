@@ -42,7 +42,7 @@ const ActivityList = ({ totalPages, onPageChange, currentPage }) => {
         if (category) {
             fetchPosts();
         }
-    }, [category, currentPage]); // Chỉ fetch khi category hoặc currentPage thay đổi
+    }, [category, currentPage]);
 
 
 

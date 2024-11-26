@@ -5,7 +5,7 @@ import styles from './Header.module.scss';
 import { useClientUser } from '../../../../context/ClientUserContext';
 import { Avatar, Dropdown, Menu, Button, Modal, notification, Badge } from 'antd';
 import NotificationComponent from '../../../../components/Notification';
-import { UserOutlined, BellOutlined } from '@ant-design/icons';
+import { UserOutlined } from '@ant-design/icons';
 import { motion } from 'framer-motion';
 import axios from 'axios';
 import { API_URL } from '../../../../config/config';
@@ -256,8 +256,6 @@ export const Header = () => {
                     </>
                 )}
             </div>
-
-            {/* Modal xác nhận đăng xuất */}
             <Modal
                 title="Xác nhận đăng xuất"
                 visible={isModalVisible}
@@ -268,8 +266,6 @@ export const Header = () => {
             >
                 <p>Bạn có chắc chắn muốn đăng xuất không?</p>
             </Modal>
-
-            {/* Menu Di Động Khi Mở */}
             {isMenuOpen && (
                 <div className="md:hidden fixed top-16 left-0 right-0 bg-white shadow-md z-40 p-4">
                     <nav className="flex flex-col items-center">
@@ -287,18 +283,17 @@ export const Header = () => {
                                 {item.label}
                             </NavLink>
                         ))}
-                        {/* Nếu không có user thì hiển thị nút đăng nhập và đăng ký */}
                         {!user ? (
                             <div className="flex flex-col items-center mt-4">
                                 <Button
-                                    className="mb-2 w-full" // Đặt chiều rộng toàn bộ
+                                    className="mb-2 w-full"
                                     type="primary"
                                     onClick={() => navigate('/login')}
                                 >
                                     Đăng nhập
                                 </Button>
                                 <Button
-                                    className="w-full" // Đặt chiều rộng toàn bộ
+                                    className="w-full"
                                     type="default"
                                     onClick={() => navigate('/register')}
                                 >

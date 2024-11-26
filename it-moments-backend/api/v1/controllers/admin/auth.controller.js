@@ -84,7 +84,6 @@ const controller = {
     /* [POST] /api/v1/admin/auth/logout */
     logout: async (req, res) => {
         try {
-            // Xóa cookie `admin_token` khỏi trình duyệt
             res.clearCookie("admin_token", {
                 httpOnly: true,
                 sameSite: "None",

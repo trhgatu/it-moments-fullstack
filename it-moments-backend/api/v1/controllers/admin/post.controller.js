@@ -44,7 +44,7 @@ const controller = {
             .sort(sort)
             .limit(objectPagination.limitItems)
             .skip(objectPagination.skip)
-            .populate('post_category_id', 'title')
+            .populate('post_category_id', 'title slug')
             .populate('event_id')
             .lean();
 
@@ -74,7 +74,6 @@ const controller = {
             },
         });
     },
-
     /* [GET] api/v1/admin/posts/detail/:id */
     detail: async (req, res) => {
         const id = req.params.id;

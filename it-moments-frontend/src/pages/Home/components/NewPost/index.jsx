@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link } from "react-router-dom";
 import { API_URL } from '../../../../config/config';
-
+import { EyeOutlined } from '@ant-design/icons';
 export default function NewPost() {
     const [latestPost, setLatestPost] = useState(null);
 
@@ -25,26 +25,36 @@ export default function NewPost() {
                     className="relative overflow-hidden h-full flex flex-col justify-end p-8 bg-cover bg-center text-white"
                     style={{ backgroundImage: `url(${latestPost.thumbnail})` }}
                 >
-                    <div className="absolute inset-0 bg-black bg-opacity-50"></div>
-                    <div className="relative z-10">
-                        <div className="text-lg md:text-3xl font-semibold mt-2">
-                            <Link to={`/posts/${latestPost.post_category_id.slug}`} className="text-white font-semibold hover:text-blue-500 transition">
-                                <span className="bg-blue-500 px-2 py-1">
-                                    {latestPost.post_category_id.title}
-                                </span>
-                            </Link>
-                            <span className="mx-2">/</span>
-                            <span className="ml-2">{new Date(latestPost.createdAt).toLocaleDateString()}</span>
-                        </div>
+                    <div className="absolute inset-0 bg-black bg-opacity-20"></div>
 
-                        <h2 className="text-lg md:text-3xl font-semibold mt-2 hover:text-blue-500 transition">
+                    {/* Badge - Góc trái trên */}
+                    <div className="absolute top-4 left-4 bg-blue-500 text-white px-2 py-1 rounded">
+                        <Link to={`/posts/${latestPost.post_category_id.slug}`} className="text-white font-semibold hover:text-blue-500 transition">
+                            {latestPost.post_category_id.title}
+                        </Link>
+                    </div>
+
+                    <div className="relative z-10 mt-12">
+                        <h2 className="text-4xl md:text-3xl font-semibold mt-2 hover:text-blue-500 transition">
                             <Link to={`/posts/${latestPost.post_category_id.slug}/${latestPost.slug}`}>{latestPost.title}</Link>
                         </h2>
-                        <p className="text-sm md:text-lg mt-2">{latestPost.description.slice(0, 100)}...</p>
+                        <div className='line-clamp-2'
+                            dangerouslySetInnerHTML={{
+                                __html: latestPost.description,
+                            }}
+                        />
+                    </div>
+                    <div className="flex justify-between text-sm text-gray-200 mt-4">
+                        <div className='flex items-center text-white'>
+                            <EyeOutlined className='text-lg' />
+                            <span className='text-lg ml-2'>
+                                {latestPost.views}
+                            </span>
+                        </div>
+                        <span>{new Date(latestPost.createdAt).toLocaleDateString()}</span>
                     </div>
                 </div>
             )}
         </div>
-
     );
 }

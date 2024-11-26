@@ -14,6 +14,7 @@ import VerifyEmail from "../pages/VerifyEmail";
 import Academic from "../pages/Academic";
 import ForgotPassword from "../pages/ForgotPassword";
 import ResetPassword from "../pages/ResetPassword";
+import PostAcademicDetail from "../pages/PostAcademicDetail";
 export const clientRoute = [
     {
         path: "/",
@@ -52,7 +53,7 @@ export const clientRoute = [
                 children: [
                     {
                         path: ":slug",
-                        element: <PostDetail />
+                        element: <PostAcademicDetail />
                     },
 
                 ]

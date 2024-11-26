@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 import { Card, Form, Input, Button, Select, Upload, message, Radio, Checkbox, Spin } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { UploadOutlined } from '@ant-design/icons';
@@ -15,9 +17,10 @@ const CreatePost = () => {
     const [imageFileList, setImageFileList] = useState([]);
     const [videoURL, setVideoURL] = useState('');
     const [categories, setCategories] = useState([]);
-    const [events, setEvents] = useState([]); // Thêm state cho sự kiện
+    const [events, setEvents] = useState([]);
     const [isFeatured, setIsFeatured] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [description, setDescription] = useState('');
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -40,12 +43,12 @@ const CreatePost = () => {
         const fetchEvents = async () => {
             const token = user?.token;
             try {
-                const response = await axios.get(`${API_URL}/admin/events`, { // Giả định API của bạn là /admin/events
+                const response = await axios.get(`${API_URL}/admin/events`, {
                     headers: { 'Authorization': `Bearer ${token}` },
                     withCredentials: true,
                 });
                 if (response.data && Array.isArray(response.data.data.events)) {
-                    setEvents(response.data.data.events); // Lưu danh sách sự kiện vào state
+                    setEvents(response.data.data.events);
                 } else {
                     message.error('Có lỗi xảy ra khi lấy sự kiện.');
                 }
@@ -55,7 +58,7 @@ const CreatePost = () => {
         };
 
         fetchCategories();
-        fetchEvents(); // Gọi hàm lấy sự kiện
+        fetchEvents();
     }, [user]);
 
     const handleThumbnailChange = (info) => {
@@ -78,8 +81,10 @@ const CreatePost = () => {
         const formData = new FormData();
         formData.append('title', values.title);
         formData.append('post_category_id', values.post_category_id);
-        formData.append('event_id', values.event_id);
-        formData.append('description', values.description);
+        if (values.event_id) {
+            formData.append('event_id', values.event_id);
+        }
+        formData.append('description', description);  // Lưu trữ mô tả với định dạng HTML
         const positionValue = values.position ? parseInt(values.position) : '';
         formData.append('position', positionValue);
         formData.append('status', values.status);
@@ -110,6 +115,7 @@ const CreatePost = () => {
             setThumbnailFileList([]);
             setImageFileList([]);
             setVideoURL('');
+            setDescription('');
             navigate('/admin/posts');
         } catch (error) {
             console.error('Lỗi khi tạo bài viết:', error);
@@ -140,11 +146,11 @@ const CreatePost = () => {
                         </Select>
                     </Form.Item>
 
-                    <Form.Item label="Sự kiện" name="event_id" rules={[{ required: true, message: 'Vui lòng chọn sự kiện!' }]}>
+                    <Form.Item label="Sự kiện" name="event_id">
                         <Select placeholder="---- Chọn sự kiện ----">
                             {events.map(event => (
                                 <Option key={event._id} value={event._id}>
-                                    {event.title} {/* Hoặc bất kỳ thuộc tính nào mà bạn muốn hiển thị */}
+                                    {event.title}
                                 </Option>
                             ))}
                         </Select>
@@ -157,7 +163,7 @@ const CreatePost = () => {
                     </Form.Item>
 
                     <Form.Item label="Mô tả" name="description" rules={[{ required: true, message: 'Vui lòng nhập mô tả!' }]}>
-                        <Input.TextArea rows={5} placeholder="Nhập mô tả" />
+                        <ReactQuill value={description} onChange={setDescription} />
                     </Form.Item>
 
                     <Form.Item label="Ảnh" name="thumbnail">
@@ -184,11 +190,7 @@ const CreatePost = () => {
                     </Form.Item>
 
                     <Form.Item label="Video URL" name="video">
-                        <Input
-                            placeholder="Nhập URL video YouTube"
-                            value={videoURL}
-                            onChange={handleVideoURLChange}
-                        />
+                        <Input placeholder="Nhập URL video YouTube" value={videoURL} onChange={handleVideoURLChange} />
                     </Form.Item>
 
                     <Form.Item label="Vị trí" name="position">

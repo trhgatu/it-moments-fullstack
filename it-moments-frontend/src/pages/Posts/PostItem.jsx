@@ -28,7 +28,11 @@ const PostItem = ({ title, description, author, date, imageUrl, slug, category }
                     {title}
                 </h3>
 
-                <p className={styles.postDescription}>{description}</p>
+                <div className='line-clamp-2'
+                    dangerouslySetInnerHTML={{
+                        __html: description,
+                    }}
+                />
                 <div className={styles.postMeta}>
                     <span className={styles.postAuthor}><IoPersonOutline className={styles.personIcon} />{author}</span>
                     <span className={styles.postDate}><FaRegCalendarAlt className={styles.calendarIcon} />{date}</span>

@@ -5,14 +5,14 @@ import { API_URL } from '../../config/config';
 import { Modal } from 'antd';
 import { ClockCircleOutlined, EnvironmentOutlined } from '@ant-design/icons';
 
-const PostEventDetail = () => {
-  const { slug } = useParams();
+const PostAcademicDetail = () => {
+  const { slug, category } = useParams();
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
   const [imageModalVisible, setImageModalVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState('');
   const [visibleImages, setVisibleImages] = useState(8);
-  const [showFullDescription, setShowFullDescription] = useState(false); // Trạng thái điều khiển việc hiển thị đầy đủ mô tả
+  const [showFullDescription, setShowFullDescription] = useState(false);
 
   const fetchPost = async () => {
     try {
@@ -28,7 +28,7 @@ const PostEventDetail = () => {
 
   useEffect(() => {
     fetchPost();
-  }, [slug]);
+  }, [slug, category]);
 
   const showImageModal = (image) => {
     setSelectedImage(image);
@@ -81,16 +81,9 @@ const PostEventDetail = () => {
         <h2 className="text-3xl font-bold mb-6 text-gray-800 border-b pb-4">Giới thiệu sự kiện</h2>
         <div className="grid md:grid-cols-2 gap-8 items-center">
           <div>
-            <p
-              dangerouslySetInnerHTML={{
-                __html: showFullDescription
-                  ? post.description
-                  : post.description.slice(0, 200) + '...',
-              }}
-              className="text-lg italic bg-yellow-50 p-4 rounded-lg shadow"
-            >
+            <p className="text-lg italic bg-yellow-50 p-4 rounded-lg shadow">
+              ✍️ {showFullDescription ? post.description : post.description.slice(0, 200) + '...'}
             </p>
-
             <button
               onClick={toggleDescription}
               className="text-blue-600 mt-4 inline-block"
@@ -203,4 +196,4 @@ const PostEventDetail = () => {
   );
 };
 
-export default PostEventDetail;
+export default PostAcademicDetail;

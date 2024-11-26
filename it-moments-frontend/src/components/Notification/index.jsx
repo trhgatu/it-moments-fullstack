@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Badge, Avatar } from 'antd';
 import { BellOutlined } from '@ant-design/icons';
@@ -14,6 +14,24 @@ const NotificationComponent = ({ userId }) => {
     const [isVisible, setIsVisible] = useState(false);
     const token = localStorage.getItem('client_token');
 
+    const notificationRef = useRef(null); // Tham chiếu đến phần notification
+
+    useEffect(() => {
+        // Lắng nghe click bên ngoài và đóng notification
+        const handleClickOutside = (event) => {
+            if (notificationRef.current && !notificationRef.current.contains(event.target)) {
+                setIsVisible(false); // Đóng notification nếu click ngoài
+            }
+        };
+
+        // Thêm sự kiện listener khi component được render
+        document.addEventListener('mousedown', handleClickOutside);
+
+        // Cleanup event listener khi component bị hủy
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
 
     useEffect(() => {
         const fetchNotifications = async () => {
@@ -33,10 +51,9 @@ const NotificationComponent = ({ userId }) => {
         fetchNotifications();
 
         if(token) {
-           /*  const socket = io('https://it-moments-backend-production.up.railway.app');
-            socket.emit('register', token); */
             const socket = io('http://localhost:3000');
             socket.emit('register', token);
+
             socket.on('notificationUpdate', (data) => {
                 const { notification } = data;
                 if(notification.userId === userId) {
@@ -63,6 +80,7 @@ const NotificationComponent = ({ userId }) => {
             navigate(`/posts/${notif.postCategorySlug}/${notif.postSlug}${notif.commentId ? `?commentId=${notif.commentId}` : ''}`);
         }
     };
+
     useEffect(() => {
         if (location.search) {
             const queryParams = new URLSearchParams(location.search);
@@ -75,6 +93,7 @@ const NotificationComponent = ({ userId }) => {
             }
         }
     }, [location.search]);
+
     const markAllAsRead = async () => {
         try {
             await axios.post(`${API_URL}/notifications/mark-as-read`, {}, {
@@ -132,9 +151,11 @@ const NotificationComponent = ({ userId }) => {
                 />
             </div>
 
-
             {isVisible && (
-                <div className="absolute right-0 mt-2 w-[40rem] p-4 bg-white border border-gray-200 rounded-lg shadow z-50 transform transition-all duration-300 ease-in-out opacity-0 visible opacity-100">
+                <div
+                    ref={notificationRef} // Gán ref cho phần notification
+                    className="absolute right-0 mt-2 w-[40rem] p-4 bg-white border border-gray-200 rounded-lg shadow z-50 transform transition-all duration-300 ease-in-out opacity-0 visible opacity-100"
+                >
                     <div className="flex justify-between items-center mb-4">
                         <h2 className="text-lg font-bold text-gray-800">Thông báo</h2>
                         <button
@@ -179,5 +200,4 @@ const NotificationComponent = ({ userId }) => {
         </div>
     );
 };
-
 export default NotificationComponent;

@@ -4,14 +4,11 @@ import Pagination from '../Posts/Pagination';
 import Category from './Category';
 import styles from './EventList.module.scss';
 import { ChevronRightIcon } from '@heroicons/react/24/solid';
+
 const EventList = ({ posts, category, totalPages, onPageChange, currentPage, onCategoryChange }) => {
     return (
         <div className={styles.eventListContainer}>
-            <div className={`${styles.breadcrumb} bg-gray-100 text-gray-700 p-3 shadow`}>
-                <a href="/" className="hover:text-blue-600 transition-colors duration-200">
-                    Trang chủ
-                </a>
-                <ChevronRightIcon className="w-4 h-4 mx-2" aria-hidden="true" />
+            <div className={`${styles.breadcrumb} bg-gray-100`}>
                 <a href={`/posts/${category}`} className="hover:text-blue-600 transition-colors duration-200">
                     Sự kiện
                 </a>
@@ -31,7 +28,7 @@ const EventList = ({ posts, category, totalPages, onPageChange, currentPage, onC
                         />
                     ))}
                 </div>
-                <div className="w-64 flex-shrink-0">
+                <div className="w-[300px] flex-shrink-0"> {}
                     <Category onCategoryChange={onCategoryChange} />
                 </div>
             </div>

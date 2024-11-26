@@ -36,6 +36,7 @@ function CategoriesAll() {
         currentPage: 1,
         totalPage: 1,
         pageSize: 6,
+        limitItems: 10
     });
 
     useEffect(() => {
@@ -56,9 +57,9 @@ function CategoriesAll() {
                     setCategories(data.data.categories);
                     setPagination((prev) => ({
                         ...prev,
-                        totalPage: data.data.pagination.totalPage || 1,
-                        currentPage: data.data.pagination.currentPage || 1,
-                        pageSize: data.data.pagination.limitItems || prev.pageSize,
+                        totalPage: data?.data?.pagination?.totalPage || 1,
+                        currentPage: data?.data?.pagination?.currentPage || 1,
+                        limitItems: data?.data?.pagination?.limitItems || 10
                     }));
                 } else {
                     throw new Error('Invalid data format');

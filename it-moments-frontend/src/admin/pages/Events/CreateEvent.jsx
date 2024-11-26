@@ -15,6 +15,7 @@ const CreateEvent = () => {
     const [loading, setLoading] = useState(false);
 
     const onFinish = async (values) => {
+        // Tạo đối tượng formData với các giá trị từ form
         const formData = {
             title: values.title,
             description: values.description,
@@ -22,8 +23,11 @@ const CreateEvent = () => {
             endTime: values.eventTime[1].toISOString(),
             location: values.location,
             status: values.status,
-            votingStartTime: values.votingTime[0].toISOString(),
-            votingEndTime: values.votingTime[1].toISOString(),
+            // Kiểm tra nếu có chọn thời gian bình chọn thì mới thêm vào formData
+            ...(values.votingTime && values.votingTime.length > 0 && {
+                votingStartTime: values.votingTime[0].toISOString(),
+                votingEndTime: values.votingTime[1].toISOString(),
+            }),
             votingStatus: values.votingStatus,
         };
 
@@ -78,7 +82,7 @@ const CreateEvent = () => {
                         <Input placeholder="Nhập địa điểm sự kiện" />
                     </Form.Item>
 
-                    <Form.Item label="Thời gian bình chọn" name="votingTime" rules={[{ required: true, message: 'Vui lòng chọn thời gian bình chọn!' }]}>
+                    <Form.Item label="Thời gian bình chọn" name="votingTime">
                         <RangePicker
                             showTime={{ format: 'HH:mm' }}
                             format="YYYY-MM-DD HH:mm"
@@ -100,6 +104,7 @@ const CreateEvent = () => {
                             {loading ? 'Đang tạo...' : 'Tạo sự kiện'}
                         </Button>
                     </Form.Item>
+
                     <Form.Item label="Trạng thái bình chọn" name="votingStatus" initialValue="closed">
                         <Select placeholder="Chọn trạng thái bình chọn">
                             <Option value="active">Mở bình chọn</Option>

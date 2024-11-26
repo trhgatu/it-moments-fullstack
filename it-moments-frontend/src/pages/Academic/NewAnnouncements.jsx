@@ -10,10 +10,9 @@ const announcements = [
 const NewAnnouncements = () => {
   return (
     <div className="p-6 bg-white rounded-lg shadow-lg">
-      {/* Tiêu đề với biểu tượng chuông và đường kẻ dưới màu xanh lam */}
       <div className="flex items-center mb-6">
         <FaBell className="text-blue-500 text-xl mr-2" />
-        <h2 className="font-bold text-lg text-navy-800 border-b-2 pb-2 flex-1" 
+        <h2 className="font-bold text-lg text-navy-800 border-b-2 pb-2 flex-1"
             style={{ borderBottom: '2px solid', borderImage: 'linear-gradient(to right, #3b82f6, #93c5fd) 1' }}>
           THÔNG BÁO MỚI
         </h2>
@@ -22,8 +21,8 @@ const NewAnnouncements = () => {
       {/* Danh sách thông báo */}
       <ul className="space-y-6 text-gray-800">
         {announcements.map((item, index) => (
-          <li 
-            key={index} 
+          <li
+            key={index}
             className="flex items-center p-4 rounded-lg hover:bg-gray-100 transition-all duration-200 space-x-4"
             style={{ minHeight: '70px' }}
           >
@@ -35,11 +34,9 @@ const NewAnnouncements = () => {
           </li>
         ))}
       </ul>
-
-      {/* Nút "Xem thêm" với màu xanh lam và hiệu ứng hover */}
       <div className="text-right mt-6">
-        <a 
-          href="#" 
+        <a
+          href="#"
           className="inline-flex items-center justify-center space-x-2 px-4 py-2 rounded-lg font-semibold text-base transition-all duration-200 border-2"
           style={{
             borderImage: 'linear-gradient(to right, #3b82f6, #93c5fd) 1',

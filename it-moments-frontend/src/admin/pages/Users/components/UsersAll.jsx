@@ -28,7 +28,7 @@ const fetchUsersData = async (currentPage, token) => {
 
 function UsersAll() {
     const navigate = useNavigate();
-    const { user } = useUser(); // Lấy user từ context
+    const { user } = useUser();
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -130,12 +130,6 @@ function UsersAll() {
             render: (email) => email || 'Không có email',
         },
         {
-            title: "Số điện thoại",
-            dataIndex: "phone",
-            key: "phone",
-            render: (phone) => phone || 'N/A',
-        },
-        {
             title: "Avatar",
             dataIndex: "avatar",
             key: "avatar",
@@ -147,7 +141,7 @@ function UsersAll() {
             title: "Vai trò",
             dataIndex: "role",
             key: "role",
-            render: (role) => role ? role.title : 'Không có vai trò',
+            render: (role) => role ? role.title : 'Người dùng',
         },
         {
             title: "Trạng thái",

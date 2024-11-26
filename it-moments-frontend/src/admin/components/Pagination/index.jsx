@@ -7,13 +7,16 @@ function Pagination({ pagination, onPageChange }) {
     const pageSize = pagination.limitItems;
 
     return (
-        <AntPagination
-            current={currentPage}
-            total={totalItems}
-            pageSize={pageSize}
-            onChange={onPageChange}
-            showSizeChanger={false}
-        />
+        <div className='py-8 flex justify-center'>
+            <AntPagination
+                current={currentPage}
+                total={totalItems}
+                pageSize={pageSize}
+                onChange={onPageChange}
+                showSizeChanger={false}
+            />
+        </div>
+
     );
 }
 

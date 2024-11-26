@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Form, Input, Button, Select, Upload, message, Radio, Checkbox, Spin } from 'antd';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 import { useNavigate, useParams } from 'react-router-dom';
 import { UploadOutlined } from '@ant-design/icons';
 import axios from 'axios';
@@ -10,7 +12,7 @@ const { Option } = Select;
 const PostEdit = () => {
     const { user } = useUser();
     const navigate = useNavigate();
-    const { id } = useParams(); // Lấy id bài viết từ URL
+    const { id } = useParams();
     const [form] = Form.useForm();
     const [thumbnailFileList, setThumbnailFileList] = useState([]);
     const [imageFileList, setImageFileList] = useState([]);
@@ -20,7 +22,7 @@ const PostEdit = () => {
     const [isFeatured, setIsFeatured] = useState(false);
     const [loading, setLoading] = useState(false);
     const [initialLoading, setInitialLoading] = useState(true);
-
+    const [description, setDescription] = useState('');
     useEffect(() => {
         const fetchCategoriesAndEvents = async () => {
             const token = user?.token;
@@ -238,7 +240,7 @@ const PostEdit = () => {
                     </Form.Item>
 
                     <Form.Item label="Mô tả" name="description" rules={[{ required: true, message: 'Vui lòng nhập mô tả!' }]}>
-                        <Input.TextArea rows={5} placeholder="Nhập mô tả" />
+                        <ReactQuill value={description} onChange={setDescription} />
                     </Form.Item>
 
                     <Form.Item label="Ảnh" name="thumbnail">

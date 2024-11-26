@@ -66,12 +66,12 @@ export default function Home() {
                 <div className="">
                     <Background />
                 </div>
-                <div className="text-black mx-auto container">
-                    <div className={styles.mainContent}>
-                        <Element name='vanNgheSection' className={styles.vanNgheSection}>
+                <div className="text-black mx-auto">
+                    <div className="">
+                        <Element name='vanNgheSection' className='bg-black'>
                             <div>
                                 <div
-                                    className={`${styles.titleHeading} text-center text-4xl md:text-4xl font-bold text-black pt-20 pb-20`}
+                                    className={`${styles.titleHeading} text-center text-4xl md:text-4xl font-bold text-white pt-20 pb-20`}
                                     data-aos="fade-right"
                                     data-aos-duration="800"
                                 >
@@ -81,7 +81,7 @@ export default function Home() {
                                                 initial={{ width: 0 }}
                                                 animate={{ width: '100%' }}
                                                 transition={{ duration: 1.5 }}
-                                                className="absolute -bottom-10 left-0 h-1 bg-blue-500"
+                                                className="absolute -bottom-10 left-0 h-1 bg-white"
                                             />
                                         )}
                                     </span>
@@ -95,7 +95,7 @@ export default function Home() {
                                         Các tiết mục văn nghệ nổi bật
                                     </span> */}
                                 </div>
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8 mb-8">
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8 py-10 px-24">
                                     <div
                                         className="flex flex-col col-span-2 h-full"
                                         data-aos="fade-right"
@@ -116,12 +116,12 @@ export default function Home() {
                                     </div>
 
                                 </div>
-                                <div className='h-full w-full'>
+                                <div className='h-full w-full bg-white px-24 py-20'>
                                     <TopPostsSection/>
                                 </div>
                             </div>
                         </Element>
-                        <Element name='suKienSection' className={styles.suKienSection}>
+                        <Element name='suKienSection' className="py-20 px-24">
                             <div
                                 className={`${styles.titleHeading} text-center text-4xl md:text-4xl font-bold text-black pt-20 pb-20`}
                                 data-aos="fade-right"

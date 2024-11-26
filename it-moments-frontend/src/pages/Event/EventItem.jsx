@@ -22,7 +22,6 @@ const EventItem = ({ title, description, date, imageUrl, slug, category }) => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
         >
-            {/* Hình ảnh bên trái */}
             <div className={`${styles.eventImage} relative w-1/3 overflow-hidden rounded-lg shadow-lg`}>
                 <motion.img
                     src={imageUrl}
@@ -34,13 +33,10 @@ const EventItem = ({ title, description, date, imageUrl, slug, category }) => {
                 <div className={styles.overlay}></div>
             </div>
 
-            {/* Nội dung bên phải */}
             <div className="w-2/3 pl-4 flex flex-col justify-between">
                 <div className="flex items-center text-gray-500 text-sm mb-1">
                     <FaRegClock className="mr-1" /> {date}
                 </div>
-
-                {/* Tiêu đề với thiết kế viền và hiệu ứng hover */}
                 <motion.h3
                     className={`${styles.eventTitle} mb-2`}
                     whileHover={{ color: '#1e90ff' }}
@@ -48,15 +44,17 @@ const EventItem = ({ title, description, date, imageUrl, slug, category }) => {
                 >
                     {title}
                 </motion.h3>
-
-                {/* Mô tả với thiết kế tinh tế và hiệu ứng xuất hiện */}
                 <motion.p
                     className={`${styles.eventDescription} mb-4 line-clamp-3`}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.2 }}
                 >
-                    {description}
+                    <div
+                        dangerouslySetInnerHTML={{
+                            __html: description,
+                        }}
+                    />
                 </motion.p>
 
                 {/* Nút icon thay thế cho "Read More" */}
