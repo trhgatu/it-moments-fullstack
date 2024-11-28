@@ -1,6 +1,6 @@
-import React from 'react';
-import { FaBookOpen, FaArrowRight } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import { FaArrowRight } from "react-icons/fa";
 
 const MainNotifications = ({ posts = [], category }) => {
   const navigate = useNavigate();
@@ -10,65 +10,65 @@ const MainNotifications = ({ posts = [], category }) => {
   };
 
   return (
-    <div className="flex flex-col space-y-8 p-6">
-      <h2
-        className="font-bold text-2xl mb-6 text-navy-800 border-b-2 pb-2"
-        style={{ borderImage: 'linear-gradient(to right, #1e3a8a, #3b82f6) 1' }}
-      >
-        Nghiên Cứu - Học Thuật
-      </h2>
-
+    <div className="flex flex-col space-y-8 p-6 bg-gray-50">
       {posts.length > 0 ? (
         posts.map((post, index) => (
           <div
             key={index}
-            onClick={() => handleNotificationClick(post.slug)} // Use the passed category
-            className="flex items-center p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-200 space-x-6 relative cursor-pointer"
-            style={{ height: '180px' }}
+            onClick={() => handleNotificationClick(post.slug)}
+            className="flex bg-white rounded-lg overflow-hidden transition-all duration-300 ease-in-out cursor-pointer hover:bg-gray-200 group"
           >
-            <div className="absolute -top-2 -left-2 w-14 h-14 bg-gradient-to-b from-blue-300 to-blue-600 rounded-full shadow-md flex items-center justify-center text-white font-bold text-sm">
-              <span className="text-lg">{new Date(post.createdAt).getDate()}</span>
-              <span className="text-xs">{new Date(post.createdAt).toLocaleDateString('vi-VN', { month: 'short' })}</span>
-            </div>
-
-            {/* Hình ảnh sự kiện */}
-            <img
-              src={post.thumbnail || 'https://via.placeholder.com/150'}
-              alt={post.title}
-              className="w-40 h-40 object-cover rounded-lg border border-gray-200"
-            />
-            <div className="flex-1 space-y-2 ml-4">
-              <h3 className="text-xl font-semibold text-gray-900">{post.title}</h3>
-              <div className="flex items-center text-gray-600 text-sm italic">
-                <FaBookOpen className="mr-2 text-gray-600" />
-                <div className="line-clamp-2" dangerouslySetInnerHTML={{ __html: post.description }} />
+            <div className="relative w-1/3 h-72">
+              <img
+                src={post.thumbnail || "https://via.placeholder.com/300"}
+                alt={post.title}
+                className="w-full h-full object-cover rounded-lg shadow-md"
+              />
+              <div className="absolute top-0 right-0 bg-white text-center p-3 rounded-bl-lg shadow-lg">
+                <div className="text-lg font-semibold text-gray-800 uppercase">
+                  {new Date(post.createdAt).toLocaleDateString("vi-VN", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                  })}
+                </div>
               </div>
-              <p className="text-xs text-gray-400">{new Date(post.createdAt).toLocaleDateString('vi-VN')}</p>
+            </div>
+            <div className="w-2/3 px-6 py-4 flex flex-col justify-center">
+              <h3 className="text-2xl font-extrabold text-gray-900 mb-2 flex items-center">
+                {/* Thêm group-hover:text-blue-500 để đổi màu khi hover vào cha */}
+                <span className="transition-colors duration-200 group-hover:text-blue-500 line-clamp-2">
+                  {post.title}
+                </span>
+              </h3>
+              <div className="border-b border-gray-200 mb-4"></div>
+              <p className="text-sm text-gray-700 line-clamp-2">
+                {post.description.length > 100
+                  ? `${post.description.substring(0, 100)}...`
+                  : post.description}
+              </p>
+              <a
+                href="#"
+                className="text-blue-500 text-sm font-semibold hover:underline mt-4"
+              >
+                Đọc thêm →
+              </a>
             </div>
           </div>
         ))
       ) : (
-        <div>Không có thông báo nào.</div>
+        <div className="text-center text-gray-500">Không có thông báo nào.</div>
       )}
-
-      <div className="text-right mt-6">
-        <a
-          href="#"
-          className="inline-flex items-center justify-center space-x-2 px-4 py-2 rounded-lg font-semibold text-base transition-all duration-200 shadow-md"
-          style={{
-            background: 'linear-gradient(to right, #1e3a8a, #3b82f6)',
-            color: 'white',
-          }}
+      <div className="flex justify-center mt-8">
+        <button
+          className="flex items-center justify-center px-6 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-blue-700 text-white text-lg font-semibold shadow-md transition-transform duration-200 transform hover:scale-105 hover:from-blue-600 hover:to-blue-800"
         >
-          <span>Xem thêm</span>
-          <FaArrowRight className="text-base" />
-        </a>
+          Xem Thêm
+          <FaArrowRight className="ml-2 text-white transition-transform duration-200 transform hover:translate-x-1" />
+        </button>
       </div>
     </div>
   );
 };
-
-
-
 
 export default MainNotifications;

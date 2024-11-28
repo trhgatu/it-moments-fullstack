@@ -1,4 +1,5 @@
 import Event from '../../models/event.model.js';
+import Post from '../../models/post.model.js';
 import pagination from '../../../../helpers/pagination.js';
 import search from '../../../../helpers/search.js';
 import filterStatus from '../../../../helpers/filterStatus.js';
@@ -54,24 +55,40 @@ const controller = {
     /* [GET] api/v1/admin/events/detail/:id */
     detail: async (req, res) => {
         const id = req.params.id;
-        const event = await Event.findOne({
-            _id: id,
-            deleted: false,
-        });
+        try {
+            // Tìm sự kiện dựa trên ID
+            const event = await Event.findOne({
+                _id: id,
+                deleted: false,
+            });
 
-        if (!event) {
-            return res.status(404).json({
+            if(!event) {
+                return res.status(404).json({
+                    success: false,
+                    message: 'Sự kiện không tìm thấy.',
+                });
+            }
+
+            const posts = await Post.find({ event_id: id, deleted: false }).populate("post_category_id");
+            const totalVotes = posts.reduce((sum, post) => sum + (post.votes || 0), 0);
+            res.json({
+                success: true,
+                message: 'Lấy chi tiết sự kiện thành công.',
+                data: {
+                    event,
+                    totalVotes,
+                    posts,
+                },
+            });
+        } catch(error) {
+            console.error('Lỗi khi lấy chi tiết sự kiện:', error);
+            res.status(500).json({
                 success: false,
-                message: 'Sự kiện không tìm thấy.',
+                message: 'Đã xảy ra lỗi khi lấy chi tiết sự kiện.',
             });
         }
-
-        res.json({
-            success: true,
-            message: 'Lấy chi tiết sự kiện thành công.',
-            data: event,
-        });
     },
+
 
     /* [PATCH] api/v1/admin/events/change-status/:id */
     changeStatus: async (req, res) => {
@@ -85,7 +102,7 @@ const controller = {
                 code: 200,
                 message: "Cập nhật trạng thái thành công"
             });
-        } catch (error) {
+        } catch(error) {
             console.error('Lỗi khi cập nhật trạng thái:', error);
             res.json({
                 code: 404,
@@ -98,7 +115,7 @@ const controller = {
     changeMulti: async (req, res) => {
         try {
             const { ids, key, value } = req.body;
-            switch (key) {
+            switch(key) {
                 case "status":
                     await Event.updateMany({ _id: { $in: ids } }, { status: value });
                     return res.status(200).json({
@@ -117,7 +134,7 @@ const controller = {
                         message: "Không tồn tại"
                     });
             }
-        } catch (error) {
+        } catch(error) {
             console.error(error);
             return res.status(500).json({
                 code: 500,
@@ -165,7 +182,7 @@ const controller = {
                 code: 200,
                 message: "Cập nhật sự kiện thành công",
             });
-        } catch (error) {
+        } catch(error) {
             console.error('Lỗi khi cập nhật sự kiện:', error);
             res.json({
                 code: 400,
@@ -183,7 +200,7 @@ const controller = {
                 code: 200,
                 message: "Xóa sự kiện thành công"
             });
-        } catch (error) {
+        } catch(error) {
             console.error('Lỗi khi xóa sự kiện:', error);
             res.json({
                 code: 400,

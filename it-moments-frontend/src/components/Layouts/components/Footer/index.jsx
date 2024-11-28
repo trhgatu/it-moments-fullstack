@@ -1,75 +1,84 @@
 import React from 'react';
-import { Facebook, Twitter, Instagram, Github, MapPin, Phone, Mail } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
+import { FacebookOutlined, TwitterOutlined, InstagramOutlined, GithubOutlined, PhoneOutlined, MailOutlined, EnvironmentOutlined } from '@ant-design/icons';
+import { Row, Col, Typography, Space } from 'antd';
 import cx from 'classnames';
 import styles from './Footer.module.scss';
 
+const { Paragraph } = Typography;
+
 function Footer() {
   return (
-    <footer className="bg-black text-white py-16 w-full">
+    <footer className="bg-black text-white py-12 w-full">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-8">
+        {/* Logo Section */}
+        <div className="text-center mb-6">
           <NavLink to="/">
-            <span className={cx(styles.textLogo, 'text-8xl')}>IT Moments</span>
+            <span className={cx(styles.textLogo, 'text-6xl')}>IT Moments</span>
           </NavLink>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
-          <div className="space-y-4">
-            <h4 className="text-2xl font-bold mb-6 border-b-2 border-blue-500 pb-2 inline-block text-white shadow-lg shadow-black">Về chúng tôi</h4>
-            <p>Chúng tôi là đơn vị tiên phong trong lĩnh vực tổ chức sự kiện văn nghệ tại Việt Nam.</p>
-            <p>Giờ làm việc: Thứ 2 - Thứ 6: 8:00 - 18:00, Thứ 7 - Chủ nhật: 9:00 - 17:00</p>
-          </div>
-          <div className="space-y-4">
-            <h4 className="text-2xl font-bold mb-6 border-b-2 border-blue-500 pb-2 inline-block text-white shadow-lg shadow-black">Dịch vụ</h4>
-            <ul className="space-y-2">
-              <li>Livestream các hoạt động khoa CNTTT</li>
-              <li>Quản lý video, hình ảnh hoạt động khoa CNTT</li>
-            </ul>
-          </div>
+        {/* Footer Content */}
+        <Row gutter={[16, 16]} justify="center">
+          {/* About Section */}
+          <Col xs={24} sm={8} className="text-center">
+            <Paragraph className="text-white">
+              Chúng tôi là đơn vị tiên phong trong lĩnh vực tổ chức sự kiện văn nghệ tại Việt Nam.
+            </Paragraph>
+          </Col>
 
-          {/* Contact Column */}
-          <div className="space-y-6">
-            <h4 className="text-2xl font-bold mb-6 border-b-2 border-blue-500 pb-2 inline-block text-white shadow-lg shadow-black">Liên hệ</h4>
-            <div className="space-y-4">
-              <div className="flex items-center justify-center">
-                <MapPin className="w-5 h-5 text-gray-500" />
-                <p className="ml-2">160 Lê Trọng Tấn,phường Tây Thanh, Quận Tân Phú, TP.HCM</p>
+          {/* Links Section */}
+          <Col xs={24} sm={8} className="text-center">
+            <h4 className="text-2xl font-bold text-white mb-4">Liên kết</h4>
+            <Space direction="vertical" size="middle" className="text-white">
+              <NavLink to="/" className="hover:text-blue-400 transition duration-300">Trang chủ</NavLink>
+              <NavLink to="/about" className="hover:text-blue-400 transition duration-300">Về chúng tôi</NavLink>
+              <NavLink to="/posts/su-kien" className="hover:text-blue-400 transition duration-300">Sự kiện</NavLink>
+              <NavLink to="/posts/van-nghe" className="hover:text-blue-400 transition duration-300">Văn nghệ</NavLink>
+              <NavLink to="/posts/hoc-thuat" className="hover:text-blue-400 transition duration-300">Học thuật</NavLink>
+            </Space>
+          </Col>
+
+          <Col xs={24} sm={8} className='text-center'>
+            <h4 className="text-2xl font-bold text-white mb-4 text-center">Thông tin liên hệ</h4>
+            <Space direction="vertical" size="middle" className="text-white">
+              <div className="flex items-center">
+                <EnvironmentOutlined className="text-white hover:text-blue-400 transition duration-300 w-6 h-6" />
+                <span className="ml-2 text-white">160 Lê Trọng Tấn, Phường Tây Thanh, Quận Tân Phú, TP.HCM</span>
               </div>
-              <div className="flex items-center justify-center">
-                <Phone className="w-5 h-5 text-gray-500" />
-                <p className="ml-2">+84 123 456 789</p>
+              {/* Phone */}
+              <div className="flex items-center">
+                <PhoneOutlined className="text-white hover:text-blue-400 transition duration-300 w-6 h-6" />
+                <span className="ml-2 text-white">+84 123 456 789</span>
               </div>
-              <div className="flex items-center justify-center">
-                <Mail className="w-5 h-5 text-gray-500" />
-                <p className="ml-2">contact@vannghe.vn</p>
+              {/* Email */}
+              <div className="flex items-center">
+                <MailOutlined className="text-white hover:text-blue-400 transition duration-300 w-6 h-6" />
+                <span className="ml-2 text-white">contact@vannghe.vn</span>
               </div>
-            </div>
+            </Space>
+
             {/* Social Media Icons */}
-            <div className="pt-4">
-              <h5 className="text-lg font-semibold mb-4">Kết nối</h5>
-              <div className="flex justify-center space-x-4">
-                {[
-                  { platform: 'Facebook', url: 'https://facebook.com' },
-                  { platform: 'Twitter', url: 'https://twitter.com' },
-                  { platform: 'Instagram', url: 'https://instagram.com' },
-                  { platform: 'Github', url: 'https://github.com' }
-                ].map(({ platform, url }, index) => (
-                  <a key={index} href={url} target="_blank" rel="noopener noreferrer" className="bg-gray-700 p-2 rounded-full">
-                    {platform === 'Facebook' && <Facebook className="w-5 h-5 text-white" />}
-                    {platform === 'Twitter' && <Twitter className="w-5 h-5 text-white" />}
-                    {platform === 'Instagram' && <Instagram className="w-5 h-5 text-white" />}
-                    {platform === 'Github' && <Github className="w-5 h-5 text-white" />}
-                  </a>
-                ))}
-              </div>
+            <div className="flex justify-center space-x-6 mt-6">
+              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="text-white hover:text-blue-400 transition duration-300">
+                <FacebookOutlined className="text-white hover:text-blue-400 transition duration-300 w-8 h-8" />
+              </a>
+              <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="text-white hover:text-blue-400 transition duration-300">
+                <TwitterOutlined className="text-white hover:text-blue-400 transition duration-300 w-8 h-8" />
+              </a>
+              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="text-white hover:text-blue-400 transition duration-300">
+                <InstagramOutlined className="text-white hover:text-blue-400 transition duration-300 w-8 h-8" />
+              </a>
+              <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-white hover:text-blue-400 transition duration-300">
+                <GithubOutlined className="text-white hover:text-blue-400 transition duration-300 w-8 h-8" />
+              </a>
             </div>
-          </div>
-        </div>
+          </Col>
+        </Row>
 
         {/* Copyright Section */}
         <div className="text-center text-gray-400 mt-12 pt-8 border-t border-gray-700">
-          <p>© 2024 Văn Nghệ VN. Tất cả quyền được bảo lưu.</p>
+          <Paragraph className="text-white">© 2024 IT Moments. Tất cả quyền được bảo lưu.</Paragraph>
         </div>
       </div>
     </footer>

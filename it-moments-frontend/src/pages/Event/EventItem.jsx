@@ -2,8 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import { FaArrowRight, FaRegClock } from 'react-icons/fa';
-import { motion } from 'framer-motion';
-import styles from './EventItem.module.scss';
 
 const EventItem = ({ title, description, date, imageUrl, slug, category }) => {
     const navigate = useNavigate();
@@ -13,60 +11,36 @@ const EventItem = ({ title, description, date, imageUrl, slug, category }) => {
     };
 
     return (
-        <motion.div
-            className={`${styles.eventItem} flex items-start mb-6`}
+        <div
+            className="w-full flex items-start mb-6 cursor-pointer transition-all duration-300 group bg-gray-100 hover:bg-gray-300 rounded-lg p-4"
             onClick={handleEventItemClick}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
         >
-            <div className={`${styles.eventImage} relative w-1/3 overflow-hidden rounded-lg shadow-lg`}>
-                <motion.img
+            <div className="relative w-1/3 h-72 overflow-hidden rounded-lg shadow-md">
+                <img
                     src={imageUrl}
                     alt={title}
-                    className="w-full h-full object-cover"
-                    whileHover={{ scale: 1.1 }}
+                    className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
                     loading="lazy"
                 />
-                <div className={styles.overlay}></div>
+                <div className="absolute inset-0 bg-black bg-opacity-20 transition-opacity duration-300 hover:bg-opacity-30"></div>
             </div>
-
             <div className="w-2/3 pl-4 flex flex-col justify-between">
-                <div className="flex items-center text-gray-500 text-sm mb-1">
+                <div className="flex items-center text-gray-500 text-sm mb-4">
                     <FaRegClock className="mr-1" /> {date}
                 </div>
-                <motion.h3
-                    className={`${styles.eventTitle} mb-2`}
-                    whileHover={{ color: '#1e90ff' }}
-                    transition={{ duration: 0.3 }}
-                >
+                <h3 className="text-lg font-bold text-gray-900 mb-2 transition-colors duration-300 group-hover:text-blue-500">
                     {title}
-                </motion.h3>
-                <motion.p
-                    className={`${styles.eventDescription} mb-4 line-clamp-3`}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.2 }}
-                >
-                    <div
+                </h3>
+
+                <p className=" line-clamp-2 mb-4">
+                    <span
                         dangerouslySetInnerHTML={{
                             __html: description,
                         }}
                     />
-                </motion.p>
-
-                {/* Nút icon thay thế cho "Read More" */}
-                <motion.div
-                    className={`${styles.iconButton} flex items-center justify-center`}
-                    whileHover={{ scale: 1.2 }}
-                    whileTap={{ scale: 0.9 }}
-                >
-                    <FaArrowRight className="text-white" />
-                </motion.div>
+                </p>
             </div>
-        </motion.div>
+        </div>
     );
 };
 

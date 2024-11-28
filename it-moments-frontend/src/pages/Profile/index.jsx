@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './Profile.module.scss';
 import { API_URL } from '../../config/config';
 import { useClientUser } from '../../context/ClientUserContext';
@@ -7,20 +7,41 @@ import { Modal, Button, Input, Form, message, Upload, Divider } from 'antd';
 import { FaCog } from 'react-icons/fa';
 import axios from 'axios';
 import { UploadOutlined } from '@ant-design/icons';
+import { Link } from 'react-router-dom';
 
 const Profile = () => {
   const { user, setUser } = useClientUser();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
-  const [avatar, setAvatar] = useState(user.avatar || null); // Initialize avatar with user data
-  const [imagePreview, setImagePreview] = useState(user.avatar || null); // Store image preview
+  const [avatar, setAvatar] = useState(user.avatar || null);
+  const [imagePreview, setImagePreview] = useState(user.avatar || null);
 
-  const votedPosts = [
-    { title: "Bài viết 1", date: "01/01/2024" },
-    { title: "Bài viết 2", date: "02/01/2024" },
-    { title: "Bài viết 3", date: "03/01/2024" },
-  ];
+  const [votedPosts, setVotedPosts] = useState([]);
+  const [loadingPosts, setLoadingPosts] = useState(true);
+
+  useEffect(() => {
+    const fetchVotedPosts = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/posts/voted/${user._id}`, {
+          withCredentials: true,
+        });
+
+        if(response.data.success) {
+          setVotedPosts(response.data.posts);
+        }
+      } catch(error) {
+        console.error('Lỗi khi lấy bài viết đã bình chọn:', error);
+        message.error('Không thể lấy danh sách bài viết đã bình chọn.');
+      } finally {
+        setLoadingPosts(false);
+      }
+    };
+
+    if(user._id) {
+      fetchVotedPosts();
+    }
+  }, [user._id]);
 
   const showModal = () => {
     form.setFieldsValue({
@@ -99,7 +120,6 @@ const Profile = () => {
       });
   };
 
-
   const handleAvatarChange = async (file) => {
     const reader = new FileReader();
     reader.onloadend = () => {
@@ -147,7 +167,7 @@ const Profile = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-32 md:mt-48 px-4 md:px-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 mt-32 md:mt-48 px-4 md:px-10">
           <div className="shadow-[rgba(0,_0,_0,_0.02)_0px_1px_3px_0px,_rgba(27,_31,_35,_0.15)_0px_0px_0px_1px] p-6 bg-white rounded-lg col-span-1">
             <div className="mb-8">
               <h3 className="text-2xl font-semibold">Giới thiệu</h3>
@@ -180,132 +200,114 @@ const Profile = () => {
                       href={user.socialLinks.instagram}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-blue-600 ml-6"
+                      className="text-pink-600 ml-6"
                     >
                       {user.socialLinks.instagram}
                     </a>
                   </div>
                 )}
               </div>
-
             </div>
           </div>
 
-          <div className="shadow-[rgba(0,_0,_0,_0.02)_0px_1px_3px_0px,_rgba(27,_31,_35,_0.15)_0px_0px_0px_1px] p-6 bg-white rounded-lg col-span-1 md:col-span-2 lg:col-span-2">
-            <div>
-              <h3 className="text-2xl font-semibold text-gray-800">Bài viết đã bình chọn</h3>
-              <ul className="space-y-4 mt-4">
-                {votedPosts.map((post, index) => (
-                  <li key={index} className="flex justify-between items-center">
-                    <span className="text-gray-600">{post.title}</span>
-                    <span className="text-gray-500 text-sm">{post.date}</span>
-                  </li>
-                ))}
-              </ul>
+          <div className="shadow-[rgba(0,_0,_0,_0.02)_0px_1px_3px_0px,_rgba(27,_31,_35,_0.15)_0px_0px_0px_1px] p-6 bg-white rounded-lg col-span-1">
+            <div className="mb-8">
+              <h3 className="text-2xl font-semibold">Các bài viết đã bình chọn:</h3>
+              <div className="space-y-4 mt-4">
+                {loadingPosts ? (
+                  <div className="text-center text-gray-500">Đang tải bài viết...</div>
+                ) : (
+                  votedPosts.length > 0 ? (
+                    votedPosts.map((post) => (
+                      <div key={post._id} className="border-b p-4 group hover:bg-gray-100 border rounded-md transition duration-300 ease-in-out">
+                        <Link
+                          to={`/posts/${post.post_category_id?.slug}/${post.slug}`}
+                          className="flex items-center space-x-4 group-hover:text-blue-600 transition duration-300 ease-in-out"
+                        >
+                          {/* Thumbnail Image */}
+                          <img
+                            src={post.thumbnail}
+                            alt={post.title}
+                            className="w-56  object-cover"
+                          />
+
+                          {/* Post Details */}
+                          <div className="flex-1">
+                            {/* Title */}
+                            <h4 className="text-lg font-semibold group-hover:text-blue-600 transition duration-300 ease-in-out line-clamp-2">
+                              {post.title}
+                            </h4>
+
+                            {/* Description */}
+                            <p className="line-clamp-2 text-sm text-gray-500" dangerouslySetInnerHTML={{ __html: post.description }}></p>
+
+                            {/* Date */}
+                            <span className="text-xs text-gray-400">
+                              {new Date(post.createdAt).toLocaleDateString('vi-VN')}
+                            </span>
+                          </div>
+                        </Link>
+                      </div>
+
+                    ))
+
+                  ) : (
+                    <div className="text-center text-gray-500">Bạn chưa bình chọn bài viết nào</div>
+                  )
+                )}
+              </div>
             </div>
           </div>
         </div>
+      </div>
 
-        <Modal
-          title="Cài đặt Profile"
-          visible={isModalOpen}
-          onCancel={handleCancel}
-          footer={[
-            <Button key="back" onClick={handleCancel}>
-              Đóng
-            </Button>,
-            <Button key="submit" type="primary" onClick={handleSave} loading={loading}>
-              Lưu thay đổi
-            </Button>,
-          ]}
-          width={700}
+      {/* Modal edit user info */}
+      <Modal
+        title="Chỉnh sửa thông tin cá nhân"
+        visible={isModalOpen}
+        onCancel={handleCancel}
+        onOk={handleSave}
+        confirmLoading={loading}
+      >
+        <Form
+          form={form}
+          layout="vertical"
+          name="profile-form"
         >
-          <Divider />
-          <Form.Item className="flex items-center mt-10">
-            <div className="flex items-center space-x-10 relative">
-              {imagePreview ? (
-                <div className="relative">
-                  <img
-                    src={imagePreview}
-                    alt="Avatar"
-                    className="w-40 h-40 md:w-60 md:h-60 rounded-full border-4 border-white ring-8 ring-white"
-                  />
-                  <Button
-                    className="absolute top-2 right-2 bg-red-500 text-white hover:bg-red-600"
-                    size="small"
-                    onClick={() => {
-                      setImagePreview(null);
-                      setAvatar(null); // Đặt lại avatar
-                    }}
-                  >
-                    Xóa
-                  </Button>
-                </div>
-              ) : (
-                <div className="w-40 h-40 md:w-60 md:h-60 rounded-full border-4 border-white ring-8 ring-white bg-gray-200 flex items-center justify-center">
-                  <FaUser size={50} className="text-gray-500" />
-                </div>
-              )}
-            </div>
+          <Form.Item label="Giới thiệu bản thân" name="bio">
+            <Input.TextArea />
+          </Form.Item>
+
+          <Form.Item label="Facebook" name="facebook">
+            <Input placeholder="https://facebook.com/yourprofile" />
+          </Form.Item>
+          <Form.Item label="Instagram" name="instagram">
+            <Input placeholder="https://instagram.com/yourprofile" />
+          </Form.Item>
+
+          <Form.Item label="Tải ảnh đại diện" name="avatar">
             <Upload
+              showUploadList={false}
               beforeUpload={(file) => {
                 handleAvatarChange(file);
                 return false;
               }}
-              showUploadList={false}
-              accept="image/*"
             >
-              <Button icon={<UploadOutlined />} className="text-blue-500">
-                Chọn avatar
-              </Button>
+              <Button icon={<UploadOutlined />}>Chọn ảnh</Button>
             </Upload>
+            <div className="mt-4">
+              {imagePreview && (
+                <img
+                  src={imagePreview}
+                  alt="Avatar Preview"
+                  className="w-40 h-40 object-cover rounded-full border-4 border-white ring-8 ring-white"
+                />
+              )}
+            </div>
           </Form.Item>
-          <Form form={form} layout="vertical">
-            <Form.Item
-              label="Tiểu sử"
-              name="bio"
-            >
-              <Input.TextArea placeholder="Nhập tiểu sử của bạn" rows={4} />
-            </Form.Item>
-
-            <Form.Item
-              label="Link Facebook"
-              name="facebook"
-            >
-              <Input placeholder="Nhập link Facebook" />
-            </Form.Item>
-            <Form.Item
-              label="Link Instagram"
-              name="instagram"
-            >
-              <Input placeholder="Nhập link Instagram" />
-            </Form.Item>
-
-            <Form.Item
-              label="Link Twitter"
-              name="twitter"
-            >
-              <Input placeholder="Nhập link Twitter" />
-            </Form.Item>
-
-            <Form.Item
-              label="Link LinkedIn"
-              name="linkedin"
-            >
-              <Input placeholder="Nhập link LinkedIn" />
-            </Form.Item>
-            <Form.Item
-              label="Link Youtube"
-              name="youtube"
-            >
-              <Input placeholder="Nhập link Youtube" />
-            </Form.Item>
-
-
-          </Form>
-        </Modal>
-      </div>
-    </div >
+        </Form>
+      </Modal>
+    </div>
   );
 };
 

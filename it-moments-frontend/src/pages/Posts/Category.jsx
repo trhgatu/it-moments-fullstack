@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { FaChevronDown, FaChevronRight } from 'react-icons/fa';
+import { FaChevronDown, FaChevronRight, FaBell,FaListAlt  } from 'react-icons/fa';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { API_URL } from '../../config/config';
-
+import { Divider } from 'antd';
 const Category = ({ onCategoryChange }) => {
     const [categories, setCategories] = useState([]);
     const [activeCategorySlug, setActiveCategorySlug] = useState(null);
@@ -15,10 +15,10 @@ const Category = ({ onCategoryChange }) => {
             try {
                 const response = await fetch(`${API_URL}/post-categories`);
                 const data = await response.json();
-                if (data.success) {
+                if(data.success) {
                     setCategories(data.data.categories);
                 }
-            } catch (error) {
+            } catch(error) {
                 console.error('Error fetching categories:', error);
             }
         };
@@ -28,13 +28,13 @@ const Category = ({ onCategoryChange }) => {
         const { pathname } = location;
         const categorySlug = pathname.split('/').pop();
 
-        if (categorySlug) {
+        if(categorySlug) {
             setActiveCategorySlug(categorySlug);
         }
     }, [location]);
 
     const handleCategoryClick = (categorySlug, categoryTitle) => {
-        if (categorySlug !== activeCategorySlug) {
+        if(categorySlug !== activeCategorySlug) {
             setActiveCategorySlug(categorySlug);
             navigate(`/posts/${categorySlug}`, { replace: true });
             onCategoryChange(categorySlug, categoryTitle);
@@ -52,7 +52,7 @@ const Category = ({ onCategoryChange }) => {
                 <div key={category._id} className="mt-2">
                     <button
                         onClick={() => handleCategoryClick(category.slug, category.title)}
-                        className={`text-lg text-gray-700 hover:text-blue-600 hover:underline transition-all duration-300 focus:outline-none p-2 rounded-md ${activeCategorySlug === category.slug ? 'bg-blue-100' : ''}`}
+                        className={` text-gray-800  hover:underline transition-all duration-300 focus:outline-none p-2 ${activeCategorySlug === category.slug ? 'bg-blue-500 text-white' : ''}`}
                     >
                         <FaChevronRight className="inline mr-2 text-gray-500" />
                         {category.title}
@@ -66,17 +66,18 @@ const Category = ({ onCategoryChange }) => {
             .filter((category) => category.parent_id === parentId)
             .map((category) => (
                 <div key={category._id} className="mt-4">
-                    <div className="flex items-center justify-between">
+                    <div className={`flex items-center justify-between px-4 hover:text hover:bg-blue-500 hover:text-white cursor-pointer ${activeCategorySlug === category.slug ? 'bg-blue-500 text-white' : ''}`}>
+
                         <button
                             onClick={() => handleCategoryClick(category.slug, category.title)}
-                            className={`text-2xl text-gray-800 hover:text-blue-600 hover:bg-gray-200 p-4 rounded-lg transition-all duration-300 focus:outline-none transform hover:scale-105 ${activeCategorySlug === category.slug ? 'bg-blue-100' : ''}`}
+                            className={`text-2xl hover:text-white hover:underline p-4  transition-all duration-300 focus:outline-none transform  `}
                         >
                             {category.title}
                         </button>
                         {categories.some(subCategory => subCategory.parent_id === category._id) && (
                             <button
                                 onClick={() => toggleSubcategories(category._id)}
-                                className="ml-2 text-gray-500 hover:text-gray-700 transition-all duration-200"
+                                className="ml-4 hover:text-gray-700 transition-all duration-200"
                             >
                                 <FaChevronDown />
                             </button>
@@ -97,10 +98,17 @@ const Category = ({ onCategoryChange }) => {
     };
 
     return (
-        <div className="w-full sm:w-96 mx-auto font-sans">
-            <h3 className="text-3xl font-semibold mb-8 text-gray-800">Danh mục</h3>
-            <div className="border border-gray-300 rounded-lg p-8 bg-white shadow-lg">
-                {renderCategories("67134482580ad1dc01c9a120")}
+        <div className="w-full">
+            <div className='p-8'>
+                <div className="flex items-center justify-between bg-gradient-to-r from-blue-400 to-blue-600 px-4 py-3 rounded-t-lg  transition-shadow duration-200">
+                    <div className="flex items-center space-x-2">
+                        <FaListAlt className="text-white text-2xl" />
+                        <span className=" font-semibold text-white">Danh mục</span>
+                    </div>
+                </div>
+                <div>
+                    {renderCategories("67134482580ad1dc01c9a120")}
+                </div>
             </div>
         </div>
     );

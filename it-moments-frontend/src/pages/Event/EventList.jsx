@@ -8,15 +8,11 @@ import { ChevronRightIcon } from '@heroicons/react/24/solid';
 const EventList = ({ posts, category, totalPages, onPageChange, currentPage, onCategoryChange }) => {
     return (
         <div className={styles.eventListContainer}>
-            <div className={`${styles.breadcrumb} bg-gray-100`}>
-                <a href={`/posts/${category}`} className="hover:text-blue-600 transition-colors duration-200">
-                    Sự kiện
-                </a>
-            </div>
             <div className={`${styles.eventList} flex`}>
-                <div className="flex-1 flex flex-wrap gap-4">
+                <div className="flex-1 flex flex-wrap gap-4 bg-white rounded-lg">
                     {posts.map((post) => (
                         <EventItem
+                            className=" border-b-2 border-blue-500"
                             key={post._id}
                             title={post.title}
                             description={post.description}

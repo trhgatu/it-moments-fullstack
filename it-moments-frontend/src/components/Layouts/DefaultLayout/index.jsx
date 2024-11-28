@@ -3,6 +3,7 @@ import Footer from '../components/Footer';
 import styles from "../DefaultLayout/DefaultLayout.module.scss"
 import classNames from 'classnames/bind';
 import { Outlet } from "react-router-dom";
+import ScrollToTopButton from "../../ScrollToTopButton";
 const cx = classNames.bind(styles);
 
 function DefaultLayout({ children }) {
@@ -15,7 +16,8 @@ function DefaultLayout({ children }) {
                     <Outlet />
                 </div>
             </div>
-            <Footer/>
+            <ScrollToTopButton />
+            <Footer />
         </div>
     );
 }

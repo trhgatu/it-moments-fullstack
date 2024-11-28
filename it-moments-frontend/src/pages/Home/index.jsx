@@ -5,10 +5,11 @@ import Background from './components/Background';
 import PostSection from './components/PostSection';
 import NewPost from './components/NewPost';
 import TopPostsSection from './components/TopPostsSection';
+import AcademicSection from './components/AcademicSection';
 import EventSection from './components/EventSection';
 import 'swiper/css';
-import 'aos/dist/aos.css'; // Import AOS CSS
-import AOS from 'aos'; // Import AOS
+import 'aos/dist/aos.css';
+import AOS from 'aos';
 import { motion, useInView } from 'framer-motion';
 import { Element } from 'react-scroll';
 import styles from './Home.module.scss';
@@ -21,9 +22,10 @@ export default function Home() {
 
     const vanNgheRef = useRef(null);
     const suKienRef = useRef(null);
+    const hocThuatRef = useRef(null);
     const isInViewVanNghe = useInView(vanNgheRef, { once: false });
     const isInViewSuKien = useInView(suKienRef, { once: false });
-
+    const isInViewHocThuat = useInView(hocThuatRef, { once: false });
     useEffect(() => {
         axios.get(`${API_URL}/posts?category=van-nghe&isFeatured=true&isLatest=true`)
             .then((response) => setnewPostPerformances(response.data.data.posts))
@@ -68,10 +70,10 @@ export default function Home() {
                 </div>
                 <div className="text-black mx-auto">
                     <div className="">
-                        <Element name='vanNgheSection' className='bg-black'>
+                        <Element name='vanNgheSection'>
                             <div>
                                 <div
-                                    className={`${styles.titleHeading} text-center text-4xl md:text-4xl font-bold text-white pt-20 pb-20`}
+                                    className={`${styles.titleHeading} text-center text-4xl md:text-4xl font-bold pt-36`}
                                     data-aos="fade-right"
                                     data-aos-duration="800"
                                 >
@@ -81,21 +83,12 @@ export default function Home() {
                                                 initial={{ width: 0 }}
                                                 animate={{ width: '100%' }}
                                                 transition={{ duration: 1.5 }}
-                                                className="absolute -bottom-10 left-0 h-1 bg-white"
+                                                className="absolute -bottom-10 left-0 h-1 bg-blue-500"
                                             />
                                         )}
                                     </span>
                                 </div>
-                                <div
-                                    className={`text-center md:text-4xl pb-10`}
-                                    data-aos="fade-left"
-                                    data-aos-duration="900"
-                                >
-                                    {/* <span className='relative text-3xl' ref={vanNgheRef}>
-                                        Các tiết mục văn nghệ nổi bật
-                                    </span> */}
-                                </div>
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8 py-10 px-24">
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8 px-44 py-20">
                                     <div
                                         className="flex flex-col col-span-2 h-full"
                                         data-aos="fade-right"
@@ -121,7 +114,7 @@ export default function Home() {
                                 </div>
                             </div>
                         </Element>
-                        <Element name='suKienSection' className="py-20 px-24">
+                        <Element name='suKienSection' className="py-20 px-56">
                             <div
                                 className={`${styles.titleHeading} text-center text-4xl md:text-4xl font-bold text-black pt-20 pb-20`}
                                 data-aos="fade-right"
@@ -148,6 +141,34 @@ export default function Home() {
                                 </span> */}
                             </div>
                             <EventSection />
+                        </Element>
+                        <Element name='hocThuatSection' className='py-20 px-56 bg-white'>
+                            <div
+                                className={`${styles.titleHeading} text-center text-4xl md:text-4xl font-bold text-black pt-20 pb-20`}
+                                data-aos="fade-right"
+                                data-aos-duration="800"
+                            >
+                                <span className='relative uppercase' ref={hocThuatRef}>Học thuật
+                                    {isInViewHocThuat && (
+                                        <motion.span
+                                            initial={{ width: 0 }}
+                                            animate={{ width: '100%' }}
+                                            transition={{ duration: 1.5 }}
+                                            className="absolute -bottom-10 left-0 h-1 bg-blue-500"
+                                        />
+                                    )}
+                                </span>
+                            </div>
+                            <div
+                                className={`text-center md:text-4xl pb-10`}
+                                data-aos="fade-left"
+                                data-aos-duration="900"
+                            >
+                                {/* <span className='relative text-3xl' ref={suKienRef}>
+                                    Sự kiện đặc sắc đang diễn ra!
+                                </span> */}
+                            </div>
+                            <AcademicSection />
                         </Element>
                     </div>
                 </div>

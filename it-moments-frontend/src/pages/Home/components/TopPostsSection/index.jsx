@@ -4,6 +4,8 @@ import styles from '../../Home.module.scss';
 import axios from 'axios';
 import { EyeOutlined } from '@ant-design/icons';
 import { API_URL } from '../../../../config/config';
+import AOS from 'aos';  // Import AOS
+import 'aos/dist/aos.css'; // Import AOS CSS
 
 export default function TopPostsSection() {
     const [topPosts, setTopPosts] = useState([]);
@@ -38,6 +40,12 @@ export default function TopPostsSection() {
         };
 
         fetchData();
+
+        // Initialize AOS
+        AOS.init({
+            duration: 1000,  // Thời gian hiệu ứng
+            easing: 'ease-in-out',  // Easing hiệu ứng
+        });
     }, []);
 
     if(isLoading) {
@@ -51,36 +59,40 @@ export default function TopPostsSection() {
     return (
         <div className="my-24">
             <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-                <div className="col-span-8">
+                <div
+                    className="col-span-8"
+                    data-aos="fade-right"
+                >
                     <h2 className={`${styles.titleHeading} flex items-center text-4xl font-bold text-left mb-10`}>
                         <span className="border-l-4 border-blue-500 h-8 mr-4 inline-block"></span>
                         Nhiều lượt xem
                     </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
                         {topPosts.map((post) => (
                             <div
                                 key={post._id}
-                                className="border rounded flex flex-col h-full cursor-pointer"
+                                className="border rounded flex flex-col h-full cursor-pointer overflow-hidden group"
                             >
                                 <Link
                                     to={`/posts/${post.post_category_id.slug}/${post.slug}`}
-                                    className="relative group overflow-hidden block h-full"
+                                    className="relative group block h-full"
+                                    style={{
+                                        backgroundImage: `url(${post.thumbnail})`,
+                                        backgroundSize: 'cover',
+                                        backgroundPosition: 'center',
+                                        height: '250px',
+                                    }}
                                 >
-                                    <img
-                                        src={post.thumbnail}
-                                        alt={post.title}
-                                        className="w-full h-48 object-cover rounded-t transform group-hover:scale-110 group-hover:brightness-75 transition-all duration-300"
-                                    />
-                                    <div className="p-4 flex flex-col justify-between flex-1 group">
-                                        <h3 className="text-lg font-semibold text-blue-700 hover:text-blue-500 transition-all duration-300">
+                                    <div className="p-6 flex flex-col w-full justify-between flex-1 group bg-black bg-opacity-80 absolute bottom-0 transition-all duration-300">
+                                        <h3 className="font-semibold text-white group-hover:text-blue-500 transition-all duration-300">
                                             {post.title}
                                         </h3>
-                                        <div className='line-clamp-2 text-gray-600'
+                                        <div className='line-clamp-2 text-white'
                                             dangerouslySetInnerHTML={{
                                                 __html: post.description,
                                             }}
                                         />
-                                        <div className="flex justify-between text-sm text-gray-500">
+                                        <div className="flex justify-between text-sm text-gray-300">
                                             <div className="flex items-center">
                                                 <EyeOutlined />
                                                 <span className="ml-2">{post.views}</span>
@@ -92,32 +104,48 @@ export default function TopPostsSection() {
                             </div>
                         ))}
                     </div>
+                    {/* Link "Xem tất cả" */}
+                    <div className="mt-6 text-center">
+                        <Link to="/posts/van-nghe?sortKey=views&sortValue=desc" className="text-blue-600 hover:text-blue-800 font-semibold">
+                            Xem tất cả
+                        </Link>
+                    </div>
                 </div>
-                <div className="col-span-4">
+
+                {/* Phần "Nhiều lượt bình chọn" với hiệu ứng fade */}
+                <div
+                    className="col-span-4 pl-20"
+                    data-aos="fade-up"  // Áp dụng hiệu ứng fade-up
+                >
                     <h2 className={`${styles.titleHeading} flex items-center text-4xl font-bold text-left mb-10`}>
                         <span className="border-l-4 border-blue-500 h-8 mr-4 inline-block"></span>
                         Nhiều lượt bình chọn
                     </h2>
-                    <div className="space-y-8">
+                    <div className="space-y-10">
                         {topVotesPosts.map((post) => (
                             <div
                                 key={post._id}
-                                className="p-4 border rounded flex flex-col h-full"
+                                className=" border rounded flex flex-col h-full cursor-pointer overflow-hidden group"
                             >
                                 <Link
                                     to={`/posts/${post.post_category_id.slug}/${post.slug}`}
-                                    className="relative group overflow-hidden block h-full"
+                                    className="relative group block h-full"
+                                    style={{
+                                        backgroundImage: `url(${post.thumbnail})`,
+                                        backgroundSize: 'cover',
+                                        backgroundPosition: 'center',
+                                        height: '250px',
+                                    }}
                                 >
-                                    <img
-                                        src={post.thumbnail}
-                                        alt={post.title}
-                                        className="w-full h-32 object-cover rounded mb-3 transform group-hover:scale-110 group-hover:brightness-75 transition-all duration-300"
-                                    />
-                                    <h3 className="text-lg font-semibold mb-2">{post.title}</h3>
-                                    <p className="text-gray-600 truncate mb-4">{post.description}</p>
-                                    <div className="flex justify-between text-sm text-gray-500">
-                                        <span>{post.views} lượt xem</span>
-                                        <span>{new Date(post.createdAt).toLocaleDateString('vi-VN')}</span>
+                                    <div className="p-6 flex flex-col w-full justify-between flex-1 group bg-black bg-opacity-40 absolute bottom-0 transition-all duration-300">
+                                        <h3 className="text-xl font-semibold text-white mb-2 group-hover:text-blue-500 transition-all duration-300">
+                                            {post.title}
+                                        </h3>
+                                        <p className="text-gray-300 truncate mb-4">{post.description}</p>
+                                        <div className="flex justify-between text-sm text-gray-300">
+                                            <span>{post.views} lượt xem</span>
+                                            <span>{new Date(post.createdAt).toLocaleDateString('vi-VN')}</span>
+                                        </div>
                                     </div>
                                 </Link>
                             </div>

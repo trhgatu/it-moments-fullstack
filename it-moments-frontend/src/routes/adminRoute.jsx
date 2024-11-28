@@ -8,6 +8,7 @@ import EditRole from "../admin/pages/Roles/EditRole";
 import PostEdit from "../admin/pages/Posts/PostEdit";
 import PostAll from "../admin/pages/Posts/components/PostAll";
 import EventAll from "../admin/pages/Events/components/EventAll";
+import EventDetail from "../admin/pages/Events/EventDetail";
 import Posts from '../admin/pages/Posts';
 import CreatePost from '../admin/pages/Posts/CreatePost';
 import SignUp from '../admin/pages/Auth/SignUp';
@@ -147,6 +148,10 @@ export const adminRoute = [
                             {
                                 path: "create",
                                 element: <CreateEvent />
+                            },
+                            {
+                                path: "detail/:id",
+                                element: <EventDetail />
                             },
                         ]
 

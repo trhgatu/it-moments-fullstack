@@ -3,12 +3,11 @@ import { Link } from 'react-router-dom';
 
 const PostSection = ({ postData }) => {
     return (
-        <div className="w-full min-h-48 bg-black h-full">
+        <div className="w-full min-h-48 h-full">
             <div className="grid grid-cols-1 gap-8">
                 {postData.map((post, index) => (
                     <div
                         key={index}
-
                         className="relative p-4 h-72 transition duration-300 ease-in-out flex items-start"
                     >
                         <div

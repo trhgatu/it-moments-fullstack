@@ -3,33 +3,29 @@ import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import cx from 'classnames';
 import styles from './Header.module.scss';
 import { useClientUser } from '../../../../context/ClientUserContext';
-import { Avatar, Dropdown, Menu, Button, Modal, notification, Badge } from 'antd';
+import { Avatar, Dropdown, Menu, Button, Modal, notification, Badge, Input } from 'antd';
 import NotificationComponent from '../../../../components/Notification';
-import { UserOutlined } from '@ant-design/icons';
+import { UserOutlined, SearchOutlined } from '@ant-design/icons';
 import { motion } from 'framer-motion';
 import axios from 'axios';
 import { API_URL } from '../../../../config/config';
 
 export const Header = () => {
     const navigate = useNavigate();
-    const { user, setUser, loading } = useClientUser(); // Assumes loading state is provided
+    const { user, setUser, loading } = useClientUser();
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [isModalVisible, setIsModalVisible] = useState(false); // State for modal
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [searchVisible, setSearchVisible] = useState(false);
     const location = useLocation();
     const navRef = useRef([]);
-
 
     const handleScroll = () => {
         setIsScrolled(window.scrollY > 50);
     };
 
-
-
     const handleLogout = async () => {
-
         try {
-
             await axios.post(`${API_URL}/auth/logout`, {}, { withCredentials: true });
             localStorage.clear();
             sessionStorage.clear();
@@ -42,7 +38,6 @@ export const Header = () => {
             setTimeout(() => {
                 window.location.reload();
             }, 2000);
-
         } catch(error) {
             console.error('Đăng xuất thất bại:', error);
             notification.error({
@@ -52,9 +47,6 @@ export const Header = () => {
             });
         }
     };
-
-
-
 
     const showModal = () => {
         setIsModalVisible(true);
@@ -151,6 +143,9 @@ export const Header = () => {
                     <NavLink
                         key={item.path}
                         to={item.path}
+                        onClick={() => {
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }}
                         end={item.path === '/'}
                         ref={el => navRef.current[index] = el}
                         className={({ isActive }) =>
@@ -161,7 +156,7 @@ export const Header = () => {
                             })
                         }
                     >
-                        <span className={cx(styles.textNav,)}>{item.label}</span>
+                        <span className={cx(styles.textNav)}>{item.label}</span>
                     </NavLink>
                 ))}
 
@@ -191,6 +186,29 @@ export const Header = () => {
             </nav>
 
             <div className="hidden md:flex gap-4 items-center mr-4 w-[200px]">
+                <div className="relative">
+                    <SearchOutlined
+                        className={cx('text-2xl cursor-pointer', {
+                            'text-black': isScrolled || location.pathname !== '/',
+                            'text-white': !isScrolled && location.pathname === '/',
+                        })}
+                        onClick={() => setSearchVisible(!searchVisible)}
+                    />
+                    {searchVisible && (
+                        <motion.div
+                            initial={{ opacity: 0, y: -20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -20 }}
+                            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                            className="absolute left-0 top-16 w-96"
+                        >
+                            <Input
+                                placeholder="Tìm kiếm..."
+                                onBlur={() => setSearchVisible(false)}
+                            />
+                        </motion.div>
+                    )}
+                </div>
                 {loading ? (
                     <div className="loader">Loading...</div>
                 ) : user ? (
@@ -223,14 +241,11 @@ export const Header = () => {
                                     e.currentTarget.style.color = '#1890ff';
                                 }}
                             />
-
                         </Dropdown>
-                        <div className='ml-4' >
+                        <div className='ml-4'>
                             <NotificationComponent />
                         </div>
                     </div>
-
-
                 ) : (
                     <>
                         <Button
@@ -255,7 +270,11 @@ export const Header = () => {
                         </Button>
                     </>
                 )}
+
+
             </div>
+
+            {/* Modal Confirm Logout */}
             <Modal
                 title="Xác nhận đăng xuất"
                 visible={isModalVisible}
@@ -266,6 +285,8 @@ export const Header = () => {
             >
                 <p>Bạn có chắc chắn muốn đăng xuất không?</p>
             </Modal>
+
+            {/* Mobile Menu */}
             {isMenuOpen && (
                 <div className="md:hidden fixed top-16 left-0 right-0 bg-white shadow-md z-40 p-4">
                     <nav className="flex flex-col items-center">

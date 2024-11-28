@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Badge, Avatar } from 'antd';
-import { BellOutlined } from '@ant-design/icons';
+import { Badge, Avatar, Button, Popover, Menu,message } from 'antd';
+import { BellOutlined, MoreOutlined } from '@ant-design/icons';
 import io from 'socket.io-client';
 import axios from 'axios';
 import { API_URL } from '../../config/config';
@@ -12,27 +12,28 @@ const NotificationComponent = ({ userId }) => {
     const [notifications, setNotifications] = useState([]);
     const [unreadCount, setUnreadCount] = useState(0);
     const [isVisible, setIsVisible] = useState(false);
+    const [visiblePopover, setVisiblePopover] = useState(null); // Track which Popover is open
     const token = localStorage.getItem('client_token');
 
-    const notificationRef = useRef(null); // Tham chiếu đến phần notification
+    const notificationRef = useRef(null);
+    const popoverRef = useRef(null);
 
     useEffect(() => {
-        // Lắng nghe click bên ngoài và đóng notification
         const handleClickOutside = (event) => {
-            if (notificationRef.current && !notificationRef.current.contains(event.target)) {
-                setIsVisible(false); // Đóng notification nếu click ngoài
+            // Check if the click is outside of the notification and popover areas
+            if (notificationRef.current && !notificationRef.current.contains(event.target) &&
+                popoverRef.current && !popoverRef.current.contains(event.target)) {
+                setIsVisible(false); // Close the notification panel if clicked outside
             }
         };
 
-        // Thêm sự kiện listener khi component được render
         document.addEventListener('mousedown', handleClickOutside);
-
-        // Cleanup event listener khi component bị hủy
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, []);
 
+    // Hàm lấy thông báo và sắp xếp chúng theo thời gian
     useEffect(() => {
         const fetchNotifications = async () => {
             try {
@@ -41,8 +42,12 @@ const NotificationComponent = ({ userId }) => {
                     withCredentials: true,
                 });
                 if(response.data.success) {
-                    setNotifications(response.data.data);
-                    setUnreadCount(response.data.data.filter((notif) => !notif.read).length);
+                    // Sắp xếp thông báo theo thời gian giảm dần
+                    const sortedNotifications = response.data.data.sort(
+                        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+                    );
+                    setNotifications(sortedNotifications);
+                    setUnreadCount(sortedNotifications.filter((notif) => !notif.read).length);
                 }
             } catch(error) {
                 console.error("Lỗi khi lấy thông báo:", error);
@@ -57,10 +62,13 @@ const NotificationComponent = ({ userId }) => {
             socket.on('notificationUpdate', (data) => {
                 const { notification } = data;
                 if(notification.userId === userId) {
-                    setNotifications((prevNotifications) => [
-                        ...prevNotifications,
-                        notification,
-                    ]);
+                    setNotifications((prevNotifications) => {
+                        // Thêm thông báo mới vào đầu danh sách và sắp xếp lại
+                        const updatedNotifications = [notification, ...prevNotifications];
+                        return updatedNotifications.sort(
+                            (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+                        );
+                    });
                     if(!notification.read) {
                         setUnreadCount((prevCount) => prevCount + 1);
                     }
@@ -82,12 +90,12 @@ const NotificationComponent = ({ userId }) => {
     };
 
     useEffect(() => {
-        if (location.search) {
+        if(location.search) {
             const queryParams = new URLSearchParams(location.search);
             const commentId = queryParams.get('commentId');
-            if (commentId) {
+            if(commentId) {
                 const commentElement = document.getElementById(commentId);
-                if (commentElement) {
+                if(commentElement) {
                     commentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
             }
@@ -102,9 +110,49 @@ const NotificationComponent = ({ userId }) => {
             });
             setUnreadCount(0);
             setNotifications((prevNotifications) =>
-                prevNotifications.map((notif) => ({ ...notif, read: true })));
+                prevNotifications.map((notif) => ({ ...notif, read: true }))
+            );
         } catch(error) {
             console.error("Lỗi khi đánh dấu thông báo:", error);
+        }
+    };
+    const markNotificationAsRead = async (notificationId) => {
+        try {
+            await axios.put(`${API_URL}/notifications/mark-as-read/${notificationId}`, {}, {
+                headers: { Authorization: `Bearer ${token}` },
+                withCredentials: true,
+            });
+            setUnreadCount((prevCount) => prevCount - 1);
+        } catch (error) {
+            console.error("Lỗi khi đánh dấu thông báo là đã đọc:", error);
+        }
+    };
+    const deleteNotification = async (notificationId) => {
+        try {
+            await axios.delete(`${API_URL}/notifications/delete/${notificationId}`, {
+                headers: { Authorization: `Bearer ${token}` },
+                withCredentials: true,
+            });
+            setNotifications((prevNotifications) =>
+                prevNotifications.filter((notif) => notif._id !== notificationId)
+            );
+            message.success('Thông báo đã được xóa');
+        } catch(error) {
+            console.error("Lỗi khi xóa thông báo:", error);
+            message.error('Có lỗi xảy ra khi xóa thông báo');
+        }
+    };
+
+    const deleteAllNotifications = async () => {
+        try {
+            await axios.delete(`${API_URL}/notifications`, {
+                headers: { Authorization: `Bearer ${token}` },
+                withCredentials: true,
+            });
+            setNotifications([]);
+            setUnreadCount(0);
+        } catch(error) {
+            console.error("Lỗi khi xóa tất cả thông báo:", error);
         }
     };
 
@@ -112,12 +160,37 @@ const NotificationComponent = ({ userId }) => {
         setIsVisible((prev) => !prev);
     };
 
+    const handleActionSelect = (action, notifId) => {
+        if (action === 'markAsRead') {
+            // Cập nhật giao diện ngay lập tức
+            setNotifications((prevNotifications) =>
+                prevNotifications.map((notif) =>
+                    notif._id === notifId ? { ...notif, read: true } : notif
+                )
+            );
+
+            // Gửi yêu cầu đến API để đánh dấu thông báo đã đọc
+            markNotificationAsRead(notifId);
+        } else if (action === 'delete') {
+            deleteNotification(notifId);
+        }
+        setVisiblePopover(null);
+    };
+
+    const menu = (notifId) => (
+        <Menu>
+            <Menu.Item key="1" onClick={() => handleActionSelect('markAsRead', notifId)}>
+                Đánh dấu đã đọc
+            </Menu.Item>
+            <Menu.Item key="2" onClick={() => handleActionSelect('delete', notifId)}>
+                Xóa
+            </Menu.Item>
+        </Menu>
+    );
+
     return (
         <div className="relative">
-            <div
-                onClick={toggleVisibility}
-                className="cursor-pointer relative flex items-center group"
-            >
+            <div onClick={toggleVisibility} className="cursor-pointer relative flex items-center group">
                 <Avatar
                     size={40}
                     style={{
@@ -153,7 +226,7 @@ const NotificationComponent = ({ userId }) => {
 
             {isVisible && (
                 <div
-                    ref={notificationRef} // Gán ref cho phần notification
+                    ref={notificationRef}
                     className="absolute right-0 mt-2 w-[40rem] p-4 bg-white border border-gray-200 rounded-lg shadow z-50 transform transition-all duration-300 ease-in-out opacity-0 visible opacity-100"
                 >
                     <div className="flex justify-between items-center mb-4">
@@ -164,29 +237,45 @@ const NotificationComponent = ({ userId }) => {
                         >
                             Đánh dấu đã đọc
                         </button>
+                        <button
+                            onClick={deleteAllNotifications}
+                            className="text-red-500 hover:underline text-sm"
+                        >
+                            Xóa tất cả
+                        </button>
                     </div>
                     <div className="max-h-96 overflow-y-auto scrollbar-hide">
                         {notifications.length > 0 ? (
-                            notifications.map((notif, index) => (
-                                <div
-                                    key={index}
-                                    className={`flex items-center p-3 mb-2 cursor-pointer rounded-lg hover:bg-[#F3F3F4] ${notif.read
-                                        ? "bg-gray-100"
-                                        : "bg-blue-50 border-l-4 border-blue-500"
-                                        }`}
-                                    onClick={() => handleNotificationClick(notif)}
-                                >
-                                    <Avatar
-                                        src={notif.avatar}
-                                        size={40}
-                                        className="mr-3"
-                                    />
-                                    <div className="flex-grow">
-                                        <p className="text-sm text-gray-700">{notif.content}</p>
-                                        <p className="text-xs text-gray-400">
-                                            {new Date(notif.createdAt).toLocaleString()}
-                                        </p>
+                            notifications.map((notif) => (
+                                <div key={notif._id} className="flex items-center p-4">
+                                    <div
+                                        className={`flex items-center p-3 cursor-pointer rounded-lg hover:bg-gray-300 transition-all duration-300 ${notif.read
+                                            ? "bg-gray-100"
+                                            : "bg-blue-50 border-l-4 border-blue-500"
+                                            }`}
+                                        onClick={() => handleNotificationClick(notif)}
+                                    >
+                                        <Avatar
+                                            src={notif.avatar}
+                                            size={40}
+                                            className="mr-3"
+                                        />
+                                        <div className="flex-grow">
+                                            <p className="text-sm text-gray-700">{notif.content}</p>
+                                            <p className="text-xs text-gray-400">
+                                                {new Date(notif.createdAt).toLocaleString()}
+                                            </p>
+                                        </div>
                                     </div>
+
+                                    <Popover
+                                        content={menu(notif._id)}
+                                        trigger="click"
+                                        visible={visiblePopover === notif._id}
+                                        onVisibleChange={(visible) => setVisiblePopover(visible ? notif._id : null)}
+                                    >
+                                        <MoreOutlined className="text-gray-500 text-3xl cursor-pointer" />
+                                    </Popover>
                                 </div>
                             ))
                         ) : (
@@ -200,4 +289,5 @@ const NotificationComponent = ({ userId }) => {
         </div>
     );
 };
+
 export default NotificationComponent;

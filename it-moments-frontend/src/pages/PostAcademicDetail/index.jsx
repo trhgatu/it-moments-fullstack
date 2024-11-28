@@ -1,12 +1,22 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 import { API_URL } from '../../config/config';
-import { Modal } from 'antd';
 import { ClockCircleOutlined, EnvironmentOutlined } from '@ant-design/icons';
-
+import { message, Modal, Row, Col, Input, Button, Spin, Image } from 'antd';
+import { useClientUser } from '../../context/ClientUserContext';
+import styles from './PostAcademicDetail.module.scss';
 const PostAcademicDetail = () => {
-  const { slug, category } = useParams();
+  const { slug } = useParams();
+  const location = useLocation();
+  const query = new URLSearchParams(location.search);
+  const commentId = query.get('commentId');
+  const commentRefs = useRef({})
+  const { user, loading: userLoading } = useClientUser();
+  const [comment, setComment] = useState('');
+  const [comments, setComments] = useState([]);
+  const [replyCommentId, setReplyCommentId] = useState(null);
+  const [replyContent, setReplyContent] = useState('');
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
   const [imageModalVisible, setImageModalVisible] = useState(false);
@@ -14,6 +24,216 @@ const PostAcademicDetail = () => {
   const [visibleImages, setVisibleImages] = useState(8);
   const [showFullDescription, setShowFullDescription] = useState(false);
 
+  useEffect(() => {
+    if(commentId && commentRefs.current[commentId]) {
+      const commentElement = commentRefs.current[commentId];
+      if(commentElement) {
+        commentElement.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+        });
+
+        commentElement.classList.add(styles.flashEffect);
+
+        setTimeout(() => {
+          commentElement.classList.remove(styles.flashEffect);
+        }, 1000);
+      }
+    }
+  }, [commentId, comments]);
+  useEffect(() => {
+    const increaseViewCount = async () => {
+      if(!post?._id) return;
+      try {
+        await axios.post(`${API_URL}/posts/${post._id}/increment-views`);
+      } catch(error) {
+        console.error("Lỗi khi tăng lượt xem:", error);
+      }
+    };
+
+    increaseViewCount();
+  }, [post?._id]);
+  const fetchComments = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/posts/${post._id}/comments`);
+      setComments(response.data.data.comments || []);
+    } catch(error) {
+      console.error('Lỗi khi tải bình luận:', error);
+    }
+  };
+  useEffect(() => {
+    if(post) {
+      fetchComments();
+    }
+  }, [post]);
+  useEffect(() => {
+    fetchPost();
+  }, [slug]);
+  const handleCommentSubmit = async () => {
+    if(!comment.trim()) {
+      message.warning('Vui lòng nhập bình luận');
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        `${API_URL}/posts/${post._id}/comment`,
+        { content: comment },
+        {
+          headers: { Authorization: `Bearer ${user.token}` },
+          withCredentials: true
+        }
+      );
+
+      if(response.data.success) {
+        setComments([...comments, response.data.data.comment]);
+        setComment('');
+        message.success('Bình luận thành công!');
+      }
+    } catch(error) {
+      console.error('Lỗi khi bình luận:', error.response?.data?.message);
+      message.error('Đã xảy ra lỗi khi bình luận.');
+    }
+  };
+  const handleReplySubmit = async () => {
+    if(!replyContent.trim()) {
+      message.warning('Vui lòng nhập phản hồi');
+      return;
+    }
+
+    const parentComment = comments.find(c => c._id === replyCommentId);
+    if(!parentComment) {
+      message.warning('Không tìm thấy bình luận để trả lời!');
+      return;
+    }
+
+    const toUserId = parentComment.user_id._id;
+
+    try {
+      const response = await axios.post(
+        `${API_URL}/posts/${post._id}/comment/reply`,
+        {
+          content: replyContent,
+          parentCommentId: replyCommentId,
+          toUserId: toUserId
+        },
+        {
+          headers: { Authorization: `Bearer ${user.token}` },
+          withCredentials: true
+        }
+      );
+
+      if(response.data.success) {
+        const newReply = response.data.data.reply;
+
+        // Cập nhật mảng comments với phản hồi mới và thêm thông tin người dùng vào đó
+        const updatedComments = comments.map((comment) => {
+          if(comment._id === replyCommentId) {
+            return {
+              ...comment,
+              replies: [
+                ...comment.replies,
+                {
+                  ...newReply, // Thêm dữ liệu phản hồi đã nhận từ API
+                  user_id: user  // Gắn thêm thông tin người dùng vào phản hồi
+                }
+              ]
+            };
+          }
+          return comment;
+        });
+
+        setComments(updatedComments);
+        setReplyContent('');
+        setReplyCommentId(null);
+        message.success('Phản hồi thành công!');
+      }
+    } catch(error) {
+      console.error('Lỗi khi phản hồi:', error.response?.data?.message);
+      message.error('Đã xảy ra lỗi khi phản hồi.');
+    }
+  };
+  const renderReplies = (replies) => {
+    return replies.map((reply) => (
+      <div
+        key={reply._id}
+        ref={(el) => commentRefs.current[reply._id] = el}
+        className="ml-6 border-l-2 border-gray-200 pl-4 mt-4"
+      >
+        <div className="flex items-start space-x-4">
+          {reply.user_id?.avatar ? (
+            <img
+              src={reply.user_id.avatar}
+              className="rounded-full w-10 h-10"
+              alt="user-avatar"
+            />
+          ) : (
+            <FaUser className="w-10 h-10 text-gray-400 rounded-full border" />
+          )}
+          <div className="bg-gray-50 rounded-lg p-4 w-full">
+            <strong className="block text-lg">{reply.user_id?.fullName || 'Người dùng'}</strong>
+            <p className="text-gray-700 mt-2">{reply.content}</p>
+          </div>
+        </div>
+      </div>
+    ));
+  };
+
+  const renderComments = () => {
+    return comments.map((comment) => (
+      <div
+        key={comment._id}
+        ref={(el) => commentRefs.current[comment._id] = el}
+        className="mb-6"
+      >
+        <div className="flex items-start space-x-4">
+          {comment.user_id?.avatar ? (
+            <img
+              src={comment.user_id.avatar}
+              className="rounded-full w-12 h-12"
+              alt={`${comment.user_id.fullName || 'Người dùng'}'s avatar`}
+            />
+          ) : (
+            <FaUser className="w-12 h-12 text-gray-400 rounded-full border" />
+          )}
+          <div className="bg-gray-50 rounded-lg p-4 w-full">
+            <strong className="block text-lg">{comment.user_id?.fullName || 'Người dùng'}</strong>
+            <p className="text-gray-700 mt-2">{comment.content}</p>
+            <Button
+              onClick={() => setReplyCommentId(comment._id)}
+              className="mt-2 text-blue-600"
+              type="link"
+            >
+              Trả lời
+            </Button>
+          </div>
+        </div>
+        {comment.replies && comment.replies.length > 0 && (
+          <div className="mt-4">
+            {renderReplies(comment.replies)}
+          </div>
+        )}
+        {replyCommentId === comment._id && (
+          <div className="mt-4 ml-6">
+            <Input.TextArea
+              value={replyContent}
+              onChange={(e) => setReplyContent(e.target.value)}
+              rows={3}
+              placeholder="Nhập phản hồi của bạn..."
+              className="w-full"
+            />
+            <Button
+              type="primary"
+              onClick={handleReplySubmit}
+              className="mt-2"
+            >
+              Gửi Phản hồi
+            </Button>
+          </div>
+        )}
+      </div>
+    ));
+  };
   const fetchPost = async () => {
     try {
       const response = await axios.get(`${API_URL}/posts/detail/${slug}`);
@@ -28,8 +248,15 @@ const PostAcademicDetail = () => {
 
   useEffect(() => {
     fetchPost();
-  }, [slug, category]);
-
+  }, [slug]);
+  if(userLoading || loading) {
+    return <div className="flex justify-center items-center min-h-64">
+      <Spin size="large" />
+    </div>;
+  }
+  if(!post) {
+    return <div>Không tìm thấy bài đăng.</div>;
+  }
   const showImageModal = (image) => {
     setSelectedImage(image);
     setImageModalVisible(true);
@@ -39,6 +266,7 @@ const PostAcademicDetail = () => {
     setImageModalVisible(false);
     setSelectedImage('');
   };
+
   const loadMoreImages = () => {
     setVisibleImages((prev) => prev + 8);
   };
@@ -77,39 +305,46 @@ const PostAcademicDetail = () => {
           </div>
         </div>
       </div>
-      <div className="mt-16 bg-gray-100 p-8 rounded-lg shadow-lg">
-        <h2 className="text-3xl font-bold mb-6 text-gray-800 border-b pb-4">Giới thiệu sự kiện</h2>
-        <div className="grid md:grid-cols-2 gap-8 items-center">
-          <div>
-            <p className="text-lg italic bg-yellow-50 p-4 rounded-lg shadow">
-              ✍️ {showFullDescription ? post.description : post.description.slice(0, 200) + '...'}
-            </p>
+
+      <div className="mt-16 bg-gray-100 p-8 rounded-lg border border-gray-200">
+        <h2 className="text-3xl font-bold mb-6 text-gray-800 border-b pb-4">
+          Giới thiệu sự kiện
+        </h2>
+        <div className="flex flex-col gap-6">
+          <div className="relative">
+            <p
+              dangerouslySetInnerHTML={{
+                __html: showFullDescription
+                  ? post.description
+                  : post.description.slice(0, 200) + '...',
+              }}
+              className="text-lg leading-relaxed text-gray-700"
+            ></p>
             <button
               onClick={toggleDescription}
-              className="text-blue-600 mt-4 inline-block"
+              className="mt-4 text-blue-600 font-medium border border-blue-500 px-4 py-2 rounded-lg hover:bg-blue-500 hover:text-white transition"
             >
               {showFullDescription ? 'Xem bớt' : 'Xem thêm'}
             </button>
-            <ul className="mt-6 space-y-4">
-              <li className="flex items-center gap-2 text-lg">
-                <ClockCircleOutlined className="text-blue-600" />
-                <span>{new Date(post.createdAt).toLocaleString()}</span>
-              </li>
-              <li className="flex items-center gap-2 text-lg">
-                <EnvironmentOutlined className="text-green-600" />
-                <span>{post.location || 'Đang cập nhật'}</span>
-              </li>
-            </ul>
           </div>
-          <div>
-            <img
-              src={post.thumbnail || 'https://via.placeholder.com/150'}
-              alt="Event Illustration"
-              className="rounded-lg shadow-lg border border-gray-200"
-            />
+          <div className="mt-6 border-t border-gray-300 pt-6">
+            <div className="flex items-center gap-3 mb-4">
+              <ClockCircleOutlined className="text-blue-600 text-2xl" />
+              <span className="text-lg font-semibold text-gray-800">
+                {new Date(post.createdAt).toLocaleString()}
+              </span>
+            </div>
+            <div className="flex items-center gap-3">
+              <EnvironmentOutlined className="text-green-600 text-2xl" />
+              <span className="text-lg font-semibold text-gray-800">
+                {post.location || 'Đang cập nhật'}
+              </span>
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Khoảnh khắc sự kiện */}
       <div className="mt-16">
         <h2 className="text-3xl font-bold mb-6 text-gray-800 border-b pb-4">Khoảnh khắc sự kiện</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -140,6 +375,7 @@ const PostAcademicDetail = () => {
         )}
       </div>
 
+      {/* Video Section */}
       {post.video && (
         <div className="mt-16 bg-gray-100 p-8 rounded-lg shadow-lg">
           <h2 className="text-3xl font-bold mb-4 text-gray-800 border-b pb-4">
@@ -157,8 +393,6 @@ const PostAcademicDetail = () => {
           ></iframe>
         </div>
       )}
-
-      {/* Related Events */}
       <div className="mt-16">
         <h2 className="text-3xl font-bold mb-6 text-gray-800 border-b pb-4">Sự kiện liên quan</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -183,6 +417,43 @@ const PostAcademicDetail = () => {
           ))}
         </div>
       </div>
+      <div className="mt-8">
+        <h3 className="text-2xl font-semibold">Bình luận:</h3>
+        {user ? (
+          <>
+            <Input.TextArea
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              placeholder={`Trả lời dưới tên ${user.fullName}`}
+              rows={4}
+            />
+            <Button
+              type="primary"
+              onClick={handleCommentSubmit}
+              className="mt-4"
+              disabled={!comment.trim()}
+            >
+              Gửi Bình luận
+            </Button>
+          </>
+        ) : (
+          <div className="mt-4">
+            <p className="text-lg text-gray-600">Bạn cần đăng nhập để bình luận.</p>
+            <Button
+              type="primary"
+              onClick={() => {
+                window.location.href = `/login?redirect=${encodeURIComponent(window.location.pathname)}`;
+              }}
+            >
+              Đăng nhập
+            </Button>
+          </div>
+        )}
+        <div className="mt-8">
+          {comments.length > 0 ? renderComments() : <p>Chưa có bình luận nào.</p>}
+        </div>
+      </div>
+
       <Modal
         visible={imageModalVisible}
         footer={null}

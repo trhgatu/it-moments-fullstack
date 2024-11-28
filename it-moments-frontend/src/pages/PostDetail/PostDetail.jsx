@@ -403,7 +403,7 @@ const PostDetail = () => {
   const isEventNotStarted = post.event_id?.status === 'pending';
 
   return (
-    <div className="max-w-screen-2xl mx-auto pt-48">
+    <div className="max-w-screen-2xl mx-auto pt-40">
       <div className="grid grid-cols-4 gap-6">
         <div className="col-span-3">
           <div className="bg-white rounded-xl p-12">
@@ -430,11 +430,6 @@ const PostDetail = () => {
                     </span>
                   </div>
                 </div>
-                <div className='text-2xl'
-                  dangerouslySetInnerHTML={{
-                    __html: post.description,
-                  }}
-                />
                 {post.video && (
                   <div className="mt-4">
                     <iframe
@@ -448,6 +443,11 @@ const PostDetail = () => {
                     ></iframe>
                   </div>
                 )}
+                 <div className='text-2xl pt-6'
+                  dangerouslySetInnerHTML={{
+                    __html: post.description,
+                  }}
+                />
                 <h3 className="text-2xl py-6">Hình ảnh bài viết:</h3>
                 <Row gutter={[16, 16]}>
                   <Col span={12}>
@@ -610,8 +610,6 @@ const PostDetail = () => {
             </div>
           </div>
         </div>
-
-        {/* Right column for Related Posts */}
         <div className="col-span-1">
           <RelatedPosts eventId={post.event_id._id} />
         </div>

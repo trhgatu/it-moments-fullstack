@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Outlet, useParams } from 'react-router-dom';
+import { Outlet, useParams, Link } from 'react-router-dom';
 import { Spin } from 'antd';
+import { IoIosArrowForward } from "react-icons/io";
 import { API_URL } from '../../config/config';
 import MainNotifications from './MainNotifications';
 import Breadcrumbs from './Breadcrumbs';
@@ -22,9 +23,9 @@ export default function Academic() {
     setLoading(true);
     try {
       let eventStatus = '';
-      if (type === "ongoing") {
+      if(type === "ongoing") {
         eventStatus = "active";
-      } else if (type === "completed") {
+      } else if(type === "completed") {
         eventStatus = "completed";
       }
 
@@ -39,7 +40,7 @@ export default function Academic() {
         currentPage: data.pagination.currentPage,
         totalPages: data.pagination.totalPage,
       }));
-    } catch (error) {
+    } catch(error) {
       console.error('Error fetching posts:', error);
     } finally {
       setLoading(false);
@@ -56,7 +57,7 @@ export default function Academic() {
     setPagination((prev) => ({ ...prev, currentPage: 1 }));
   };
 
-  if (loading) {
+  if(loading) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-gray-100">
         <Spin size="large" tip="Loading data..." />
@@ -65,12 +66,24 @@ export default function Academic() {
   }
 
   return (
-    <>
+    <div className='pt-36'>
       {!slug ? (
         <div className="container mx-auto px-6 grid grid-cols-12 gap-8">
-          <div className="col-span-12 md:col-span-8 bg-white p-6 rounded-lg shadow-lg">
-            <div className="col-span-12 mb-6">
-              <Breadcrumbs />
+          <div className="col-span-12 md:col-span-8 bg-white p-6 rounded-lg ">
+            <div className="bg-gray-200 p-4  flex items-center mb-8">
+              <Link
+                to="/"
+                className=" font-semibold hover:text-blue-600 transition duration-300"
+              >
+                <span>Trang chủ</span>
+              </Link>
+              <IoIosArrowForward/>
+              <span
+                to="/posts/van-nghe"
+                className="font-semibold text-blue-500"
+              >
+                <span>Học thuật</span>
+              </span>
             </div>
             <MainNotifications
               posts={posts}
@@ -91,6 +104,6 @@ export default function Academic() {
       ) : (
         <Outlet />
       )}
-    </>
+    </div>
   );
 }

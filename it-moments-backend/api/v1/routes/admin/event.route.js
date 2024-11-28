@@ -7,4 +7,5 @@ router.get('/', controller.index);
 router.post('/create',
     controller.createEvent
 );
+router.get('/detail/:id', controller.detail);
 export default router;

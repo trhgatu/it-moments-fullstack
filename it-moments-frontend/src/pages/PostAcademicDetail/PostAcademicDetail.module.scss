@@ -1,0 +1,16 @@
+/* CSS cho hiệu ứng nháy màu */
+@keyframes flashColor {
+    0% {
+      background-color: rgba(255, 255, 0, 0.3); /* Màu vàng nháy */
+    }
+    50% {
+      background-color: rgba(255, 255, 0, 0.6);
+    }
+    100% {
+      background-color: rgba(255, 255, 0, 0.3);
+    }
+  }
+
+  .flashEffect {
+    animation: flashColor 1s ease-in-out;
+  }

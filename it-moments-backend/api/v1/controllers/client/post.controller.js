@@ -554,6 +554,32 @@ const controller = {
             res.status(500).json({ message: 'Internal server error' });
         }
     },
+    getUserVotedPosts: async (req, res) => {
+        try {
+            const { userId } = req.params;
+            const votedPosts = await Post.find({
+                voters: { $in: [userId] }
+            }).populate("post_category_id", "title slug");
+
+            const user = await User.findById(userId);
+
+            if(!user) {
+                return res.status(404).json({ message: 'User not found' });
+            }
+
+            res.status(200).json({
+                success: true,
+                user: {
+                    id: user._id,
+                    name: user.fullName,
+                },
+                posts: votedPosts,
+            });
+        } catch(error) {
+            console.error('Error fetching voted posts:', error);
+            res.status(500).json({ success: false, message: 'Server error' });
+        }
+    }
 
 }
 export default controller;

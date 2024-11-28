@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { API_URL } from '../../config/config';
-import { Modal } from 'antd';
+import { Modal, Spin } from 'antd';
 import { ClockCircleOutlined, EnvironmentOutlined } from '@ant-design/icons';
 
 const PostEventDetail = () => {
@@ -12,7 +12,7 @@ const PostEventDetail = () => {
   const [imageModalVisible, setImageModalVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState('');
   const [visibleImages, setVisibleImages] = useState(8);
-  const [showFullDescription, setShowFullDescription] = useState(false); // Trạng thái điều khiển việc hiển thị đầy đủ mô tả
+  const [showFullDescription, setShowFullDescription] = useState(false);
 
   const fetchPost = async () => {
     try {
@@ -39,6 +39,7 @@ const PostEventDetail = () => {
     setImageModalVisible(false);
     setSelectedImage('');
   };
+
   const loadMoreImages = () => {
     setVisibleImages((prev) => prev + 8);
   };
@@ -48,7 +49,9 @@ const PostEventDetail = () => {
   };
 
   if(loading) {
-    return <div>Loading...</div>;
+    return <div className="flex justify-center items-center min-h-64">
+      <Spin size="large" />
+    </div>;
   }
 
   if(!post) {
@@ -57,6 +60,7 @@ const PostEventDetail = () => {
 
   return (
     <div className="max-w-screen-lg mx-auto p-6 bg-gradient-to-b from-gray-50 to-white">
+      {/* Banner */}
       <div className="relative w-full h-[70vh]">
         <img
           src={post.thumbnail || 'https://via.placeholder.com/150'}
@@ -72,53 +76,51 @@ const PostEventDetail = () => {
             </span>
             <span className="flex items-center gap-2">
               <EnvironmentOutlined className="text-white text-xl" />
-              {post.location || 'Đang cập nhật'}
+              {post.event_id.location || 'Đang cập nhật'}
             </span>
           </div>
         </div>
       </div>
-      <div className="mt-16 bg-gray-100 p-8 rounded-lg shadow-lg">
-        <h2 className="text-3xl font-bold mb-6 text-gray-800 border-b pb-4">Giới thiệu sự kiện</h2>
-        <div className="grid md:grid-cols-2 gap-8 items-center">
-          <div>
+
+      <div className="mt-16 bg-gray-100 p-8 rounded-lg  border border-gray-200">
+        <h2 className="text-3xl font-bold mb-6 text-gray-800 border-b pb-4">
+          Giới thiệu sự kiện
+        </h2>
+        <div className="flex flex-col gap-6">
+          <div className="relative">
             <p
               dangerouslySetInnerHTML={{
                 __html: showFullDescription
                   ? post.description
                   : post.description.slice(0, 200) + '...',
               }}
-              className="text-lg italic bg-yellow-50 p-4 rounded-lg shadow"
-            >
-            </p>
-
+              className="text-lg leading-relaxed text-gray-700"
+            ></p>
             <button
               onClick={toggleDescription}
-              className="text-blue-600 mt-4 inline-block"
+              className="mt-4 text-blue-600 font-medium border border-blue-500 px-4 py-2 rounded-lg hover:bg-blue-500 hover:text-white transition"
             >
               {showFullDescription ? 'Xem bớt' : 'Xem thêm'}
             </button>
-            <ul className="mt-6 space-y-4">
-              <li className="flex items-center gap-2 text-lg">
-                <ClockCircleOutlined className="text-blue-600" />
-                <span>{new Date(post.createdAt).toLocaleString()}</span>
-              </li>
-              <li className="flex items-center gap-2 text-lg">
-                <EnvironmentOutlined className="text-green-600" />
-                <span>{post.location || 'Đang cập nhật'}</span>
-              </li>
-            </ul>
           </div>
-          <div>
-            <img
-              src={post.thumbnail || 'https://via.placeholder.com/150'}
-              alt="Event Illustration"
-              className="rounded-lg shadow-lg border border-gray-200"
-            />
+          <div className="mt-6 border-t border-gray-300 pt-6">
+            <div className="flex items-center gap-3 mb-4">
+              <ClockCircleOutlined className="text-blue-600 text-2xl" />
+              <span className="text-lg font-semibold text-gray-800">
+                {new Date(post.createdAt).toLocaleString()}
+              </span>
+            </div>
+            <div className="flex items-center gap-3">
+              <EnvironmentOutlined className="text-green-600 text-2xl" />
+              <span className="text-lg font-semibold text-gray-800">
+                {post.event_id.location || "Đang cập nhật"}
+              </span>
+            </div>
           </div>
         </div>
       </div>
       <div className="mt-16">
-        <h2 className="text-3xl font-bold mb-6 text-gray-800 border-b pb-4">Khoảnh khắc sự kiện</h2>
+        <h2 className="text-3xl font-bold mb-6 text-gray-800 border-b pb-4">Một số hình ảnh:</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {post.images?.slice(0, visibleImages).map((image, index) => (
             <div
@@ -147,6 +149,7 @@ const PostEventDetail = () => {
         )}
       </div>
 
+      {/* Video Section */}
       {post.video && (
         <div className="mt-16 bg-gray-100 p-8 rounded-lg shadow-lg">
           <h2 className="text-3xl font-bold mb-4 text-gray-800 border-b pb-4">
@@ -190,6 +193,7 @@ const PostEventDetail = () => {
           ))}
         </div>
       </div>
+
       <Modal
         visible={imageModalVisible}
         footer={null}

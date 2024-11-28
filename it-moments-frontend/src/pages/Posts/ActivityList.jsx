@@ -24,22 +24,22 @@ const ActivityList = ({ totalPages, onPageChange, currentPage }) => {
                 const response = await fetch(`${API_URL}/posts?category=${category}&page=${currentPage}&limit=6`);
                 const data = await response.json();
 
-                if (data.success) {
+                if(data.success) {
                     setPosts(data.data.posts);
-                    if (data.data.posts && data.data.posts.length > 0) {
+                    if(data.data.posts && data.data.posts.length > 0) {
                         setCategoryTitle(data.data.posts[0].post_category_id.title);
                     }
                 } else {
                     setError('Không thể tải bài viết. Vui lòng thử lại sau.');
                 }
-            } catch (error) {
+            } catch(error) {
                 setError('Có lỗi xảy ra khi tải dữ liệu.');
             } finally {
                 setLoading(false);
             }
         };
 
-        if (category) {
+        if(category) {
             fetchPosts();
         }
     }, [category, currentPage]);
@@ -52,20 +52,8 @@ const ActivityList = ({ totalPages, onPageChange, currentPage }) => {
     };
 
     return (
-        <div className={styles.activityListContainer}>
-            <div className={`${styles.breadcrumb} bg-gray-100 text-gray-700 p-3 shadow flex items-center`}>
-                <span className="w-1 h-full bg-blue-500 mr-2"></span>
-                <Link
-
-                    to="/posts/van-nghe"
-                    className="text-3xl uppercase font-semibold text-gray-700 hover:text-blue-600 transition duration-300"
-                >
-                    Văn nghệ
-                </Link>
-            </div>
-
-
-            <div className={styles.activityList}>
+        <div className={`${styles.activityListContainer} px-24 `}>
+            <div className={`${styles.activityList} p-10`}>
                 {loading ? (
                     <div className="flex justify-center items-center min-h-64">
                         <Spin size="large" />
@@ -73,7 +61,7 @@ const ActivityList = ({ totalPages, onPageChange, currentPage }) => {
                 ) : error ? (
                     <div>{error}</div>
                 ) : (
-                    <div className={styles.posts}>
+                    <div className={`${styles.posts} gap-10`}>
                         {posts.map((post) => (
                             <PostItem
                                 key={post._id}
@@ -88,7 +76,7 @@ const ActivityList = ({ totalPages, onPageChange, currentPage }) => {
                         ))}
                     </div>
                 )}
-                <div className={styles.category}>
+                <div className={`${styles.category} bg-white border-4`}>
                     <Category onCategoryChange={handleCategoryChange} />
                 </div>
             </div>

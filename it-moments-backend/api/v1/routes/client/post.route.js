@@ -27,5 +27,6 @@ router.post('/:id/comment/reply', requireClientAuth, controller.replyToComment);
 
 router.post('/:id/increment-views', controller.incrementViews);
 
+router.get('/voted/:userId', requireClientAuth, controller.getUserVotedPosts);
 
 export default router;

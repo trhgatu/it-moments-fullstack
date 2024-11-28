@@ -1,62 +1,64 @@
-import React from 'react';
-import { FaBell, FaArrowRight } from 'react-icons/fa';
+import React from "react";
+import { FaBell, FaCalendarAlt } from "react-icons/fa";
 
 const announcements = [
-  'Danh sách sinh viên đăng ký thực tập...',
-  'Thông báo thời gian tổ chức thi cuối kỳ...',
-  'Biểu mẫu báo cáo thực tập tốt nghiệp...',
+  {
+    title: "Danh sách sinh viên đăng ký thực tập",
+    description: "Kiểm tra danh sách sinh viên đăng ký thực tập kỳ này...",
+    date: "25/11/2024",
+    icon: <FaBell className="text-white text-lg" />,
+  },
+  {
+    title: "Thông báo thời gian tổ chức thi cuối kỳ",
+    description: "Thông báo chính thức về thời gian thi cuối kỳ học kỳ 2...",
+    date: "24/11/2024",
+    icon: <FaCalendarAlt className="text-white text-lg" />,
+  },
+  {
+    title: "Biểu mẫu báo cáo thực tập tốt nghiệp",
+    description: "Tải xuống biểu mẫu mới nhất cho báo cáo thực tập...",
+    date: "23/11/2024",
+    icon: <FaBell className="text-white text-lg" />,
+  },
 ];
 
 const NewAnnouncements = () => {
   return (
-    <div className="p-6 bg-white rounded-lg shadow-lg">
-      <div className="flex items-center mb-6">
-        <FaBell className="text-blue-500 text-xl mr-2" />
-        <h2 className="font-bold text-lg text-navy-800 border-b-2 pb-2 flex-1"
-            style={{ borderBottom: '2px solid', borderImage: 'linear-gradient(to right, #3b82f6, #93c5fd) 1' }}>
-          THÔNG BÁO MỚI
-        </h2>
+    <>
+      <div className="flex items-center justify-between bg-gradient-to-r from-blue-400 to-blue-600 px-4 py-3 rounded-t-lg  transition-shadow duration-200">
+        <div className="flex items-center space-x-2">
+          <FaBell className="text-white text-2xl" />
+          <span className=" font-semibold text-white">Thông báo mới</span>
+        </div>
       </div>
-
-      {/* Danh sách thông báo */}
-      <ul className="space-y-6 text-gray-800">
-        {announcements.map((item, index) => (
+      <ul className="space-y-6 mt-4">
+        {announcements.map((announcement, index) => (
           <li
             key={index}
-            className="flex items-center p-4 rounded-lg hover:bg-gray-100 transition-all duration-200 space-x-4"
-            style={{ minHeight: '70px' }}
+            className="flex items-start p-4 bg-white rounded-lg cursor-pointer transform hover:scale-105 hover:bg-gray-200 duration-300 transition-all border-l-4 border-blue-500"
           >
-            {/* Biểu tượng chuông với vòng tròn nền mờ và đổ bóng */}
-            <div className="flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 shadow-md transition-transform duration-200 hover:scale-110">
-              <FaBell className="text-blue-600 text-lg" />
+            <div className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-md">
+              {announcement.icon}
             </div>
-            <span className="text-sm text-gray-700">{item}</span>
+
+            <div className="ml-4 flex-1">
+              <h3 className="text-md font-bold text-gray-800">{announcement.title}</h3>
+              <p className="text-sm text-gray-600 mt-1 line-clamp-2">
+                {announcement.description}
+              </p>
+              <span className="text-xs text-gray-400 mt-2 inline-block italic">
+                {announcement.date}
+              </span>
+            </div>
           </li>
         ))}
       </ul>
-      <div className="text-right mt-6">
-        <a
-          href="#"
-          className="inline-flex items-center justify-center space-x-2 px-4 py-2 rounded-lg font-semibold text-base transition-all duration-200 border-2"
-          style={{
-            borderImage: 'linear-gradient(to right, #3b82f6, #93c5fd) 1',
-            color: '#3b82f6',
-            backgroundColor: '#E5F0FF',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = '#D1E9FF';
-            e.currentTarget.style.color = '#2563eb';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = '#E5F0FF';
-            e.currentTarget.style.color = '#3b82f6';
-          }}
-        >
-          <span>Xem thêm</span>
-          <FaArrowRight className="text-base" />
-        </a>
+      <div className="mt-6 text-center">
+        <button className="px-6 py-2 bg-gradient-to-r from-blue-500 to-blue-700 text-white rounded-full shadow-md hover:shadow-lg hover:scale-105 transition-transform flex items-center justify-center">
+          Xem thêm
+        </button>
       </div>
-    </div>
+    </>
   );
 };
 

@@ -8,5 +8,6 @@ const router = express.Router();
 router.get('/', requireClientAuth, controller.getNotifications);
 
 router.post('/mark-as-read', requireClientAuth, controller.markNotificationsAsRead);
-
+router.put('/mark-as-read/:notificationId', requireClientAuth, controller.markNotificationAsRead);
+router.delete('/delete/:notificationId', requireClientAuth, controller.deleteNotification);
 export default router;

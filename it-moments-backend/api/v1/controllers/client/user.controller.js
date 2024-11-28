@@ -18,7 +18,7 @@ const controller = {
     updateUserInfo: async (req, res) => {
         try {
             const { id } = req.params;
-            const { bio, facebook, twitter, linkedin, youtube, instagram, avatar  } = req.body;
+            const { bio, facebook, twitter, linkedin, youtube, instagram, avatar } = req.body;
             const user = await User.findById(id);
 
             if(!user) {
@@ -31,8 +31,8 @@ const controller = {
             user.socialLinks.youtube = youtube || user.socialLinks.youtube;
             user.socialLinks.instagram = instagram || user.socialLinks.instagram;
 
-            if(avatar ) {
-                user.avatar = avatar ; // Cập nhật avatar mới
+            if(avatar) {
+                user.avatar = avatar; // Cập nhật avatar mới
             }
 
             await user.save();
@@ -45,7 +45,8 @@ const controller = {
             console.error('Lỗi khi cập nhật thông tin người dùng:', error);
             return res.status(500).json({ message: 'Lỗi khi cập nhật thông tin người dùng' });
         }
-    }
+    },
+
 };
 
 export default controller;

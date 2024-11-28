@@ -25,7 +25,7 @@ export default function NewPost() {
                     className="relative overflow-hidden h-full flex flex-col justify-end p-8 bg-cover bg-center text-white"
                     style={{ backgroundImage: `url(${latestPost.thumbnail})` }}
                 >
-                    <div className="absolute inset-0 bg-black bg-opacity-20"></div>
+                    <div className="absolute inset-0 bg-black bg-opacity-40"></div>
 
                     {/* Badge - Góc trái trên */}
                     <div className="absolute top-4 left-4 bg-blue-500 text-white px-2 py-1 rounded">
