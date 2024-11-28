@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import styles from './Profile.module.scss';
 import { API_URL } from '../../config/config';
 import { useClientUser } from '../../context/ClientUserContext';
-import { FaUserFriends, FaFacebook, FaInstagram, FaUser } from "react-icons/fa";
+import { FaUserFriends, FaFacebook, FaInstagram, FaUser,FaYoutube  } from "react-icons/fa";
+import { FaSquareXTwitter } from "react-icons/fa6";
 import { Modal, Button, Input, Form, message, Upload, Divider } from 'antd';
 import { FaCog } from 'react-icons/fa';
 import axios from 'axios';
@@ -52,8 +53,8 @@ const Profile = () => {
       youtube: user.socialLinks?.youtube || '',
       instagram: user.socialLinks?.instagram || ''
     });
-    setAvatar(user.avatar || null); // Load avatar from user data
-    setImagePreview(user.avatar || null); // Set image preview for avatar
+    setAvatar(user.avatar || null);
+    setImagePreview(user.avatar || null);
     setIsModalOpen(true);
   };
 
@@ -167,7 +168,7 @@ const Profile = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 mt-32 md:mt-48 px-4 md:px-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-32 md:mt-48 px-4 md:px-10">
           <div className="shadow-[rgba(0,_0,_0,_0.02)_0px_1px_3px_0px,_rgba(27,_31,_35,_0.15)_0px_0px_0px_1px] p-6 bg-white rounded-lg col-span-1">
             <div className="mb-8">
               <h3 className="text-2xl font-semibold">Giới thiệu</h3>
@@ -207,10 +208,40 @@ const Profile = () => {
                   </div>
                 )}
               </div>
+              <div className="mt-4 flex items-center space-x-6">
+                {user.socialLinks?.youtube && (
+                  <div className="flex items-center space-x-4">
+                    <FaYoutube size={20} />
+                    <a
+                      href={user.socialLinks.youtube}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[#FF0000] ml-6"
+                    >
+                      {user.socialLinks.youtube}
+                    </a>
+                  </div>
+                )}
+              </div>
+              <div className="mt-4 flex items-center space-x-6">
+                {user.socialLinks?.twitter && (
+                  <div className="flex items-center space-x-4">
+                    <FaSquareXTwitter size={20} />
+                    <a
+                      href={user.socialLinks.twitter}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-black ml-6"
+                    >
+                      {user.socialLinks.twitter}
+                    </a>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
-          <div className="shadow-[rgba(0,_0,_0,_0.02)_0px_1px_3px_0px,_rgba(27,_31,_35,_0.15)_0px_0px_0px_1px] p-6 bg-white rounded-lg col-span-1">
+          <div className="shadow-[rgba(0,_0,_0,_0.02)_0px_1px_3px_0px,_rgba(27,_31,_35,_0.15)_0px_0px_0px_1px] p-6 bg-white rounded-lg col-span-2">
             <div className="mb-8">
               <h3 className="text-2xl font-semibold">Các bài viết đã bình chọn:</h3>
               <div className="space-y-4 mt-4">
@@ -224,24 +255,16 @@ const Profile = () => {
                           to={`/posts/${post.post_category_id?.slug}/${post.slug}`}
                           className="flex items-center space-x-4 group-hover:text-blue-600 transition duration-300 ease-in-out"
                         >
-                          {/* Thumbnail Image */}
                           <img
                             src={post.thumbnail}
                             alt={post.title}
                             className="w-56  object-cover"
                           />
-
-                          {/* Post Details */}
                           <div className="flex-1">
-                            {/* Title */}
                             <h4 className="text-lg font-semibold group-hover:text-blue-600 transition duration-300 ease-in-out line-clamp-2">
                               {post.title}
                             </h4>
-
-                            {/* Description */}
                             <p className="line-clamp-2 text-sm text-gray-500" dangerouslySetInnerHTML={{ __html: post.description }}></p>
-
-                            {/* Date */}
                             <span className="text-xs text-gray-400">
                               {new Date(post.createdAt).toLocaleDateString('vi-VN')}
                             </span>
@@ -260,8 +283,6 @@ const Profile = () => {
           </div>
         </div>
       </div>
-
-      {/* Modal edit user info */}
       <Modal
         title="Chỉnh sửa thông tin cá nhân"
         visible={isModalOpen}
@@ -284,6 +305,18 @@ const Profile = () => {
           <Form.Item label="Instagram" name="instagram">
             <Input placeholder="https://instagram.com/yourprofile" />
           </Form.Item>
+          <Form.Item label="Twitter" name="twitter">
+            <Input placeholder="https://instagram.com/yourprofile" />
+          </Form.Item>
+
+          <Form.Item label="Likedin" name="likein">
+            <Input placeholder="https://instagram.com/yourprofile" />
+          </Form.Item>
+
+          <Form.Item label="Youtube" name="youtube">
+            <Input placeholder="https://instagram.com/yourprofile" />
+          </Form.Item>
+
 
           <Form.Item label="Tải ảnh đại diện" name="avatar">
             <Upload

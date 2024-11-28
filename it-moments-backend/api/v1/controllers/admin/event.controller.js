@@ -88,61 +88,6 @@ const controller = {
             });
         }
     },
-
-
-    /* [PATCH] api/v1/admin/events/change-status/:id */
-    changeStatus: async (req, res) => {
-        try {
-            const id = req.params.id;
-            const status = req.body.status;
-
-            await Event.updateOne({ _id: id }, { status });
-
-            res.json({
-                code: 200,
-                message: "Cập nhật trạng thái thành công"
-            });
-        } catch(error) {
-            console.error('Lỗi khi cập nhật trạng thái:', error);
-            res.json({
-                code: 404,
-                message: "Cập nhật trạng thái thất bại"
-            });
-        }
-    },
-
-    /* Cập nhật nhiều sự kiện */
-    changeMulti: async (req, res) => {
-        try {
-            const { ids, key, value } = req.body;
-            switch(key) {
-                case "status":
-                    await Event.updateMany({ _id: { $in: ids } }, { status: value });
-                    return res.status(200).json({
-                        code: 200,
-                        message: "Cập nhật trạng thái thành công"
-                    });
-                case "delete":
-                    await Event.updateMany({ _id: { $in: ids } }, { deleted: true, deletedAt: new Date() });
-                    return res.status(200).json({
-                        code: 200,
-                        message: "Xóa thành công"
-                    });
-                default:
-                    return res.status(400).json({
-                        code: 400,
-                        message: "Không tồn tại"
-                    });
-            }
-        } catch(error) {
-            console.error(error);
-            return res.status(500).json({
-                code: 500,
-                message: "Cập nhật trạng thái thất bại"
-            });
-        }
-    },
-
     createEvent: async (req, res) => {
         if(req.body.position == '' || isNaN(req.body.position)) {
             const countPosts = await Event.countDocuments();
@@ -190,8 +135,6 @@ const controller = {
             });
         }
     },
-
-    /* Xóa sự kiện */
     delete: async (req, res) => {
         try {
             const id = req.params.id;

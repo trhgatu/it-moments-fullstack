@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Badge, Avatar, Button, Popover, Menu,message } from 'antd';
+import { Badge, Avatar, Button, Popover, Menu, message } from 'antd';
 import { BellOutlined, MoreOutlined } from '@ant-design/icons';
 import io from 'socket.io-client';
 import axios from 'axios';
@@ -12,7 +12,7 @@ const NotificationComponent = ({ userId }) => {
     const [notifications, setNotifications] = useState([]);
     const [unreadCount, setUnreadCount] = useState(0);
     const [isVisible, setIsVisible] = useState(false);
-    const [visiblePopover, setVisiblePopover] = useState(null); // Track which Popover is open
+    const [visiblePopover, setVisiblePopover] = useState(null);
     const token = localStorage.getItem('client_token');
 
     const notificationRef = useRef(null);
@@ -20,10 +20,9 @@ const NotificationComponent = ({ userId }) => {
 
     useEffect(() => {
         const handleClickOutside = (event) => {
-            // Check if the click is outside of the notification and popover areas
-            if (notificationRef.current && !notificationRef.current.contains(event.target) &&
+            if(notificationRef.current && !notificationRef.current.contains(event.target) &&
                 popoverRef.current && !popoverRef.current.contains(event.target)) {
-                setIsVisible(false); // Close the notification panel if clicked outside
+                setIsVisible(false);
             }
         };
 
@@ -32,8 +31,6 @@ const NotificationComponent = ({ userId }) => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, []);
-
-    // Hàm lấy thông báo và sắp xếp chúng theo thời gian
     useEffect(() => {
         const fetchNotifications = async () => {
             try {
@@ -42,7 +39,6 @@ const NotificationComponent = ({ userId }) => {
                     withCredentials: true,
                 });
                 if(response.data.success) {
-                    // Sắp xếp thông báo theo thời gian giảm dần
                     const sortedNotifications = response.data.data.sort(
                         (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
                     );
@@ -63,7 +59,6 @@ const NotificationComponent = ({ userId }) => {
                 const { notification } = data;
                 if(notification.userId === userId) {
                     setNotifications((prevNotifications) => {
-                        // Thêm thông báo mới vào đầu danh sách và sắp xếp lại
                         const updatedNotifications = [notification, ...prevNotifications];
                         return updatedNotifications.sort(
                             (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
@@ -85,9 +80,11 @@ const NotificationComponent = ({ userId }) => {
 
     const handleNotificationClick = (notif) => {
         if(notif.postId) {
-            navigate(`/posts/${notif.postCategorySlug}/${notif.postSlug}${notif.commentId ? `?commentId=${notif.commentId}` : ''}`);
+            const url = `/posts/${notif.postCategorySlug}/${notif.postSlug}${notif.commentId ? `?commentId=${notif.commentId}` : ''}`;
+            window.location.href = url;
         }
     };
+
 
     useEffect(() => {
         if(location.search) {
@@ -123,7 +120,7 @@ const NotificationComponent = ({ userId }) => {
                 withCredentials: true,
             });
             setUnreadCount((prevCount) => prevCount - 1);
-        } catch (error) {
+        } catch(error) {
             console.error("Lỗi khi đánh dấu thông báo là đã đọc:", error);
         }
     };
@@ -161,17 +158,14 @@ const NotificationComponent = ({ userId }) => {
     };
 
     const handleActionSelect = (action, notifId) => {
-        if (action === 'markAsRead') {
-            // Cập nhật giao diện ngay lập tức
+        if(action === 'markAsRead') {
             setNotifications((prevNotifications) =>
                 prevNotifications.map((notif) =>
                     notif._id === notifId ? { ...notif, read: true } : notif
                 )
             );
-
-            // Gửi yêu cầu đến API để đánh dấu thông báo đã đọc
             markNotificationAsRead(notifId);
-        } else if (action === 'delete') {
+        } else if(action === 'delete') {
             deleteNotification(notifId);
         }
         setVisiblePopover(null);
