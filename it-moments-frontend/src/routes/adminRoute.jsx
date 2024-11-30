@@ -11,6 +11,7 @@ import EventAll from "../admin/pages/Events/components/EventAll";
 import EventDetail from "../admin/pages/Events/EventDetail";
 import Posts from '../admin/pages/Posts';
 import CreatePost from '../admin/pages/Posts/CreatePost';
+import CreateUser from "../admin/pages/Users/CreateUser";
 import SignUp from '../admin/pages/Auth/SignUp';
 import SignIn from '../admin/pages/Auth/SignIn';
 import { AdminDefaultLayout } from "../admin/components/Layouts";
@@ -28,10 +29,10 @@ import UsersAll from "../admin/pages/Users/components/UsersAll";
 import Roles from "../admin/pages/Roles";
 import RolesAll from "../admin/pages/Roles/components/RolesAll";
 import Event from "../admin/pages/Events";
-/* import CreateEvent from "../admin/pages/Events/CreateEvent"; */
 import CreateRole from "../admin/pages/Roles/CreateRole";
 import PermissionForm from "../admin/pages/Roles/PermissionForm";
 import Profile from "../admin/pages/Profile";
+import UserDetail from "../admin/pages/Users/UserDetail"
 export const adminRoute = [
     {
         path: "/admin",
@@ -100,14 +101,14 @@ export const adminRoute = [
                                 index: true,
                                 element: <UsersAll />
                             },
-                            /* {
+                            {
                                 path: "detail/:id",
-                                element : <UserDetail/>
+                                element: <UserDetail />
                             },
                             {
                                 path: "create",
-                                element: <CreateUser/>
-                            } */
+                                element: <CreateUser />
+                            }
                         ]
                     },
                     {

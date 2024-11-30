@@ -179,6 +179,26 @@ const EventDetail = () => {
                                 description={`Views: ${post.views} - Votes: ${post.votes}`}
                             />
                             <div dangerouslySetInnerHTML={{ __html: post.description }} />
+
+                            {/* Hiển thị danh sách người vote */}
+                            {post.voterDetails && post.voterDetails.length > 0 && (
+                                <div style={{ marginTop: '10px' }}>
+                                    <Text strong>Người đã bình chọn:</Text>
+                                    <List
+                                        itemLayout="horizontal"
+                                        dataSource={post.voterDetails}
+                                        renderItem={voter => (
+                                            <List.Item key={voter._id}>
+                                                <List.Item.Meta
+                                                    avatar={<Avatar src="https://via.placeholder.com/150" />}
+                                                    title={voter.fullName}
+                                                    description={`Email: ${voter.email}`}
+                                                />
+                                            </List.Item>
+                                        )}
+                                    />
+                                </div>
+                            )}
                         </List.Item>
                     )}
                 />

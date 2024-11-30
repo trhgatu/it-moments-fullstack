@@ -32,7 +32,7 @@ const controller = {
             user.socialLinks.instagram = instagram || user.socialLinks.instagram;
 
             if(avatar) {
-                user.avatar = avatar; // Cập nhật avatar mới
+                user.avatar = avatar;
             }
 
             await user.save();

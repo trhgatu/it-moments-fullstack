@@ -192,45 +192,45 @@ const controller = {
         }
     },
 
-    resetPassword : async(req, res) => {
-    const { password, token } = req.body;
-    if(!password || !token) {
-        return res.status(400).json({ message: 'Mật khẩu hoặc token bị thiếu.' });
-    }
-
-    try {
-        const hashedToken = crypto
-            .createHash('sha256')
-            .update(token)
-            .digest('hex');
-        const user = await User.findOne({
-            resetPasswordTokenHash: hashedToken,
-            resetPasswordExpires: { $gt: Date.now() }
-        });
-
-        if(!user) {
-            return res.status(400).json({ message: 'Token không hợp lệ hoặc đã hết hạn.' });
+    resetPassword: async (req, res) => {
+        const { password, token } = req.body;
+        if(!password || !token) {
+            return res.status(400).json({ message: 'Mật khẩu hoặc token bị thiếu.' });
         }
 
-        const hashedPassword = await bcrypt.hash(password, 10);
-        user.password = hashedPassword;
+        try {
+            const hashedToken = crypto
+                .createHash('sha256')
+                .update(token)
+                .digest('hex');
+            const user = await User.findOne({
+                resetPasswordTokenHash: hashedToken,
+                resetPasswordExpires: { $gt: Date.now() }
+            });
 
-        user.resetPasswordToken = undefined;
-        user.resetPasswordTokenHash = undefined;
-        user.resetPasswordExpires = undefined;
+            if(!user) {
+                return res.status(400).json({ message: 'Token không hợp lệ hoặc đã hết hạn.' });
+            }
 
-        await user.save();
+            const hashedPassword = await bcrypt.hash(password, 10);
+            user.password = hashedPassword;
 
-        return res.status(200).json({
-            code: 200,
-            message: 'Mật khẩu đã được đặt lại thành công!'
-        });
+            user.resetPasswordToken = undefined;
+            user.resetPasswordTokenHash = undefined;
+            user.resetPasswordExpires = undefined;
 
-    } catch(error) {
-        console.error("Lỗi khi đặt lại mật khẩu:", error);
-        return res.status(500).json({ message: 'Có lỗi xảy ra khi đặt lại mật khẩu.' });
-    }
-},
+            await user.save();
+
+            return res.status(200).json({
+                code: 200,
+                message: 'Mật khẩu đã được đặt lại thành công!'
+            });
+
+        } catch(error) {
+            console.error("Lỗi khi đặt lại mật khẩu:", error);
+            return res.status(500).json({ message: 'Có lỗi xảy ra khi đặt lại mật khẩu.' });
+        }
+    },
 
 };
 

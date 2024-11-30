@@ -51,12 +51,9 @@ const controller = {
             },
         });
     },
-
-    /* [GET] api/v1/admin/events/detail/:id */
     detail: async (req, res) => {
         const id = req.params.id;
         try {
-            // Tìm sự kiện dựa trên ID
             const event = await Event.findOne({
                 _id: id,
                 deleted: false,
@@ -68,9 +65,21 @@ const controller = {
                     message: 'Sự kiện không tìm thấy.',
                 });
             }
+            const posts = await Post.find({ event_id: id, deleted: false })
+                .populate("post_category_id")
+                .lean();
+            for(const post of posts) {
+                if(post.voters && post.voters.length > 0) {
+                    post.voterDetails = await User.find({
+                        _id: { $in: post.voters }
+                    }, 'fullName email');
+                } else {
+                    post.voterDetails = [];
+                }
+            }
 
-            const posts = await Post.find({ event_id: id, deleted: false }).populate("post_category_id");
             const totalVotes = posts.reduce((sum, post) => sum + (post.votes || 0), 0);
+
             res.json({
                 success: true,
                 message: 'Lấy chi tiết sự kiện thành công.',
@@ -88,6 +97,7 @@ const controller = {
             });
         }
     },
+
     createEvent: async (req, res) => {
         if(req.body.position == '' || isNaN(req.body.position)) {
             const countPosts = await Event.countDocuments();

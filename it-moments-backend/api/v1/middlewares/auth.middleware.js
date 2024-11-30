@@ -3,11 +3,9 @@ import User from "../models/user.model.js";
 
 export const requireAuth = async (req, res, next) => {
     const token = req.cookies.admin_token;
-
     if(!token) {
         return res.status(401).json({ message: "Token không hợp lệ hoặc hết hạn" });
     }
-
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const user = await User.findById(decoded.id).populate('role_id', 'title permissions description isAdmin').select("-password -token");

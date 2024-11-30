@@ -8,20 +8,12 @@ import controller from '../../controllers/admin/user.controller.js';
 
 router.get('/', controller.index);
 
-/* router.get('/create', controller.create);
-
 router.post('/create',
     uploadMulter.single("avatar"),
     upload,
+    controller.createPost
 );
-
-router.get('/edit/:id', controller.edit);
-
-router.patch('/edit/:id',
-    upload.single("avatar"),
-    upload,
-);
-
-router.delete('/delete/:id', controller.deleteItem); */
+router.get('/detail/:id', controller.detail)
+router.delete('/delete/:id', controller.delete)
 
 export default router;

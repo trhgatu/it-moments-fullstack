@@ -84,7 +84,7 @@ const CreatePost = () => {
         if (values.event_id) {
             formData.append('event_id', values.event_id);
         }
-        formData.append('description', description);  // Lưu trữ mô tả với định dạng HTML
+        formData.append('description', description);
         const positionValue = values.position ? parseInt(values.position) : '';
         formData.append('position', positionValue);
         formData.append('status', values.status);
