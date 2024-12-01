@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Card, Table, Button, Avatar, Typography, Alert, Modal } from "antd";
+import { Row, Col, Card, Table, Button, Avatar, Typography, Alert, Modal, message } from "antd";
 import { EyeOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../../../../context/UserContext';
@@ -99,7 +99,7 @@ function UsersAll() {
         };
 
         try {
-            await axios.delete(`http://localhost:3000/api/v1/admin/users/${deletingUserId}`, config);
+            await axios.delete(`http://localhost:3000/api/v1/admin/users/delete/${deletingUserId}`, config);
             message.success('Người dùng đã được xóa thành công.');
             setUsers((prev) => prev.filter(user => user._id !== deletingUserId));
         } catch(error) {

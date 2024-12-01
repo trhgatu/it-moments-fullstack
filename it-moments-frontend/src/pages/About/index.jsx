@@ -51,30 +51,30 @@ const About = () => {
 
   const teamMembers = [
     {
-      image: "https://via.placeholder.com/150",
+      image: "../src/assets/images/tu.jpg",
       name: "Trần Hoàng Anh Tú",
       role: "Nhóm Trưởng",
-      description: "Chuyên gia về phát triển web và quản lý dự án",
+      description: "Project Manager & Fullstack Developer",
       social: {
-        email: "tu.than@example.com",
+        email: "trananhtu1112003@gmail.com",
       }
     },
     {
-      image: "https://via.placeholder.com/150",
+      image: "../src/assets/images/thai.jpg",
       name: "Nguyễn Quốc Thái",
       role: "Thành Viên",
-      description: "Chuyên gia về UI/UX và front-end development",
+      description: "Frontend Developer",
       social: {
         email: "thai.nguyen@example.com",
       }
     },
     {
-      image: "https://via.placeholder.com/150",
+      image: "../src/assets/images/tan.jpg",
       name: "Phạm Minh Tấn",
       role: "Thành Viên",
-      description: "Chuyên gia về back-end và cơ sở dữ liệu",
+      description: "Business Analyst",
       social: {
-        email: "tan.pham@example.com",
+        email: "minhtan06022@gmail.com",
       }
     },
   ];
@@ -177,18 +177,15 @@ const About = () => {
       {/* Team Section */}
       <section className="container mx-auto px-4 md:px-6 py-20">
         <div className="text-center mb-16" data-aos="fade-up">
-          <h2 className="text-4xl font-bold text-gray-800 mb-4">Thành Viên Thực Hiện</h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Đội ngũ tài năng và đầy nhiệt huyết của chúng tôi luôn sẵn sàng đồng hành cùng bạn.
-          </p>
+          <h2 className="text-4xl font-bold text-gray-800 mb-4">Sinh viên thực hiện</h2>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" data-aos="fade-up">
           {teamMembers.map((member, index) => (
             <div key={index} className="bg-white rounded-xl shadow-lg p-6">
-              <img src={member.image} alt={member.name} className="rounded-full w-24 h-24 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-center">{member.name}</h3>
+              <img src={member.image} alt={member.name} className="rounded-full w-24 h-24 mx-auto mb-4 object-cover" />
+              <h3 className="text-2xl font-semibold text-center">{member.name}</h3>
               <p className="text-gray-600 text-center">{member.role}</p>
-              <p className="text-gray-500 text-center mb-4">{member.description}</p>
+              <p className="text-3xl font-semibold text-center mb-4">{member.description}</p>
               <a href={`mailto:${member.social.email}`} className="text-blue-600 text-center block">
                 {member.social.email}
               </a>

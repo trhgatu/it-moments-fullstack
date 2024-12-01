@@ -140,7 +140,9 @@ const PostEdit = () => {
         const formData = new FormData();
         formData.append('title', values.title);
         formData.append('post_category_id', values.post_category_id);
-        formData.append('event_id', values.event_id);
+        if (values.event_id) {
+            formData.append('event_id', values.event_id);
+        }
         formData.append('description', values.description);
         const positionValue = values.position ? parseInt(values.position) : '';
         formData.append('position', positionValue);
@@ -223,7 +225,7 @@ const PostEdit = () => {
                     </Form.Item>
 
 
-                    <Form.Item label="Sự kiện" name="event_id" rules={[{ required: true, message: 'Vui lòng chọn sự kiện!' }]}>
+                    <Form.Item label="Sự kiện" name="event_id" rules={[{ required: false, message: 'Vui lòng chọn sự kiện!' }]}>
                         <Select placeholder="---- Chọn sự kiện ----">
                             {events.map((event) => (
                                 <Option key={event._id} value={event._id}>

@@ -55,6 +55,13 @@ const eventSchema = new mongoose.Schema({
             default: Date.now
         }
     },
+    updatedBy: [{
+        account_id: String,
+        updatedAt: {
+            type: Date,
+            default: Date.now
+        }
+    }],
     posts: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Post'

@@ -9,11 +9,21 @@ import controller from '../../controllers/admin/user.controller.js';
 router.get('/', controller.index);
 
 router.post('/create',
-    uploadMulter.single("avatar"),
+    uploadMulter.fields([
+        { name: 'avatar', maxCount: 1 },
+    ]),
     upload,
     controller.createPost
 );
 router.get('/detail/:id', controller.detail)
 router.delete('/delete/:id', controller.delete)
+router.patch('/edit/:id',
+    uploadMulter.fields([
+        { name: 'avatar', maxCount: 1 },
+    ]),
+    upload,
+    controller.editUser
+);
+
 
 export default router;

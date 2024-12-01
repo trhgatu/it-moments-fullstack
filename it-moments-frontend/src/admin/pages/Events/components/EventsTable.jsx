@@ -64,15 +64,19 @@ const EventsTable = ({ events, loading, selectedRowKeys, handleSelectChange, han
 
     {
       title: "Ngày bắt đầu",
-      dataIndex: "startDate",
-      key: "startDate",
-      render: (startDate) => moment(startDate).format('DD/MM/YYYY'),
+      dataIndex: "startTime", // Đảm bảo đúng trường từ dữ liệu API
+      key: "startTime",
+      render: (startTime) => {
+        return startTime ? moment(startTime).format('DD/MM/YYYY HH:mm') : 'N/A';
+      },
     },
     {
       title: "Ngày kết thúc",
-      dataIndex: "endDate",
-      key: "endDate",
-      render: (endDate) => moment(endDate).format('DD/MM/YYYY'),
+      dataIndex: "endTime", // Đảm bảo đúng trường từ dữ liệu API
+      key: "endTime",
+      render: (endTime) => {
+        return endTime ? moment(endTime).format('DD/MM/YYYY HH:mm') : 'N/A';
+      },
     },
     {
       title: "Người tạo",

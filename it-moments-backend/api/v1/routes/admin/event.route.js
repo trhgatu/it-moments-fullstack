@@ -9,4 +9,5 @@ router.post('/create',
 );
 router.get('/detail/:id', controller.detail);
 router.delete('/delete/:id', controller.delete);
+router.patch('/edit/:id', controller.edit);
 export default router;

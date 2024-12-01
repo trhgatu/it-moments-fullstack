@@ -4,10 +4,8 @@ import { Button, Select, Input } from 'antd';
 const { Option } = Select;
 
 const PostsActions = ({ error, actionType, setActionType, selectedRowKeys, handleActionSubmit }) => {
-  // State để quản lý từ khóa tìm kiếm
   const [searchKeyword, setSearchKeyword] = useState('');
 
-  // Hàm để xử lý thay đổi từ khóa tìm kiếm
   const handleSearchChange = (e) => {
     setSearchKeyword(e.target.value);
   };
@@ -26,7 +24,7 @@ const PostsActions = ({ error, actionType, setActionType, selectedRowKeys, handl
             value={actionType || undefined}
             onChange={(value) => setActionType(value)}
             className="w-80"
-            dropdownStyle={{ minWidth: 200 }} // Đặt độ rộng tối thiểu cho dropdown
+            dropdownStyle={{ minWidth: 200 }}
           >
             <Option value="active">Hoạt động</Option>
             <Option value="inactive">Dừng hoạt động</Option>

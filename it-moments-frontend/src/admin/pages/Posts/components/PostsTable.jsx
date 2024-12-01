@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Avatar, Button } from 'antd';
+import { Table, Avatar, Button, Typography } from 'antd';
 import { EyeOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import moment from 'moment';
 
@@ -32,6 +32,18 @@ const PostsTable = ({ posts, loading, selectedRowKeys, handleSelectChange, handl
       title: "Tiêu đề",
       dataIndex: "title",
       key: "title",
+      render: (title) => (
+        <Typography.Text
+          style={{
+            whiteSpace: 'normal',
+            wordWrap: 'break-word',
+            maxHeight: '60px',
+            overflow: 'hidden'
+          }}
+        >
+          {title}
+        </Typography.Text>
+      ),
     },
     {
       title: "Ảnh bìa",
@@ -75,16 +87,17 @@ const PostsTable = ({ posts, loading, selectedRowKeys, handleSelectChange, handl
     },
     {
       title: "Người cập nhật",
-      key: "updatedBy",
+      key: "updatedBy.accountFullName",
       render: (record) => {
-        const updatedBy = record.updatedBy?.slice(-1)[0];
+        const updatedBy = Array.isArray(record.updatedBy) ? record.updatedBy.slice(-1)[0] : null;
+
         return (
           <>
             {updatedBy ? (
               <>
-                <p>{updatedBy.accountFullName}</p>
+                <p>{updatedBy.accountFullName || 'N/A'}</p>
                 <b>Lúc:</b>
-                <p>{moment(updatedBy.updateAt).format('HH:mm:ss')}</p>
+                <p>{updatedBy.updatedAt ? moment(updatedBy.updatedAt).format('HH:mm:ss') : 'N/A'}</p>
               </>
             ) : (
               <p>Chưa cập nhật</p>
@@ -93,6 +106,7 @@ const PostsTable = ({ posts, loading, selectedRowKeys, handleSelectChange, handl
         );
       },
     },
+
     {
       title: "Thao tác",
       key: "action",

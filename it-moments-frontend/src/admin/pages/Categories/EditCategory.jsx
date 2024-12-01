@@ -17,7 +17,7 @@ const EditCategory = () => {
 
     const fetchCategories = async () => {
         const token = user?.token;
-        if(!token) {
+        if (!token) {
             message.error('Token không hợp lệ.');
             return;
         }
@@ -30,14 +30,15 @@ const EditCategory = () => {
                 withCredentials: true,
             });
             setAllCategories(response.data.data.categories);
-        } catch(error) {
+        } catch (error) {
             console.error('Lỗi khi lấy danh mục:', error);
             message.error('Có lỗi xảy ra khi lấy danh mục.');
         }
     };
+
     const fetchCategoryDetails = async () => {
         const token = user?.token;
-        if(!token) {
+        if (!token) {
             message.error('Token không hợp lệ.');
             return;
         }
@@ -58,8 +59,9 @@ const EditCategory = () => {
                 description: category.description,
                 position: category.position,
                 status: category.status,
+                slug: category.slug || '',  // Thêm slug vào form để có thể chỉnh sửa
             });
-        } catch(error) {
+        } catch (error) {
             console.error('Lỗi khi lấy thông tin danh mục:', error);
             message.error('Có lỗi xảy ra khi lấy thông tin danh mục.');
         }
@@ -70,15 +72,50 @@ const EditCategory = () => {
         fetchCategoryDetails();
     }, [user, id]);
 
+    // Kiểm tra slug có trùng lặp không
+    const checkSlugAvailability = async (slug) => {
+        try {
+            const token = user?.token;
+            if (!token) {
+                message.error('Token không hợp lệ.');
+                return;
+            }
+
+            const response = await axios.get(`${API_URL}/admin/post-categories?slug=${slug}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+                withCredentials: true,
+            });
+
+            // Kiểm tra nếu có danh mục trùng slug
+            if (response.data.data.length > 0) {
+                message.error('Slug này đã tồn tại.');
+                return false;
+            }
+            return true;
+        } catch (error) {
+            console.error('Lỗi khi kiểm tra slug:', error);
+            message.error('Có lỗi xảy ra khi kiểm tra slug.');
+            return false;
+        }
+    };
+
     const updateCategory = async (formData) => {
         try {
             const token = user?.token;
-            if(!token) {
+            if (!token) {
                 message.error('Token không hợp lệ.');
                 return;
             }
 
             setLoading(true);
+
+            // Kiểm tra tính hợp lệ của slug
+            if (!(await checkSlugAvailability(formData.slug))) {
+                return; // Không tiếp tục nếu slug không hợp lệ
+            }
+
             const response = await axios.patch(`${API_URL}/admin/post-categories/edit/${id}`, formData, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -86,10 +123,10 @@ const EditCategory = () => {
                 },
                 withCredentials: true,
             });
+
             fetchCategoryDetails();
-            console.log('Response from API:', response);
             message.success('Danh mục đã được cập nhật thành công!');
-        } catch(error) {
+        } catch (error) {
             console.error('Lỗi khi cập nhật danh mục:', error);
             message.error('Có lỗi xảy ra khi cập nhật danh mục.');
         } finally {
@@ -104,9 +141,8 @@ const EditCategory = () => {
             description: values.description,
             position: values.position ? parseInt(values.position) : '',
             status: values.status,
+            slug: values.slug || slugify(values.title),  // Nếu slug trống, tự động sinh từ title
         };
-
-        console.log('Data to be sent:', data);
 
         await updateCategory(data);
     };
@@ -136,6 +172,9 @@ const EditCategory = () => {
                         </Select>
                     </Form.Item>
 
+                    <Form.Item label="Slug" name="slug">
+                        <Input placeholder="Nhập slug" />
+                    </Form.Item>
 
                     <Form.Item label="Mô tả" name="description">
                         <Input.TextArea rows={5} placeholder="Nhập mô tả" />

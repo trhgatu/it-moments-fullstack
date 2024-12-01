@@ -52,7 +52,7 @@ const PostsCard = ({
       />
       <div className="table-responsive">
         <PostsTable
-          posts={filteredPosts} // Sử dụng bài viết đã lọc
+          posts={filteredPosts}
           loading={loading}
           selectedRowKeys={selectedRowKeys}
           handleSelectChange={handleSelectChange}

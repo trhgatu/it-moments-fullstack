@@ -28,7 +28,7 @@ function PostDetail() {
 
     useEffect(() => {
         const token = user?.token;
-        if (!token) {
+        if(!token) {
             setError('Không tìm thấy token.');
             return;
         }
@@ -37,7 +37,7 @@ function PostDetail() {
 
         fetchData(id, token)
             .then(postResponse => {
-                if (postResponse.data?.success) {
+                if(postResponse.data?.success) {
                     setPost(postResponse.data.data);
                 } else {
                     throw new Error(postResponse.data.message || 'Failed to fetch post data');
@@ -50,9 +50,9 @@ function PostDetail() {
             .finally(() => setLoading(false));
     }, [id, user]);
 
-    if (loading) return <Spin tip="Loading..." />;
-    if (error) return <Alert message={error} type="error" showIcon />;
-    if (!post) return <Alert message="Post not found." type="warning" showIcon />;
+    if(loading) return <Spin tip="Loading..." />;
+    if(error) return <Alert message={error} type="error" showIcon />;
+    if(!post) return <Alert message="Post not found." type="warning" showIcon />;
 
     const { title, description, thumbnail, video, status, images, createdAt, position, post_category_id, event_id } = post;
 
@@ -63,17 +63,16 @@ function PostDetail() {
                 bordered={false}
                 style={{ marginBottom: '20px', borderRadius: '10px', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)' }}
             >
-                <Row gutter={16}>
-                    <Col xs={24} sm={12} md={8}>
-                        <Avatar shape="square" size={128} src={thumbnail} alt="Thumbnail" />
-                    </Col>
-                    <Col xs={24} sm={12} md={16}>
-                        <div style={{ marginLeft: '20px' }}>
-                            <Text strong>Mô tả:</Text>
-                            <div dangerouslySetInnerHTML={{ __html: description }} style={{ marginTop: '10px', color: '#595959' }} />
-                        </div>
-                    </Col>
-                </Row>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '20px' }}>
+                    <Avatar shape="square" size={300} src={thumbnail} alt="Thumbnail" style={{ marginBottom: '15px' }} />
+                    <div style={{ textAlign: 'center' }}>
+                        <Text strong>Mô tả:</Text>
+                        <div
+                            dangerouslySetInnerHTML={{ __html: description }}
+                            style={{ marginTop: '10px', color: '#595959', textAlign: 'justify' }}
+                        />
+                    </div>
+                </div>
 
                 <Divider />
 
@@ -130,7 +129,14 @@ function PostDetail() {
                     <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
                         {Array.isArray(images) && images.length > 0 ? (
                             images.map((img, index) => (
-                                <Image key={index} width={100} src={img} alt={`Image-${index}`} style={{ borderRadius: '8px' }} />
+                                <Image
+                                    key={index}
+                                    width={100} // Cố định chiều rộng
+                                    height={100} // Cố định chiều cao để tất cả hình ảnh có kích thước đồng đều
+                                    src={img}
+                                    alt={`Image-${index}`}
+                                    style={{ objectFit: 'cover' }} // objectFit: 'cover' giúp hình ảnh giữ tỉ lệ mà không bị méo
+                                />
                             ))
                         ) : (
                             <Text>Không có hình ảnh liên quan.</Text>
@@ -155,6 +161,7 @@ function PostDetail() {
                 <Divider />
             </Card>
         </div>
+
     );
 }
 

@@ -4,7 +4,9 @@ import { Navigate } from "react-router-dom";
 import Dashboard from '../admin/pages/Dashboard';
 import PostDetail from "../admin/pages/Posts/PostDetail";
 import RoleDetail from "../admin/pages/Roles/RoleDetail";
+import EditUser from "../admin/pages/Users/EditUser";
 import EditRole from "../admin/pages/Roles/EditRole";
+import EditEvent from "../admin/pages/Events/EditEvent";
 import PostEdit from "../admin/pages/Posts/PostEdit";
 import PostAll from "../admin/pages/Posts/components/PostAll";
 import EventAll from "../admin/pages/Events/components/EventAll";
@@ -108,6 +110,10 @@ export const adminRoute = [
                             {
                                 path: "create",
                                 element: <CreateUser />
+                            },
+                            {
+                                path: "edit/:id",
+                                element: <EditUser />
                             }
                         ]
                     },
@@ -154,6 +160,10 @@ export const adminRoute = [
                                 path: "detail/:id",
                                 element: <EventDetail />
                             },
+                            {
+                                path: "edit/:id",
+                                element: <EditEvent/>
+                            }
                         ]
 
                     },

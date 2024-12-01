@@ -5,7 +5,6 @@ import { Spin } from 'antd';
 import { IoIosArrowForward } from "react-icons/io";
 import { API_URL } from '../../config/config';
 import MainNotifications from './MainNotifications';
-import Breadcrumbs from './Breadcrumbs';
 import NewAnnouncements from './NewAnnouncements';
 
 export default function Academic() {
@@ -47,7 +46,6 @@ export default function Academic() {
     }
   };
 
-
   useEffect(() => {
     fetchPosts(selectedCategory, pagination.currentPage);
   }, [selectedCategory, pagination.currentPage]);
@@ -66,24 +64,16 @@ export default function Academic() {
   }
 
   return (
-    <div className='pt-36'>
+    <div className='pt-36 pb-36'>
       {!slug ? (
         <div className="container mx-auto px-6 grid grid-cols-12 gap-8">
-          <div className="col-span-12 md:col-span-8 bg-white p-6 rounded-lg ">
-            <div className="bg-gray-200 p-4  flex items-center mb-8">
-              <Link
-                to="/"
-                className=" font-semibold hover:text-blue-600 transition duration-300"
-              >
+          <div className="col-span-12 md:col-span-8 bg-white p-6 rounded-lg">
+            <div className=" p-4 flex items-center mb-8 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg">
+              <Link to="/" className="font-semibold hover:text-white transition duration-300">
                 <span>Trang chủ</span>
               </Link>
-              <IoIosArrowForward/>
-              <span
-                to="/posts/van-nghe"
-                className="font-semibold text-blue-500"
-              >
-                <span>Học thuật</span>
-              </span>
+              <IoIosArrowForward />
+              <span className="font-semibold text-white">Học thuật</span>
             </div>
             <MainNotifications
               posts={posts}
@@ -95,10 +85,11 @@ export default function Academic() {
             />
           </div>
           <div className="col-span-12 md:col-span-4 space-y-8">
-            <div className="bg-white p-6 rounded-lg shadow-lg">
-              <NewAnnouncements />
+            <div className="bg-white rounded-lg shadow-lg">
+              <NewAnnouncements
+                posts={posts}
+                category={category} />
             </div>
-
           </div>
         </div>
       ) : (

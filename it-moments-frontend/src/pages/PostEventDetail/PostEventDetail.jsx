@@ -72,13 +72,16 @@ const PostEventDetail = () => {
           <div className="flex flex-col md:flex-row md:gap-8 gap-4 text-lg">
             <span className="flex items-center gap-2">
               <ClockCircleOutlined className="text-white text-xl" />
-              {new Date(post.createdAt).toLocaleString()}
+              {new Date(post.event_id.startTime).toLocaleString()} -
+              {new Date(post.event_id.endTime).toLocaleString()}
             </span>
-            <span className="flex items-center gap-2">
-              <EnvironmentOutlined className="text-white text-xl" />
-              {post.event_id.location || 'Đang cập nhật'}
-            </span>
+
+
           </div>
+          <span className="flex items-baseline gap-2">
+            <EnvironmentOutlined className="text-white text-xl" />
+            {post.event_id.location || 'Đang cập nhật'}
+          </span>
         </div>
       </div>
 
@@ -106,9 +109,10 @@ const PostEventDetail = () => {
           <div className="mt-6 border-t border-gray-300 pt-6">
             <div className="flex items-center gap-3 mb-4">
               <ClockCircleOutlined className="text-blue-600 text-2xl" />
-              <span className="text-lg font-semibold text-gray-800">
-                {new Date(post.createdAt).toLocaleString()}
-              </span>
+              <span className="flex items-center gap-2">
+              {new Date(post.event_id.startTime).toLocaleString()} -
+              {new Date(post.event_id.endTime).toLocaleString()}
+            </span>
             </div>
             <div className="flex items-center gap-3">
               <EnvironmentOutlined className="text-green-600 text-2xl" />

@@ -71,37 +71,34 @@ const controller = {
     /* [POST] api/v1/admin/users/create */
     createPost: async (req, res) => {
         try {
-            const { fullName, email, password, role_id, status, isAdmin, isVerified, avatar } = req.body;
+            const { fullName, email, password, role_id, status, isAdmin, isVerified, bio, avatar } = req.body;
 
-            // Kiểm tra xem email có bị trùng không
             const existingUser = await User.findOne({ email });
-            if (existingUser) {
+            if(existingUser) {
                 return res.status(400).json({
                     success: false,
                     message: 'Email đã tồn tại!',
                 });
             }
 
-            // Mã hóa mật khẩu
             const hashedPassword = await bcrypt.hash(password, 10);
-
-            // Tạo người dùng mới
             const newUser = new User({
                 fullName,
                 email,
                 password: hashedPassword,
-                role_id: role_id, // Đảm bảo rằng role_id được gán đúng
                 status: status || 'active',
                 isAdmin: isAdmin || false,
                 isVerified: isVerified || false,
                 avatar: avatar,
                 deleted: false,
+                bio: bio
             });
+            if (role_id) {
+                newUser.role_id = role_id;
+            }
 
             await newUser.save();
-
-            // Nếu người dùng chưa xác thực email, gửi email xác thực
-            if (!isVerified) {
+            if(!isVerified) {
                 const verificationToken = crypto.randomBytes(32).toString('hex');
                 const verificationLink = `${FRONT_END_DOMAIN}/verify?token=${verificationToken}`;
                 await sendEmail(
@@ -116,7 +113,7 @@ const controller = {
                 message: 'Người dùng đã được tạo thành công!',
                 data: newUser,
             });
-        } catch (error) {
+        } catch(error) {
             console.error('Lỗi khi tạo người dùng:', error);
             res.status(500).json({
                 success: false,
@@ -134,7 +131,7 @@ const controller = {
                 .select("-password -token")
                 .lean();
 
-            if (!user) {
+            if(!user) {
                 return res.status(404).json({
                     success: false,
                     message: "Người dùng không tồn tại hoặc đã bị xóa.",
@@ -153,7 +150,7 @@ const controller = {
                     role,
                 },
             });
-        } catch (error) {
+        } catch(error) {
             console.error("Lỗi khi lấy chi tiết người dùng:", error);
             res.status(500).json({
                 success: false,
@@ -165,18 +162,14 @@ const controller = {
     delete: async (req, res) => {
         try {
             const { id } = req.params;
-
-            // Find the user by ID
             const user = await User.findOne({ _id: id, deleted: false });
 
-            if (!user) {
+            if(!user) {
                 return res.status(404).json({
                     success: false,
                     message: "Người dùng không tồn tại hoặc đã bị xóa.",
                 });
             }
-
-            // Mark the user as deleted instead of actually removing from the database
             user.deleted = true;
             await user.save();
 
@@ -184,7 +177,7 @@ const controller = {
                 success: true,
                 message: "Người dùng đã được xóa thành công.",
             });
-        } catch (error) {
+        } catch(error) {
             console.error("Lỗi khi xóa người dùng:", error);
             res.status(500).json({
                 success: false,
@@ -192,6 +185,80 @@ const controller = {
             });
         }
     },
+    editUser: async (req, res) => {
+        try {
+            const { id } = req.params;
+            const { fullName, email, password, role_id, status, isAdmin, isVerified, bio } = req.body;
+
+            // Tìm người dùng theo id
+            const user = await User.findOne({ _id: id, deleted: false });
+            if(!user) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Người dùng không tồn tại hoặc đã bị xóa.",
+                });
+            }
+
+            // Kiểm tra và cập nhật email nếu có thay đổi
+            if(email && email !== user.email) {
+                const existingUser = await User.findOne({ email });
+                if(existingUser) {
+                    return res.status(400).json({
+                        success: false,
+                        message: "Email đã tồn tại.",
+                    });
+                }
+                user.email = email;
+            }
+
+            // Cập nhật các thông tin khác của người dùng
+            if(fullName) user.fullName = fullName;
+            if(status) user.status = status;
+            if(isAdmin !== undefined) user.isAdmin = isAdmin;
+            if(isVerified !== undefined) user.isVerified = isVerified;
+            if(bio) user.bio = bio;
+
+            // Cập nhật role_id (nếu có) hoặc gán null nếu không có
+            if(role_id) {
+                user.role_id = role_id;
+            } else {
+                user.role_id = null;
+            }
+
+            // Cập nhật mật khẩu nếu có
+            if(password) {
+                const hashedPassword = await bcrypt.hash(password, saltRounds);
+                user.password = hashedPassword;
+            }
+
+            // Xử lý ảnh đại diện
+            if(req.file && req.file.path) {
+                user.avatar = req.file.path; // Cập nhật avatar mới nếu có
+            } else {
+                // Giữ lại avatar cũ nếu không có ảnh mới
+                user.avatar = user.avatar || ''; // Nếu không có avatar cũ, sẽ để giá trị trống
+            }
+
+            // Lưu lại thông tin người dùng đã cập nhật
+            await user.save();
+
+            // Trả về phản hồi thành công
+            res.json({
+                success: true,
+                message: "Người dùng đã được cập nhật thành công.",
+                data: user,
+            });
+        } catch(error) {
+            console.error("Lỗi khi chỉnh sửa người dùng:", error);
+            res.status(500).json({
+                success: false,
+                message: "Có lỗi xảy ra khi chỉnh sửa người dùng.",
+            });
+        }
+    }
+
+
+
 
 };
 

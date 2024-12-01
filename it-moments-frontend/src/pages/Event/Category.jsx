@@ -29,64 +29,32 @@ const Category = ({ onCategoryChange }) => {
                         <FaRegClock className="text-3xl group-hover:scale-110 transition duration-200" />
                         <span className="text-2xl leading-relaxed">Sự kiện đang diễn ra</span>
                     </button>
-
-                    {/* Dropdown danh mục con */}
-                    {activeCategorySlug === "ongoing" && (
-                        <ul className="pl-8 mt-4 space-y-4">
-                            <li>
-                                <button
-                                    onClick={() => onCategoryChange("ongoing-subcategory-1")}
-                                    className="text-blue-600 hover:text-blue-800 font-semibold hover:bg-blue-50 px-8 py-3 rounded-lg transition duration-200"
-                                >
-                                    Subcategory 1
-                                </button>
-                            </li>
-                            <li>
-                                <button
-                                    onClick={() => onCategoryChange("ongoing-subcategory-2")}
-                                    className="text-blue-600 hover:text-blue-800 font-semibold hover:bg-blue-50 px-8 py-3 rounded-lg transition duration-200"
-                                >
-                                    Subcategory 2
-                                </button>
-                            </li>
-                        </ul>
-                    )}
+                </li>
+                <li>
+                    <button
+                        onClick={() => {
+                            onCategoryChange("pending");
+                            handleCategoryClick("ongoing");
+                        }}
+                        className="flex items-center justify-start space-x-6 text-blue-600 hover:text-blue-800 font-semibold hover:bg-blue-50 px-8 py-5 rounded-lg transition duration-200 group"
+                    >
+                        <FaRegClock className="text-3xl group-hover:scale-110 transition duration-200" />
+                        <span className="text-2xl leading-relaxed">Sự kiện sắp diễn ra</span>
+                    </button>
                 </li>
 
                 {/* Nút 2 */}
                 <li>
                     <button
                         onClick={() => {
-                            onCategoryChange("upcoming");
-                            handleCategoryClick("upcoming"); // Toggle dropdown
+                            onCategoryChange("completed");
+                            handleCategoryClick("completed");
                         }}
                         className="flex items-center justify-start space-x-6 text-blue-600 hover:text-blue-800 font-semibold hover:bg-blue-50 px-8 py-5 rounded-lg transition duration-200 group"
                     >
                         <FaCalendarAlt className="text-3xl group-hover:scale-110 transition duration-200" />
                         <span className="text-2xl leading-relaxed">Sự kiện đã kết thúc</span>
                     </button>
-
-                    {/* Dropdown danh mục con */}
-                    {activeCategorySlug === "upcoming" && (
-                        <ul className="pl-8 mt-4 space-y-4">
-                            <li>
-                                <button
-                                    onClick={() => onCategoryChange("upcoming-subcategory-1")}
-                                    className="text-blue-600 hover:text-blue-800 font-semibold hover:bg-blue-50 px-8 py-3 rounded-lg transition duration-200"
-                                >
-                                    Subcategory 1
-                                </button>
-                            </li>
-                            <li>
-                                <button
-                                    onClick={() => onCategoryChange("upcoming-subcategory-2")}
-                                    className="text-blue-600 hover:text-blue-800 font-semibold hover:bg-blue-50 px-8 py-3 rounded-lg transition duration-200"
-                                >
-                                    Subcategory 2
-                                </button>
-                            </li>
-                        </ul>
-                    )}
                 </li>
             </ul>
         </div>

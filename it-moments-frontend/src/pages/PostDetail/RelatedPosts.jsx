@@ -35,7 +35,7 @@ const RelatedPosts = ({ eventId }) => {
 
     return (
         <div className=" bg-white rounded-xl">
-            <p className="px-2 py-4 text-2xl text-white bg-black font-bold flex justify-center">
+            <p className="px-2 rounded-xl py-2 text-2xl text-white bg-blue-500 font-bold flex justify-center">
                 Bài viết liên quan
             </p>
             <div className="flex flex-col space-y-4 p-6">
@@ -44,7 +44,7 @@ const RelatedPosts = ({ eventId }) => {
                         <div
                             key={post._id}
                             onClick={() => handlePostClick(post.slug)}
-                            className="cursor-pointer group rounded-lg border border-gray-200 bg-white transition-shadow"
+                            className="cursor-pointer group rounded-lg border-4 border-gray-200 bg-gray-100 transition-shadow"
                         >
                             <div className="relative overflow-hidden rounded-t-lg">
                                 <img

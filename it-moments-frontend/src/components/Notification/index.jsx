@@ -243,7 +243,7 @@ const NotificationComponent = ({ userId }) => {
                             notifications.map((notif) => (
                                 <div key={notif._id} className="flex items-center p-4">
                                     <div
-                                        className={`flex items-center p-3 cursor-pointer rounded-lg hover:bg-gray-300 transition-all duration-300 ${notif.read
+                                        className={`flex items-center p-3 w-full cursor-pointer rounded-lg hover:bg-gray-300 transition-all duration-300 ${notif.read
                                             ? "bg-gray-100"
                                             : "bg-blue-50 border-l-4 border-blue-500"
                                             }`}

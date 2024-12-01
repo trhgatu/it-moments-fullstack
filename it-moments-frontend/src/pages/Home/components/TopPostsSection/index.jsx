@@ -84,14 +84,9 @@ export default function TopPostsSection() {
                                     }}
                                 >
                                     <div className="p-6 flex flex-col w-full justify-between flex-1 group bg-black bg-opacity-80 absolute bottom-0 transition-all duration-300">
-                                        <h3 className="font-semibold text-white group-hover:text-blue-500 transition-all duration-300">
+                                        <h3 className="font-semibold text-white line-clamp-2 group-hover:text-blue-500 transition-all duration-300">
                                             {post.title}
                                         </h3>
-                                        <div className='line-clamp-2 text-white'
-                                            dangerouslySetInnerHTML={{
-                                                __html: post.description,
-                                            }}
-                                        />
                                         <div className="flex justify-between text-sm text-gray-300">
                                             <div className="flex items-center">
                                                 <EyeOutlined />
@@ -137,11 +132,10 @@ export default function TopPostsSection() {
                                         height: '250px',
                                     }}
                                 >
-                                    <div className="p-6 flex flex-col w-full justify-between flex-1 group bg-black bg-opacity-40 absolute bottom-0 transition-all duration-300">
-                                        <h3 className="text-xl font-semibold text-white mb-2 group-hover:text-blue-500 transition-all duration-300">
+                                    <div className="p-6 flex flex-col w-full justify-between flex-1 group bg-black bg-opacity-70 absolute bottom-0 transition-all duration-300">
+                                        <h3 className="text-xl font-semibold line-clamp-2 text-white mb-2 group-hover:text-blue-500 transition-all duration-300">
                                             {post.title}
                                         </h3>
-                                        <p className="text-gray-300 truncate mb-4">{post.description}</p>
                                         <div className="flex justify-between text-sm text-gray-300">
                                             <span>{post.views} lượt xem</span>
                                             <span>{new Date(post.createdAt).toLocaleDateString('vi-VN')}</span>

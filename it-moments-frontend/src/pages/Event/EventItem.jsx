@@ -2,8 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import { FaArrowRight, FaRegClock } from 'react-icons/fa';
+import { Tag } from 'antd';
 
-const EventItem = ({ title, description, date, imageUrl, slug, category }) => {
+const EventItem = ({ title, description, date, imageUrl, slug, category, eventStatus }) => {
     const navigate = useNavigate();
 
     const handleEventItemClick = () => {
@@ -12,25 +13,45 @@ const EventItem = ({ title, description, date, imageUrl, slug, category }) => {
 
     return (
         <div
-            className="w-full flex items-start mb-6 cursor-pointer transition-all duration-300 group bg-gray-100 hover:bg-gray-300 rounded-lg p-4"
+            className=" flex items-start mb-6 cursor-pointer transition-all duration-300 group bg-white hover:bg-gray-300 rounded-lg p-4"
             onClick={handleEventItemClick}
         >
-            <div className="relative w-1/3 h-72 overflow-hidden rounded-lg shadow-md">
+            <div className="relative w-1/3 h-60 overflow-hidden rounded-lg shadow-md">
                 <img
                     src={imageUrl}
                     alt={title}
-                    className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
+                    className="w-full h-full object-cover transition-transform duration-300"
                     loading="lazy"
                 />
-                <div className="absolute inset-0 bg-black bg-opacity-20 transition-opacity duration-300 hover:bg-opacity-30"></div>
+
             </div>
             <div className="w-2/3 pl-4 flex flex-col justify-between">
-                <div className="flex items-center text-gray-500 text-sm mb-4">
-                    <FaRegClock className="mr-1" /> {date}
+                <div className="flex items-center text-gray-500 text-sm mb-4 justify-between">
+                    <span className="flex items-center">
+                        <FaRegClock className="mr-1" /> {date}
+                    </span>
+                    <Tag
+                        color={
+                            eventStatus === "completed"
+                                ? "red"
+                                : eventStatus === "pending"
+                                    ? "blue"
+                                    : "green"
+                        }
+                        className="text-lg py-2 px-4"
+                    >
+                        {eventStatus === "completed"
+                            ? "Đã kết thúc"
+                            : eventStatus === "pending"
+                                ? "Đang chờ"
+                                : "Đang diễn ra"}
+                    </Tag>
                 </div>
+
                 <h3 className="text-lg font-bold text-gray-900 mb-2 transition-colors duration-300 group-hover:text-blue-500">
                     {title}
                 </h3>
+
 
                 <p className=" line-clamp-2 mb-4">
                     <span

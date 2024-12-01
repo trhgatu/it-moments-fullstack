@@ -10,6 +10,7 @@ import Register from "../pages/Authentication/Register";
 import Error from "../pages/Error";
 import Profile from "../pages/Profile";
 import PrivateRoutes from "../components/PrivateRoutes";
+import RedirectIfLoggedIn from "../components/RedirectIfLoggedIn";
 import VerifyEmail from "../pages/VerifyEmail";
 import Academic from "../pages/Academic";
 import ForgotPassword from "../pages/ForgotPassword";
@@ -81,11 +82,15 @@ export const clientRoute = [
     },
     {
         path: "/forgot-password",
-        element: <ForgotPassword/>
+        element: <ForgotPassword />
     },
     {
         path: "login",
-        element: <Login />
+        element: (
+            <RedirectIfLoggedIn>
+                <Login />
+            </RedirectIfLoggedIn>
+        )
     },
     {
         path: "register",
@@ -93,10 +98,10 @@ export const clientRoute = [
     },
     {
         path: "verify",
-        element: <VerifyEmail/>
+        element: <VerifyEmail />
     },
     {
         path: "reset-password",
-        element: <ResetPassword/>
+        element: <ResetPassword />
     }
 ];

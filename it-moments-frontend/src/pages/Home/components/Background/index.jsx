@@ -10,7 +10,10 @@ import { motion } from 'framer-motion';
 import 'swiper/css';
 import styles from './Background.module.scss';
 import TypingEffect from 'react-typing-effect';
-import { FacebookOutlined, InstagramOutlined, YoutubeOutlined } from '@ant-design/icons';
+import { FacebookOutlined, InstagramOutlined, YoutubeOutlined, } from '@ant-design/icons';
+import { GiMusicalNotes } from "react-icons/gi";
+import { MdEventAvailable } from "react-icons/md";
+import { FaBookOpen } from "react-icons/fa";
 
 const Background = () => {
     const [showDescription, setShowDescription] = useState(false);
@@ -45,9 +48,9 @@ const Background = () => {
                     clickable: true,
                     el: `.${styles.swiperPagination}`,
                 }}
-/*                 autoplay={{
-                    delay: 3000,
-                }} */
+                /*                 autoplay={{
+                                    delay: 3000,
+                                }} */
                 modules={[Pagination]}
                 direction="vertical"
                 className="h-full mySwiper"
@@ -110,7 +113,7 @@ const Background = () => {
                     <Link to="vanNgheSection"
                         smooth={true}
                         duration={500}
-                        className='w-full sm:w-1/3'
+                        className='w-full sm:w-1/3 hover:opacity-60 duration-300 transition-all'
                     >
                         <motion.div
                             className="bg-blue-700 text-black p-6 shadow-lg transform transition-all cursor-pointer border-white border-4 relative"
@@ -118,7 +121,10 @@ const Background = () => {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 1 }}
                         >
-                            <h3 className="text-lg sm:text-xl md:text-2xl font-bold mb-2 text-white">Văn nghệ</h3>
+                            <span className='flex'>
+                                <GiMusicalNotes className='text-white text-4xl' />
+                                <h3 className="text-lg sm:text-xl md:text-2xl font-bold mb-2 ml-2 text-white">Văn nghệ</h3>
+                            </span>
                             <span className="text-white">Thưởng thức và tham gia bình chọn cho tiết mục bạn yêu thích</span>
                         </motion.div>
                     </Link>
@@ -126,7 +132,7 @@ const Background = () => {
                     <Link to="suKienSection"
                         smooth={true}
                         duration={500}
-                        className='w-full sm:w-1/3'
+                        className='w-full sm:w-1/3 hover:opacity-60 duration-300 transition-all'
                     >
                         <motion.div
                             className="bg-blue-700 text-black p-6 shadow-lg transform transition-all cursor-pointer border-white border-4 relative"
@@ -134,7 +140,10 @@ const Background = () => {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 1, ease: "easeOut", delay: 0.4 }}
                         >
-                            <h3 className="text-lg sm:text-xl md:text-2xl font-bold mb-2 text-white">Sự Kiện</h3>
+                            <span className='flex'>
+                                <MdEventAvailable className='text-white text-4xl' />
+                                <h3 className="text-lg sm:text-xl md:text-2xl font-bold mb-2 text-white ml-2">Sự Kiện</h3>
+                            </span>
                             <span className="text-white">Cập nhật thông tin về các sự kiện sôi nổi đang diễn ra.</span>
                         </motion.div>
                     </Link>
@@ -142,15 +151,18 @@ const Background = () => {
                     <Link to="hocThuatSection"
                         smooth={true}
                         duration={500}
-                        className='w-full sm:w-1/3'
+                        className='w-full sm:w-1/3 hover:opacity-60 duration-300 transition-all'
                     >
                         <motion.div
-                            className="bg-blue-700 text-black p-6 shadow-lg transform transition-all cursor-pointer border-white border-4 relative"
+                            className="bg-blue-700   text-black p-6 shadow-lg transform transition-all cursor-pointer border-white border-4 relative"
                             initial={{ opacity: 0, y: -150 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 1, ease: "easeOut", delay: 0.6 }}
                         >
-                            <h3 className="text-lg sm:text-xl md:text-2xl font-bold mb-2 text-white">Học thuật</h3>
+                            <span className='flex'>
+                                <FaBookOpen className='text-white text-4xl' />
+                                <h3 className="text-lg sm:text-xl md:text-2xl font-bold mb-2 text-white ml-2">Học thuật</h3>
+                            </span>
                             <span className="text-white">Cập nhật thông tin về các hoạt động học thuật</span>
                         </motion.div>
                     </Link>

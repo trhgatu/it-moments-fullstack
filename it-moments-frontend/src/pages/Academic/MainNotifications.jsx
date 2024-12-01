@@ -10,7 +10,7 @@ const MainNotifications = ({ posts = [], category }) => {
   };
 
   return (
-    <div className="flex flex-col space-y-8 p-6 bg-gray-50">
+    <div className="flex flex-col space-y-8 p-6 bg-gray-100 mb-36">
       {posts.length > 0 ? (
         posts.map((post, index) => (
           <div
@@ -36,17 +36,17 @@ const MainNotifications = ({ posts = [], category }) => {
             </div>
             <div className="w-2/3 px-6 py-4 flex flex-col justify-center">
               <h3 className="text-2xl font-extrabold text-gray-900 mb-2 flex items-center">
-                {/* Thêm group-hover:text-blue-500 để đổi màu khi hover vào cha */}
                 <span className="transition-colors duration-200 group-hover:text-blue-500 line-clamp-2">
                   {post.title}
                 </span>
               </h3>
-              <div className="border-b border-gray-200 mb-4"></div>
-              <p className="text-sm text-gray-700 line-clamp-2">
-                {post.description.length > 100
-                  ? `${post.description.substring(0, 100)}...`
-                  : post.description}
-              </p>
+              <p className=" line-clamp-2 mb-4">
+                    <span
+                        dangerouslySetInnerHTML={{
+                            __html: post.description,
+                        }}
+                    />
+                </p>
               <a
                 href="#"
                 className="text-blue-500 text-sm font-semibold hover:underline mt-4"

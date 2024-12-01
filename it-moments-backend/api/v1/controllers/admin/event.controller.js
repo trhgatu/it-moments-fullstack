@@ -41,6 +41,21 @@ const controller = {
             .populate('createdBy', 'fullName')
             .lean();
 
+        for(const event of events) {
+            const user = await User.findOne({ _id: event.createdBy.account_id });
+            if(user) {
+                event.accountFullName = user.fullName;
+            }
+            if(Array.isArray(event.updatedBy) && event.updatedBy.length > 0) {
+                const updatedBy = event.updatedBy.slice(-1)[0];
+                if(updatedBy?.account_id) {
+                    const userUpdated = await User.findOne({ _id: updatedBy.account_id });
+                    if(userUpdated) {
+                        updatedBy.accountFullName = userUpdated.fullName;
+                    }
+                }
+            }
+        }
         res.json({
             success: true,
             data: {
@@ -128,23 +143,50 @@ const controller = {
         }
     },
 
-    editPatch: async (req, res) => {
+    edit: async (req, res) => {
         try {
             const id = req.params.id;
-            await Event.updateOne({ _id: id }, req.body);
 
-            res.json({
-                code: 200,
-                message: "Cập nhật sự kiện thành công",
+            if(!id) {
+                return res.status(400).json({
+                    success: false,
+                    message: "ID sự kiện không hợp lệ.",
+                });
+            }
+
+            const updateData = {...req.body};
+            const updatedBy = {
+                account_id: res.locals.user.id,
+                updatedAt: Date.now(),
+            };
+            if (updateData.updatedBy && Array.isArray(updateData.updatedBy)) {
+                updateData.updatedBy.push(updatedBy);
+            } else {
+                updateData.updatedBy = [updatedBy];
+            }
+            const event = await Event.findOne({ _id: id, deleted: false });
+            if(!event) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Không tìm thấy sự kiện để cập nhật.",
+                });
+            }
+
+            await Event.updateOne({ _id: id }, updateData);
+
+            res.status(200).json({
+                success: true,
+                message: "Cập nhật sự kiện thành công.",
             });
         } catch(error) {
-            console.error('Lỗi khi cập nhật sự kiện:', error);
-            res.json({
-                code: 400,
-                message: "Lỗi khi cập nhật sự kiện.",
+            console.error("Lỗi khi chỉnh sửa sự kiện:", error);
+            res.status(500).json({
+                success: false,
+                message: "Đã xảy ra lỗi khi chỉnh sửa sự kiện.",
             });
         }
     },
+
     delete: async (req, res) => {
         try {
             const id = req.params.id;

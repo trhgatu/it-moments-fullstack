@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaChevronDown, FaChevronRight, FaBell,FaListAlt  } from 'react-icons/fa';
+import { FaChevronDown, FaChevronRight, FaBell, FaListAlt } from 'react-icons/fa';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { API_URL } from '../../config/config';
 import { Divider } from 'antd';
@@ -49,10 +49,11 @@ const Category = ({ onCategoryChange }) => {
         return categories
             .filter((category) => category.parent_id === parentId)
             .map((category) => (
-                <div key={category._id} className="mt-2">
+                <div key={category._id} className="mt-2 ml-4">
                     <button
                         onClick={() => handleCategoryClick(category.slug, category.title)}
-                        className={` text-gray-800  hover:underline transition-all duration-300 focus:outline-none p-2 ${activeCategorySlug === category.slug ? 'bg-blue-500 text-white' : ''}`}
+                        className={` hover:underline transition-all duration-300 focus:outline-none p-2
+                            ${activeCategorySlug === category.slug ? 'border-r-4 border-blue-500' : ''}`}
                     >
                         <FaChevronRight className="inline mr-2 text-gray-500" />
                         {category.title}
@@ -66,11 +67,12 @@ const Category = ({ onCategoryChange }) => {
             .filter((category) => category.parent_id === parentId)
             .map((category) => (
                 <div key={category._id} className="mt-4">
-                    <div className={`flex items-center justify-between px-4 hover:text hover:bg-blue-500 hover:text-white cursor-pointer ${activeCategorySlug === category.slug ? 'bg-blue-500 text-white' : ''}`}>
+                    <div className={`flex items-center justify-between px-4  cursor-pointer
+                         ${activeCategorySlug === category.slug ? 'border-l-4 border-blue-500' : ''}`}>
 
                         <button
                             onClick={() => handleCategoryClick(category.slug, category.title)}
-                            className={`text-2xl hover:text-white hover:underline p-4  transition-all duration-300 focus:outline-none transform  `}
+                            className={`text-2xl hover:underline p-4  transition-all duration-300 focus:outline-none transform  `}
                         >
                             {category.title}
                         </button>
@@ -99,16 +101,14 @@ const Category = ({ onCategoryChange }) => {
 
     return (
         <div className="w-full">
-            <div className='p-8'>
-                <div className="flex items-center justify-between bg-gradient-to-r from-blue-400 to-blue-600 px-4 py-3 rounded-t-lg  transition-shadow duration-200">
-                    <div className="flex items-center space-x-2">
-                        <FaListAlt className="text-white text-2xl" />
-                        <span className=" font-semibold text-white">Danh mục</span>
-                    </div>
+            <div className="flex items-center justify-between bg-gradient-to-r from-blue-400 to-blue-600 px-4 py-3 rounded-t-lg  transition-shadow duration-200">
+                <div className="flex items-center space-x-2">
+                    <FaListAlt className="text-white text-2xl" />
+                    <span className=" font-semibold text-white">Danh mục</span>
                 </div>
-                <div>
-                    {renderCategories("67134482580ad1dc01c9a120")}
-                </div>
+            </div>
+            <div>
+                {renderCategories("674c4f7d56dc65932a0268cd")}
             </div>
         </div>
     );

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Card, Col, Row, Typography, message } from "antd";
+import { Card, Col, Row, Typography, message, Spin } from "antd"; // Thêm Spin vào import
 import { UserOutlined, FileTextOutlined, CalendarOutlined, TeamOutlined } from "@ant-design/icons";
 import axios from "axios";
 import { API_URL } from "../../../config/config";
@@ -12,7 +12,7 @@ const Dashboard = () => {
   const [totalPosts, setTotalPosts] = useState(0);
   const [totalEvents, setTotalEvents] = useState(0);
   const [loading, setLoading] = useState(true);
-
+  const [totalAdmins, setTotalAdmins] = useState(0);
   useEffect(() => {
     const fetchData = async () => {
       const token = user?.token;
@@ -30,6 +30,7 @@ const Dashboard = () => {
           withCredentials: true
         });
         if (usersResponse.data.success) {
+          setTotalAdmins(usersResponse.data.data.users.filter(user => user.isAdmin === true).length);
           setTotalUsers(usersResponse.data.data.users.length);
         }
         const postsResponse = await axios.get(`${API_URL}/admin/posts`, {
@@ -64,27 +65,26 @@ const Dashboard = () => {
 
   const count = [
     {
-      today: "Total Users",
+      today: "Số lượng người dùng",
       title: totalUsers,
       icon: <UserOutlined style={{ fontSize: 24, color: "#fff" }} />,
       bnb: "bnb2",
     },
     {
-      today: "Total Posts",
-      title: loading ? "Loading..." : totalPosts,
+      today: "Số lượng bài viết",
+      title: loading ? <Spin size="small" /> : totalPosts,  // Thay loading bằng Spin
       icon: <FileTextOutlined style={{ fontSize: 24, color: "#fff" }} />,
       bnb: "redtext",
     },
     {
-      today: "Sự kiện",
+      today: "Số lượng Sự kiện",
       title: totalEvents,
       icon: <CalendarOutlined style={{ fontSize: 24, color: "#fff" }} />,
       bnb: "bnb2",
     },
     {
-      today: "Total Admins",
-      title: "15",
-      persent: "+10%",
+      today: "Số lượng QTV",
+      title: totalAdmins,
       icon: <TeamOutlined style={{ fontSize: 24, color: "#fff" }} />,
       bnb: "bnb2",
     },
@@ -101,7 +101,7 @@ const Dashboard = () => {
                   <Col xs={18}>
                     <span>{c.today}</span>
                     <Title level={3}>
-                      {loading ? "Loading..." : c.title}{" "}
+                      {loading ? <Spin size="small" /> : c.title}{" "}  {/* Thay loading bằng Spin */}
                       <small className={c.bnb}>{c.persent}</small>
                     </Title>
                   </Col>

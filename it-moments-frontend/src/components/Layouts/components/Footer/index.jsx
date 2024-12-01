@@ -11,19 +11,17 @@ function Footer() {
   return (
     <footer className="bg-black text-white py-12 w-full">
       <div className="container mx-auto px-4">
-        {/* Logo Section */}
-        <div className="text-center mb-6">
-          <NavLink to="/">
-            <span className={cx(styles.textLogo, 'text-6xl')}>IT Moments</span>
-          </NavLink>
-        </div>
-
         {/* Footer Content */}
         <Row gutter={[16, 16]} justify="center">
           {/* About Section */}
           <Col xs={24} sm={8} className="text-center">
+            <div className="text-center mb-6">
+              <NavLink to="/">
+                <span className={cx(styles.textLogo, 'text-6xl')}>IT Moments</span>
+              </NavLink>
+            </div>
             <Paragraph className="text-white">
-              Chúng tôi là đơn vị tiên phong trong lĩnh vực tổ chức sự kiện văn nghệ tại Việt Nam.
+              Website được thực hiện bởi 3 sinh viên của Trường Đại học Công thương Thành Phố Hồ Chí Minh.
             </Paragraph>
           </Col>
 
@@ -44,7 +42,7 @@ function Footer() {
             <Space direction="vertical" size="middle" className="text-white">
               <div className="flex items-center">
                 <EnvironmentOutlined className="text-white hover:text-blue-400 transition duration-300 w-6 h-6" />
-                <span className="ml-2 text-white">160 Lê Trọng Tấn, Phường Tây Thanh, Quận Tân Phú, TP.HCM</span>
+                <span className="ml-2 text-white">140 Lê Trọng Tấn, Phường Tây Thạnh, Quận Tân Phú, TP.HCM</span>
               </div>
               {/* Phone */}
               <div className="flex items-center">
@@ -78,7 +76,7 @@ function Footer() {
 
         {/* Copyright Section */}
         <div className="text-center text-gray-400 mt-12 pt-8 border-t border-gray-700">
-          <Paragraph className="text-white">© 2024 IT Moments. Tất cả quyền được bảo lưu.</Paragraph>
+          <Paragraph className="text-white">© 2024 IT Moments.</Paragraph>
         </div>
       </div>
     </footer>

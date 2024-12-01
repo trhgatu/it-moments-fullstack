@@ -48,22 +48,23 @@ const controller = {
             .populate('event_id')
             .lean();
 
-        for(const post of posts) {
-            const user = await User.findOne({ _id: post.createdBy.account_id });
-
-            if(user) {
-                post.accountFullName = user.fullName;
-            }
-            const updatedBy = post.updatedBy.slice(-1)[0];
-            if(updatedBy) {
-                const userUpdated = await User.findOne(
-                    {
-                        _id: updatedBy.account_id
+            for (const post of posts) {
+                const user = await User.findOne({ _id: post.createdBy.account_id });
+                if (user) {
+                    post.accountFullName = user.fullName;
+                }
+                if (Array.isArray(post.updatedBy) && post.updatedBy.length > 0) {
+                    const updatedBy = post.updatedBy.slice(-1)[0];
+                    if (updatedBy?.account_id) {
+                        const userUpdated = await User.findOne({ _id: updatedBy.account_id });
+                        if (userUpdated) {
+                            updatedBy.accountFullName = userUpdated.fullName;
+                        }
                     }
-                );
-                updatedBy.accountFullName = userUpdated.fullName;
+                }
             }
-        }
+
+
         res.json({
             success: true,
             data: {
@@ -190,10 +191,22 @@ const controller = {
             if(!req.body.thumbnail) {
                 updateData.thumbnail = null;
             }
+            if (updateData.event_id === undefined) {
+                delete updateData.event_id;
+            }
 
             updateData.images = req.body.existingImages || [];
             if(req.body.images) {
                 updateData.images = [...updateData.images, ...req.body.images];
+            }
+            const updatedBy = {
+                account_id: res.locals.user.id,
+                updatedAt: Date.now(),
+            };
+            if (updateData.updatedBy && Array.isArray(updateData.updatedBy)) {
+                updateData.updatedBy.push(updatedBy);
+            } else {
+                updateData.updatedBy = [updatedBy];
             }
             const result = await Post.updateOne({ _id: id }, updateData);
 

@@ -21,7 +21,7 @@ export default function Posts() {
 
     useEffect(() => {
         const fetchPosts = async () => {
-            if (cachedPosts[category] && cachedPosts[category][currentPage]) {
+            if(cachedPosts[category] && cachedPosts[category][currentPage]) {
                 setPosts(cachedPosts[category][currentPage]);
                 setLoading(false);
                 return;
@@ -50,7 +50,7 @@ export default function Posts() {
                         [currentPage]: posts,
                     },
                 }));
-            } catch (error) {
+            } catch(error) {
                 console.error('Error fetching posts:', error);
             } finally {
                 setLoading(false);
@@ -64,7 +64,7 @@ export default function Posts() {
         setCurrentPage(page);
     };
 
-    if (loading) {
+    if(loading) {
         return (
             <div style={{
                 display: 'flex',
@@ -78,7 +78,8 @@ export default function Posts() {
     }
 
     return (
-        <div>
+        <>
+
             {!slug ? (
                 <ActivityList
                     posts={posts}
@@ -90,6 +91,6 @@ export default function Posts() {
             ) : (
                 <Outlet />
             )}
-        </div>
+        </>
     );
 }

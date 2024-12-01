@@ -316,7 +316,7 @@ const PostAcademicDetail = () => {
               dangerouslySetInnerHTML={{
                 __html: showFullDescription
                   ? post.description
-                  : post.description.slice(0, 200) + '...',
+                  : post.description.slice(0, 400) + '...',
               }}
               className="text-lg leading-relaxed text-gray-700"
             ></p>

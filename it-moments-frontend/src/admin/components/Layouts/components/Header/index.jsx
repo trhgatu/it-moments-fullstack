@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { Row, Col, Breadcrumb, Button, Input, Avatar, Dropdown, Menu, Modal, notification } from "antd";
+import { Row, Col, Breadcrumb, Button, Input, Avatar, Dropdown, Menu, Modal, Tag, notification, Typography } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { NavLink, Link, useNavigate, useLocation } from "react-router-dom";
 import { useUser } from "../../../../../context/UserContext";
 import { API_URL } from "../../../../../config/config";
+import { green } from "@mui/material/colors";
 
 const profileIcon = (
   <svg
@@ -46,7 +47,7 @@ function Header({ name, subName, onPress }) {
         credentials: "include",
       });
 
-      if (response.ok) {
+      if(response.ok) {
         setUser(null);
         notification.success({
           message: "Đăng xuất thành công!",
@@ -56,7 +57,7 @@ function Header({ name, subName, onPress }) {
       } else {
         console.error("Lỗi khi đăng xuất");
       }
-    } catch (error) {
+    } catch(error) {
       console.error("Lỗi khi đăng xuất:", error);
     }
   };
@@ -83,7 +84,7 @@ function Header({ name, subName, onPress }) {
 
   const breadcrumbDisplay = breadcrumbItems.map((item, index) => {
     const isDetailPage = item === "detail";
-    if (isDetailPage) {
+    if(isDetailPage) {
       return (
         <Breadcrumb.Item key={index}>
           <span>Detail</span>
@@ -126,21 +127,26 @@ function Header({ name, subName, onPress }) {
             {togglerIcon}
           </Button>
           {user ? (
-            <Dropdown overlay={menu} trigger={["click"]}>
-              <Avatar
-                src={user.avatar || "https://example.com/default-avatar.png"}
-                alt="avatar"
-                style={{ cursor: "pointer" }}
-              />
-            </Dropdown>
+            <div className="flex items-center">
+              <Typography>Xin chào:
+                <Tag className='ml-2' color={user.status === 'active' ? 'green' : 'red'}>
+                  {user.fullName}
+                </Tag>
+              </Typography>
+              <Dropdown overlay={menu} trigger={["click"]}>
+                <Avatar
+                  src={user.avatar || "https://example.com/default-avatar.png"}
+                  alt="avatar"
+                  style={{ cursor: "pointer" }}
+                />
+              </Dropdown>
+            </div>
           ) : (
             <Link to="/sign-in" className="btn-sign-in">
               {profileIcon}
               <span>Đăng nhập</span>
             </Link>
           )}
-
-          <Input className="header-search" placeholder="Type here..." prefix={<SearchOutlined />} />
         </Col>
       </Row>
 

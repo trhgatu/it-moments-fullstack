@@ -3,7 +3,8 @@ import axios from 'axios';
 import { useParams, useLocation } from 'react-router-dom';
 import { API_URL } from '../../config/config';
 import { useClientUser } from '../../context/ClientUserContext';
-import { message, Modal, Row, Col, Input, Button, Spin, Image } from 'antd';
+import { message, Modal, Row, Col, Input, Button, Spin, Image, Tag, Badge } from 'antd';
+import { LoadingOutlined } from '@ant-design/icons';
 import { FaRegCalendarAlt } from "react-icons/fa";
 import { FaUser } from 'react-icons/fa';
 import RelatedPosts from './RelatedPosts';
@@ -403,7 +404,7 @@ const PostDetail = () => {
   const isEventNotStarted = post.event_id?.status === 'pending';
 
   return (
-    <div className="max-w-screen-2xl mx-auto pt-40">
+    <div className="max-w-screen-2xl mx-auto pt-36 pb-36">
       <div className="grid grid-cols-4 gap-6">
         <div className="col-span-3">
           <div className="bg-white rounded-xl p-12">
@@ -420,15 +421,63 @@ const PostDetail = () => {
             <div className="border p-8 rounded-3xl">
               <div className="mt-6 leading-relaxed text-gray-900">
                 <div className="mb-8">
-                  <h1 className="text-5xl font-bold mb-4 text-black">{post.title}</h1>
-                  <div className="flex space-x-2">
-                    <span className="bg-blue-600 text-white px-4 py-2 rounded-full">
-                      {post.post_category_id?.title || 'Không có thể loại'}
-                    </span>
-                    <span className="bg-green-600 text-white px-4 py-2 rounded-full">
-                      {post.event_id?.title || 'Không có sự kiện'}
-                    </span>
+                  <h1 className="text-4xl font-bold mb-4 text-black leading-10">{post.title}</h1>
+                  <div className="space-x-2 flex  items-center ">
+                    <Badge className="bg-blue-600 text-white text-2xl px-4 py-2 rounded-full">
+                      Danh mục: {post.post_category_id?.title || 'Không có thể loại'}
+                    </Badge>
+                    <Badge className="bg-green-600 text-white text-2xl px-4 py-2 rounded-full">
+                      Sự kiện: {post.event_id?.title || 'Không có sự kiện'}
+                    </Badge>
                   </div>
+                </div>
+                <div className="mt-6">
+                  {isEventNotStarted ? (
+                    <div>
+                      <div className="flex items-center">
+                        <Spin spinning={true} tip="Sự kiện chưa bắt đầu..." size="small" />
+                        <Tag className='text-black ml-2 text-xl' color='blue'>
+                          Sự kiện bắt đầu sau: {formatTime(startTimeRemaining)}
+                        </Tag>
+                      </div>
+                    </div>
+                  ) : isEventOngoing ? (
+                    <div className='flex items-cnter'>
+                      <div className="flex items-center ">
+                        <Tag color='green'>
+                          Thời gian còn lại của sự kiện: {formatTime(timeRemaining)}
+                        </Tag>
+                      </div>
+                      {isVotingOpen ? (
+                        <>
+                          <div className="flex items-center mb-2">
+                            <Tag color='green' className='py-2 px-2 text-2x'>
+                              Thời gian bình chọn còn lại: {formatTime(votingTimeRemaining)}
+                            </Tag>
+                          </div>
+                          <button
+                            onClick={showVoteModal}
+                            disabled={voted}
+                            className={`px-4 py-2 rounded bg-blue-600 text-white ${voted ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700'}`}
+                          >
+                            {voted ? 'Đã bình chọn' : 'Bình chọn'}
+                          </button>
+                          {voted && (
+                            <button
+                              onClick={showCancelVoteModal}
+                              className="ml-4 px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700"
+                            >
+                              Hủy bình chọn
+                            </button>
+                          )}
+                        </>
+                      ) : (
+                        <Tag color='red' className='py-2 px-2 text-2x'>Bình chọn đã kết thúc</Tag>
+                      )}
+                    </div>
+                  ) : (
+                    <Tag color='red' className='py-2 px-2 text-2xl'>Sự kiện đã kết thúc.</Tag>
+                  )}
                 </div>
                 {post.video && (
                   <div className="mt-4">
@@ -443,7 +492,7 @@ const PostDetail = () => {
                     ></iframe>
                   </div>
                 )}
-                 <div className='text-2xl pt-6'
+                <div className='text-2xl pt-6'
                   dangerouslySetInnerHTML={{
                     __html: post.description,
                   }}
@@ -489,56 +538,7 @@ const PostDetail = () => {
                   </Col>
                 </Row>
               </div>
-              <div className="mt-6">
-                {isEventNotStarted ? (
-                  <div>
-                    <div className="flex items-center">
-                      <Spin spinning={true} tip="Sự kiện chưa bắt đầu..." size="small" />
-                      <span className='text-black'>
-                        Sự kiện bắt đầu sau: {formatTime(startTimeRemaining)}
-                      </span>
-                    </div>
-                  </div>
-                ) : isEventOngoing ? (
-                  <div>
-                    <div className="flex items-center">
-                      <Spin spinning={true} tip="Sự kiện đang diễn ra..." size="small" />
-                      <span className='text-black'>
-                        Thời gian còn lại của sự kiện: {formatTime(timeRemaining)}
-                      </span>
-                    </div>
-                    {isVotingOpen ? (
-                      <>
-                        <div className="flex items-center">
-                          <Spin spinning={true} tip="Bình chọn đang diễn ra" size="small" />
-                          <span className="text-black">
-                            Thời gian bình chọn còn lại: {formatTime(votingTimeRemaining)}
-                          </span>
-                        </div>
-                        <button
-                          onClick={showVoteModal}
-                          disabled={voted}
-                          className={`px-4 py-2 rounded bg-blue-600 text-white ${voted ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700'}`}
-                        >
-                          {voted ? 'Đã bình chọn' : 'Bình chọn'}
-                        </button>
-                        {voted && (
-                          <button
-                            onClick={showCancelVoteModal}
-                            className="ml-4 px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700"
-                          >
-                            Hủy bình chọn
-                          </button>
-                        )}
-                      </>
-                    ) : (
-                      <p className="text-lg text-gray-600">Bình chọn đã kết thúc</p>
-                    )}
-                  </div>
-                ) : (
-                  <p className="text-lg text-gray-600">Sự kiện đã kết thúc.</p>
-                )}
-              </div>
+
               <div className="mt-8">
                 <h3 className="text-2xl font-semibold">Bình luận:</h3>
                 {user ? (
@@ -611,8 +611,13 @@ const PostDetail = () => {
           </div>
         </div>
         <div className="col-span-1">
-          <RelatedPosts eventId={post.event_id._id} />
+          {post.event_id ? (
+            <RelatedPosts eventId={post.event_id._id} />
+          ) : (
+            <p className="text-gray-500 italic">Không có sự kiện liên quan.</p>
+          )}
         </div>
+
       </div>
     </div>
 

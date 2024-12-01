@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate, useParams, Link } from 'react-router-dom'; // Import Link
+import { useLocation, useNavigate, useParams, Link } from 'react-router-dom';
+import { IoIosArrowForward } from "react-icons/io";
 import Pagination from './Pagination';
 import styles from './ActivityList.module.scss';
 import PostItem from './PostItem';
 import Category from './Category';
 import { API_URL } from '../../config/config';
 import { Spin } from 'antd';
-
 const ActivityList = ({ totalPages, onPageChange, currentPage }) => {
     const { category } = useParams();
     const [posts, setPosts] = useState([]);
@@ -44,16 +44,27 @@ const ActivityList = ({ totalPages, onPageChange, currentPage }) => {
         }
     }, [category, currentPage]);
 
-
-
-
     const handleCategoryChange = (categorySlug, categoryTitle) => {
         navigate(`/posts/${categorySlug}`, { state: { categorySlug } });
     };
 
     return (
-        <div className={`${styles.activityListContainer} px-24 `}>
-            <div className={`${styles.activityList} p-10`}>
+        <div className={`${styles.activityListContainer} px-24 pt-36`}>
+            <div className=" p-4 flex justify-between items-center mb-8 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg">
+                <div className='flex items-center'>
+                    <Link to="/" className="font-semibold hover:text-white transition duration-300">
+                        <span>Trang chủ</span>
+                    </Link>
+                    <IoIosArrowForward />
+                    <span className="font-semibold text-white">Văn nghệ</span>
+                </div>
+                <Link to="/posts/van-nghe" >
+                    <span className='text-white hover:underline'>Xem tất cả</span>
+                </Link>
+            </div>
+
+            <div className={`${styles.activityList}`}>
+
                 {loading ? (
                     <div className="flex justify-center items-center min-h-64">
                         <Spin size="large" />
@@ -76,7 +87,7 @@ const ActivityList = ({ totalPages, onPageChange, currentPage }) => {
                         ))}
                     </div>
                 )}
-                <div className={`${styles.category} bg-white border-4`}>
+                <div className={`${styles.category} bg-white rounded-lg`}>
                     <Category onCategoryChange={handleCategoryChange} />
                 </div>
             </div>

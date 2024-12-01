@@ -5,6 +5,10 @@ import backgroundImage from '../../../../assets/images/hoc-thuat.jpg';
 import { API_URL } from '../../../../config/config';
 import { EyeOutlined } from "@ant-design/icons";
 import { FaRegClock } from "react-icons/fa";
+import DOMPurify from 'dompurify';
+
+const sanitizedDescription = (html) => DOMPurify.sanitize(html);
+
 const AcademicSection = () => {
     const [posts, setPosts] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -76,7 +80,13 @@ const AcademicSection = () => {
                                     <h3 className="text-2xl font-semibold text-black group-hover:text-blue-500 transition-all duration-300 line-clamp-1">
                                         {post.title}
                                     </h3>
-                                    <p className="text-gray-600 line-clamp-2">{post.description}</p>
+                                    <p
+                                        className="line-clamp-2 text-gray-700"
+                                        dangerouslySetInnerHTML={{
+                                            __html: sanitizedDescription(post.description),
+                                        }}
+                                    >
+                                    </p>
                                     <div className='flex items-center justify-between'>
                                         <span className='text-lg flex items-center'>
                                             <EyeOutlined />
@@ -96,12 +106,10 @@ const AcademicSection = () => {
                         </div>
                     ))}
                 </div>
-
-                {/* Link "Xem tất cả" */}
-                <div className="text-center mt-8">
+                <div className="text-center pt-14">
                     <Link
                         to="/posts/hoc-thuat"
-                        className="text-blue-600 hover:text-blue-800 font-semibold"
+                        className="text-white  bg-blue-500 hover:bg-white hover:text-blue-500 hover:border border-blue-500 transition-all duration-300 font-semibold px-4 py-6"
                     >
                         Xem tất cả
                     </Link>

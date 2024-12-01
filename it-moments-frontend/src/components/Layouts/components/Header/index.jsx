@@ -16,7 +16,6 @@ export const Header = () => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isModalVisible, setIsModalVisible] = useState(false);
-    const [searchVisible, setSearchVisible] = useState(false);
     const location = useLocation();
     const navRef = useRef([]);
 
@@ -186,29 +185,6 @@ export const Header = () => {
             </nav>
 
             <div className="hidden md:flex gap-4 items-center mr-4 w-[200px]">
-                <div className="relative">
-                    <SearchOutlined
-                        className={cx('text-2xl cursor-pointer', {
-                            'text-black': isScrolled || location.pathname !== '/',
-                            'text-white': !isScrolled && location.pathname === '/',
-                        })}
-                        onClick={() => setSearchVisible(!searchVisible)}
-                    />
-                    {searchVisible && (
-                        <motion.div
-                            initial={{ opacity: 0, y: -20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -20 }}
-                            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                            className="absolute left-0 top-16 w-96"
-                        >
-                            <Input
-                                placeholder="Tìm kiếm..."
-                                onBlur={() => setSearchVisible(false)}
-                            />
-                        </motion.div>
-                    )}
-                </div>
                 {loading ? (
                     <div className="loader">Loading...</div>
                 ) : user ? (

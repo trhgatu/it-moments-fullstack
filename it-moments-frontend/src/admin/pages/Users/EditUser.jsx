@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Form, Input, Button, Select, Upload, message, Radio, Checkbox } from 'antd';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { UploadOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import { useUser } from '../../../context/UserContext';
@@ -8,15 +8,15 @@ import { API_URL } from '../../../config/config';
 
 const { Option } = Select;
 
-const CreateUser = () => {
+const EditUser = () => {
     const navigate = useNavigate();
+    const { id } = useParams();  // Assuming you have the user's ID in the URL.
     const [form] = Form.useForm();
     const [roles, setRoles] = useState([]);
     const [selectedRole, setSelectedRole] = useState('user');
     const [avatarFileList, setAvatarFileList] = useState([]);
     const { user } = useUser();
-
-    // Fetching roles from API
+    const [currentPermissions, setCurrentPermissions] = useState([]);
     useEffect(() => {
         const fetchRoles = async () => {
             try {
@@ -26,9 +26,7 @@ const CreateUser = () => {
                     return;
                 }
                 const response = await axios.get(`${API_URL}/admin/roles`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
+                    headers: { Authorization: `Bearer ${token}` },
                     withCredentials: true,
                 });
                 setRoles(response.data.records || []);
@@ -39,68 +37,96 @@ const CreateUser = () => {
         };
         fetchRoles();
     }, [user]);
+    useEffect(() => {
+        const fetchUserDetails = async () => {
+            try {
+                const token = user?.token;
+                if(!token) {
+                    message.error('Token không hợp lệ.');
+                    return;
+                }
 
-    // Handle avatar upload
+                const response = await axios.get(`${API_URL}/admin/users/detail/${id}`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                    withCredentials: true,
+                });
+
+                const userData = response.data.data;
+
+                form.setFieldsValue({
+                    fullName: userData.fullName,
+                    email: userData.email,
+                    bio: userData.bio || '',
+                    status: userData.status || 'active',
+                    role: userData.isAdmin ? 'admin' : 'user',
+                    role_id: userData.role_id || '',
+                    isVerified: userData.isVerified || false,
+                    isAdmin: userData.isAdmin || false,
+                });
+
+                setSelectedRole(userData.isAdmin ? 'admin' : 'user');
+                setAvatarFileList(userData.avatar ? [{ url: userData.avatar }] : []);
+            } catch(error) {
+                console.error('Lỗi khi lấy thông tin người dùng:', error);
+                message.error('Không thể lấy thông tin người dùng.');
+            }
+        };
+
+        fetchUserDetails();
+    }, [id, user, form]);
+
     const handleAvatarChange = (info) => {
         setAvatarFileList(info.fileList);
     };
 
-    // Function to upload form data
-    const uploadAvatar = async (formData) => {
+    const updateUser = async (formData) => {
         try {
             const token = user?.token;
-            if (!token) {
+            if(!token) {
                 message.error('Token không hợp lệ.');
                 return;
             }
 
-            await axios.post(`${API_URL}/admin/users/create`, formData, {
+            await axios.patch(`${API_URL}/admin/users/edit/${id}`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
-                    'Authorization': `Bearer ${token}`,
+                    Authorization: `Bearer ${token}`,
                 },
                 withCredentials: true,
             });
 
-            message.success('Người dùng đã được tạo thành công!');
+            message.success('Người dùng đã được cập nhật thành công!');
             navigate('/admin/users');
-        } catch (error) {
-            console.error('Lỗi khi tạo người dùng:', error);
-            console.error('Error Response:', error.response?.data);
-            message.error('Có lỗi xảy ra khi tạo người dùng.');
+        } catch(error) {
+            console.error('Lỗi khi cập nhật người dùng:', error);
+            message.error('Có lỗi xảy ra khi cập nhật người dùng.');
         }
     };
 
-    // Form submit handler
     const onFinish = async (values) => {
         const formData = new FormData();
         formData.append('fullName', values.fullName);
         formData.append('email', values.email);
-        formData.append('password', values.password);
+        formData.append('password', values.password || '');
         formData.append('bio', values.bio);
         formData.append('status', values.status);
         formData.append('isVerified', values.isVerified);
         formData.append('isAdmin', values.isAdmin);
-
-        // Handle role selection - Sửa từ 'role' thành 'role_id'
-        if (values.role && values.role_id) {
-            formData.append('role_id', values.role_id); // Gửi role_id đúng cách
-        } else {
-            formData.append('role_id', ''); // Nếu không có role, gán giá trị rỗng
+        if (values.role === 'admin' && values.role_id) {
+            formData.append('role_id', values.role_id);
         }
-
-        // Add avatar file to form data
         if (avatarFileList.length > 0) {
             formData.append('avatar', avatarFileList[0].originFileObj);
         }
 
-        await uploadAvatar(formData);
+        await updateUser(formData);
     };
+
 
 
     return (
         <div className="page-inner">
-            <Card title="Tạo người dùng" bordered={false}>
+            <Card title="Chỉnh sửa người dùng" bordered={false}>
                 <Form
                     form={form}
                     layout="vertical"
@@ -137,9 +163,8 @@ const CreateUser = () => {
                     <Form.Item
                         label="Mật khẩu"
                         name="password"
-                        rules={[{ required: true, message: 'Mật khẩu không được để trống!' }]}
                     >
-                        <Input.Password placeholder="Nhập mật khẩu" />
+                        <Input.Password placeholder="Nhập mật khẩu (chỉ thay đổi nếu cần)" />
                     </Form.Item>
 
                     {/* Bio */}
@@ -148,12 +173,16 @@ const CreateUser = () => {
                     </Form.Item>
 
                     {/* Admin Permission */}
-                    <Form.Item label="Quyền Admin" name="isAdmin" valuePropName="checked">
-                        <Checkbox>Quyền truy cập Admin</Checkbox>
+                    <Form.Item label="Quyền truy cập vào Trang quản trị" name="isAdmin" valuePropName="checked">
+                        <Checkbox>Quyền truy cập</Checkbox>
                     </Form.Item>
 
                     {/* Role Dropdown */}
-                    <Form.Item label="Vai trò" name="role" rules={[{ required: true, message: 'Vui lòng chọn vai trò!' }]}>
+                    <Form.Item
+                        label="Vai trò"
+                        name="role"
+                        rules={[{ required: true, message: 'Vui lòng chọn vai trò!' }]}
+                    >
                         <Select
                             placeholder="Chọn vai trò"
                             onChange={(value) => setSelectedRole(value)}
@@ -172,7 +201,8 @@ const CreateUser = () => {
                             <Select
                                 placeholder="Chọn Role ID"
                                 onChange={(value) => {
-                                    const selectedRole = roles.find(role => role._id === value);
+                                    const selectedRole = roles.find((role) => role._id === value);
+                                    setCurrentPermissions(selectedRole?.permissions || []);
                                     message.info(`Quyền của Role: ${selectedRole?.permissions.join(', ')}`);
                                 }}
                             >
@@ -185,7 +215,7 @@ const CreateUser = () => {
                         </Form.Item>
                     )}
 
-                    {/* Display Permissions of selected Role */}
+
                     <div>
                         {roles.map((role) =>
                             selectedRole === 'admin' && role._id === form.getFieldValue('role_id') ? (
@@ -222,9 +252,10 @@ const CreateUser = () => {
                     <Form.Item label="Xác thực email" name="isVerified" valuePropName="checked">
                         <Checkbox>Đã xác thực</Checkbox>
                     </Form.Item>
+
                     <Form.Item>
                         <Button type="primary" htmlType="submit">
-                            Tạo mới
+                            Cập nhật
                         </Button>
                     </Form.Item>
                 </Form>
@@ -233,4 +264,4 @@ const CreateUser = () => {
     );
 };
 
-export default CreateUser;
+export default EditUser;

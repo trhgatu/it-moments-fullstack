@@ -12,7 +12,7 @@ const postSchema = new mongoose.Schema({
     event_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Event',
-        required: false
+        required: false,
     },
     description: String,
     views: {
@@ -68,12 +68,13 @@ const postSchema = new mongoose.Schema({
         account_id: String,
         deletedAt: Date
     },
-    updatedBy: [
-        {
-            account_id: String,
-            updatedAt: Date
+    updatedBy: [{
+        account_id: String,
+        updatedAt: {
+            type: Date,
+            default: Date.now
         }
-    ],
+    }],
 }, {
     timestamps: true,
 });
