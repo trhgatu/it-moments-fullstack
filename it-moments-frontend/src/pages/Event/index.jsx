@@ -1,30 +1,30 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Outlet, useParams, Link } from 'react-router-dom';
-import { Spin } from 'antd';
+import { Outlet, useParams, useNavigate } from 'react-router-dom';
 import { API_URL } from '../../config/config';
 import EventList from './EventList';
 
 export default function Event() {
     const { category = "su-kien", slug } = useParams();
+    const navigate = useNavigate();
     const [posts, setPosts] = useState([]);
-    const [loading, setLoading] = useState(true);
     const [selectedCategory, setSelectedCategory] = useState("all");
     const [pagination, setPagination] = useState({
         currentPage: 1,
         totalPages: 1,
         pageSize: 6,
     });
+    const [loadingEventList, setLoadingEventList] = useState(false);
 
     const fetchPosts = async (type = "all", page = 1) => {
-        setLoading(true);
+        setLoadingEventList(true);
         try {
             let eventStatus = '';
-            if(type === "ongoing") {
+            if (type === "ongoing") {
                 eventStatus = "active";
-            } else if(type === "completed") {
+            } else if (type === "completed") {
                 eventStatus = "completed";
-            } else if(type === "pending") {
+            } else if (type === "pending") {
                 eventStatus = "pending"
             }
 
@@ -39,10 +39,11 @@ export default function Event() {
                 currentPage: data.pagination.currentPage,
                 totalPages: data.pagination.totalPage,
             }));
-        } catch(error) {
+        } catch (error) {
             console.error('Error fetching posts:', error);
+            navigate('/404');
         } finally {
-            setLoading(false);
+            setLoadingEventList(false);
         }
     };
 
@@ -55,14 +56,6 @@ export default function Event() {
         setPagination((prev) => ({ ...prev, currentPage: 1 }));
     };
 
-    if(loading) {
-        return (
-            <div className="flex justify-center items-center min-h-screen bg-gray-100">
-                <Spin size="large" tip="Loading data..." />
-            </div>
-        );
-    }
-
     return (
         <div className='pt-36 pb-36'>
             {!slug ? (
@@ -74,6 +67,7 @@ export default function Event() {
                         totalPages={pagination.totalPages}
                         onPageChange={(page) => setPagination((prev) => ({ ...prev, currentPage: page }))}
                         onCategoryChange={handleCategoryChange}
+                        loading={loadingEventList}
                     />
                 </div>
             ) : (

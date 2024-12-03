@@ -8,12 +8,12 @@ import { IoIosPerson } from "react-icons/io";
 import { API_URL } from "../../../../config/config";
 import { Link } from 'react-router-dom';
 import { Autoplay } from 'swiper/modules';
-import { Spin } from 'antd'; // Import Spin component from Ant Design
+import { Spin } from 'antd';
 import backgroundImage from '../../../../assets/images/su-kien.jpg';
 export default function EventSection() {
     const [events, setEvents] = useState([]);
     const [activeSlideIndex, setActiveSlideIndex] = useState(0);
-    const [loading, setLoading] = useState(true); // State để quản lý trạng thái loading
+    const [loading, setLoading] = useState(true);
     const swiperRef = useRef(null);
 
     useEffect(() => {
@@ -62,7 +62,7 @@ export default function EventSection() {
             >
                 <div className="absolute top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center">
                     <h1 className="text-5xl font-bold text-white text-center">
-                        Các hoạt động học thuật của khoa CNTT
+                        Các sự kiện nổi bật của khoa CNTT
                     </h1>
                 </div>
             </div>

@@ -41,7 +41,7 @@ const EventItem = ({ title, description, date, imageUrl, slug, category, eventSt
                         className="text-lg py-2 px-4"
                     >
                         {eventStatus === "completed"
-                            ? "Đã kết thúc"
+                            ? "Sự kiện đã kết thúc"
                             : eventStatus === "pending"
                                 ? "Đang chờ"
                                 : "Đang diễn ra"}

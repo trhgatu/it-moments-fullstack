@@ -27,7 +27,7 @@ export default function Home() {
     const isInViewSuKien = useInView(suKienRef, { once: false });
     const isInViewHocThuat = useInView(hocThuatRef, { once: false });
     useEffect(() => {
-        axios.get(`${API_URL}/posts?category=van-nghe&isFeatured=true&isLatest=true`)
+        axios.get(`${API_URL}/posts?category=van-nghe&isFeatured=true&sortKey=createdAt&sortValue=desc&limit=1`)
             .then((response) => setnewPostPerformances(response.data.data.posts))
             .catch((error) => console.error("Error fetching Văn nghệ posts:", error));
     }, []);
@@ -41,9 +41,10 @@ export default function Home() {
     useEffect(() => {
         axios.get(`${API_URL}/posts?category=van-nghe&isFeatured=true&sortKey=views&sortValue=desc&limit=2`)
             .then((response) => setMostViewPostPerformances(response.data.data.posts))
-
             .catch((error) => console.error("Error fetching Tiết mục nhiều lượt xem posts:", error));
+
     }, []);
+
 
     useEffect(() => {
         axios.get(`${API_URL}/posts?category=van-nghe&isFeatured=true&sortKey=votes&sortValue=desc`)
@@ -95,7 +96,7 @@ export default function Home() {
                                         data-aos-duration="800"
                                         data-aos-delay="200"
                                     >
-                                        <NewPost />
+                                        <NewPost postData={newPostPerformances} />
                                     </div>
                                     <div
                                         className="flex flex-col h-full"

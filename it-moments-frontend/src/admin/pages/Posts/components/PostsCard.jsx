@@ -11,6 +11,7 @@ const PostsCard = ({
   selectedRowKeys,
   handleSelectChange,
   handleDeleteConfirm,
+  handleSearch,
   navigate,
   pagination,
   actionType,
@@ -49,6 +50,7 @@ const PostsCard = ({
         setActionType={setActionType}
         selectedRowKeys={selectedRowKeys}
         handleActionSubmit={handleActionSubmit}
+        onSearch={handleSearch}
       />
       <div className="table-responsive">
         <PostsTable

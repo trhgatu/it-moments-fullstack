@@ -15,18 +15,11 @@
     width: 100%;
 }
 
-.activityList > .flex {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    height: 100vh;
-    min-height: 200px;
-}
-
+/* Các phần tử khác */
 .category {
     min-height: 200px;
 }
+
 .posts {
     display: grid;
     grid-template-columns: repeat(3, 1fr);

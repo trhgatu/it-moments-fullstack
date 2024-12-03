@@ -121,10 +121,6 @@ const controller = {
             },
         });
     },
-
-
-
-
     /* [GET] api/v1/posts/detail/:slug */
     detail: async (req, res) => {
         try {
@@ -177,7 +173,6 @@ const controller = {
             res.status(500).json({ success: false, message: error.message });
         }
     },
-
     vote: async (req, res) => {
         try {
             const { id } = req.params;
@@ -228,7 +223,6 @@ const controller = {
             return res.status(500).json({ message: 'Có lỗi xảy ra khi bình chọn.' });
         }
     },
-
     /* [POST] api/v1/posts/:id/cancel-vote */
     cancelVote: async (req, res) => {
         try {
@@ -270,7 +264,6 @@ const controller = {
             return res.status(500).json({ message: 'Có lỗi xảy ra khi hủy bình chọn.' });
         }
     },
-
     /* [GET] api/v1/posts/lastest */
     lastestPost: async (req, res) => {
         try {

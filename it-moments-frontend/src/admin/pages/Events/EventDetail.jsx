@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Card, Typography, Alert, Row, Col, Divider, Spin, List, Avatar } from "antd";
+import { Card, Typography, Tag, Alert, Row, Col, Divider, Spin, Button } from "antd";
 import axios from 'axios';
 import moment from 'moment';
 import { useUser } from '../../../context/UserContext';
 import { API_URL } from '../../../config/config';
+import * as XLSX from 'xlsx';
 
 const { Title, Text } = Typography;
 
@@ -28,7 +29,7 @@ const EventDetail = () => {
 
     useEffect(() => {
         const token = user?.token;
-        if (!token) {
+        if(!token) {
             setError('Không tìm thấy token.');
             return;
         }
@@ -37,7 +38,7 @@ const EventDetail = () => {
 
         fetchEventDetail(id, token)
             .then(response => {
-                if (response.data?.success) {
+                if(response.data?.success) {
                     setEvent(response.data.data);
                 } else {
                     throw new Error(response.data.message || 'Failed to fetch event data');
@@ -50,9 +51,9 @@ const EventDetail = () => {
             .finally(() => setLoading(false));
     }, [id, user]);
 
-    if (loading) return <Spin tip="Loading..." />;
-    if (error) return <Alert message={error} type="error" showIcon />;
-    if (!event) return <Alert message="Event not found." type="warning" showIcon />;
+    if(loading) return <Spin tip="Loading..." />;
+    if(error) return <Alert message={error} type="error" showIcon />;
+    if(!event) return <Alert message="Event not found." type="warning" showIcon />;
 
     const {
         event: eventDetail,
@@ -72,6 +73,61 @@ const EventDetail = () => {
         createdAt,
         updatedAt
     } = eventDetail;
+
+    const exportToExcel = () => {
+        const data = [];
+        data.push({
+            "Thông tin sự kiện": "Tiêu đề sự kiện", "Nội dung": title
+        });
+        data.push({
+            "Thông tin sự kiện": "Địa điểm", "Nội dung": location
+        });
+        data.push({
+            "Thông tin sự kiện": "Thời gian bắt đầu", "Nội dung": moment(startTime).format('DD/MM/YYYY HH:mm')
+        });
+        data.push({
+            "Thông tin sự kiện": "Thời gian kết thúc", "Nội dung": moment(endTime).format('DD/MM/YYYY HH:mm')
+        });
+        data.push({
+            "Thông tin sự kiện": "Trạng thái", "Nội dung": status === 'completed' ? 'Hoàn thành' : 'Đang diễn ra'
+        });
+        data.push({
+            "Thông tin sự kiện": "Thời gian bỏ phiếu bắt đầu", "Nội dung": moment(votingStartTime).format('DD/MM/YYYY HH:mm')
+        });
+        data.push({
+            "Thông tin sự kiện": "Thời gian bỏ phiếu kết thúc", "Nội dung": moment(votingEndTime).format('DD/MM/YYYY HH:mm')
+        });
+
+        data.push({
+            "Thông tin tiết mục": "Tiêu đề bài viết", "Tổng số phiếu": " "
+        });
+        posts.forEach(post => {
+            data.push({
+                "Thông tin tiết mục": post.title,
+                "Tổng số phiếu": post.votes
+            });
+        });
+
+        const ws = XLSX.utils.json_to_sheet(data, {
+            header: ['Thông tin sự kiện', 'Nội dung', 'Thông tin tiết mục', 'Tổng số phiếu'],
+        });
+
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Event Details");
+
+        const colWidths = [
+            { wpx: 300 },
+            { wpx: 300 },
+            { wpx: 100 },
+        ];
+        ws['!cols'] = colWidths;
+        XLSX.writeFile(wb, `Event_Detail_${title}.xlsx`);
+    };
+
+
+
+
+
 
     return (
         <div style={{ padding: '20px', background: '#f0f2f5' }}>
@@ -109,17 +165,17 @@ const EventDetail = () => {
                         </Text>
                     </Col>
                     <Col xs={24} sm={12} md={8}>
-                        <Text strong>Thời gian bỏ phiếu bắt đầu:</Text>
+                        <Text strong>Thời gian bình chọn bắt đầu:</Text>
                         <br />
                         <Text>{moment(votingStartTime).format('DD/MM/YYYY HH:mm')}</Text>
                     </Col>
                     <Col xs={24} sm={12} md={8}>
-                        <Text strong>Thời gian bỏ phiếu kết thúc:</Text>
+                        <Text strong>Thời gian bình chọn kết thúc:</Text>
                         <br />
                         <Text>{moment(votingEndTime).format('DD/MM/YYYY HH:mm')}</Text>
                     </Col>
                     <Col xs={24} sm={12} md={8}>
-                        <Text strong>Tổng số phiếu:</Text>
+                        <Text strong>Tổng số bình chọn:</Text>
                         <br />
                         <Text>{totalVotes}</Text>
                     </Col>
@@ -136,7 +192,7 @@ const EventDetail = () => {
 
                 <Row gutter={16}>
                     <Col xs={24} sm={12}>
-                        <Text strong>Trạng thái bỏ phiếu:</Text>
+                        <Text strong>Trạng thái bình chọn:</Text>
                         <br />
                         <Text>{votingStatus === 'closed' ? 'Đã đóng' : 'Đang mở'}</Text>
                     </Col>
@@ -151,57 +207,73 @@ const EventDetail = () => {
                         <Text>{moment(updatedAt).format('DD/MM/YYYY HH:mm')}</Text>
                     </Col>
                 </Row>
+
+                {/* Export Button */}
+                <Button type="primary" onClick={exportToExcel} style={{ marginTop: '20px' }}>
+                    Xuất ra Excel
+                </Button>
             </Card>
 
             <Divider />
 
             <Card
-                title={<Title level={4}>Danh sách bài viết liên quan</Title>}
+                title={<Title level={4}>Các tiết mục đã được bình chọn ở sự kiện:</Title>}
                 bordered={false}
+                style={{ marginTop: '20px' }}
             >
-                <List
-                    itemLayout="vertical"
-                    dataSource={posts}
-                    renderItem={post => (
-                        <List.Item
-                            key={post._id}
-                            extra={
+                <div>
+                    {posts.map(post => (
+                        <div key={post._id}
+                            style={{ marginBottom: '20px', display: 'flex', alignItems: 'flex-start' }}
+                            className='p-4 border-2 rounded-lg'>
+                            {/* Cột bên trái: Ảnh bìa */}
+                            <div style={{ flex: '0 0 150px', marginRight: '16px' }}>
                                 <img
-                                    width={272}
                                     alt="thumbnail"
-                                    src={post.thumbnail}
+                                    src={post.thumbnail || 'https://via.placeholder.com/272x150'}
+                                    style={{ objectFit: 'cover', width: '100%', height: '150px', borderRadius: '8px' }}
                                 />
-                            }
-                        >
-                            <List.Item.Meta
-                                avatar={<Avatar src="https://via.placeholder.com/150" />}
-                                title={<a href={`/posts/${post.post_category_id.slug}/${post.slug}`}>{post.title}</a>}
-                                description={`Views: ${post.views} - Votes: ${post.votes}`}
-                            />
-                            <div dangerouslySetInnerHTML={{ __html: post.description }} />
+                            </div>
+                            <div style={{ flex: 1 }}>
+                                <Card.Meta
+                                    title={<a href={`/posts/${post.post_category_id.slug}/${post.slug}`}>{post.title}</a>}
+                                    description={`Lượt xem: ${post.views} - Tổng số bình chọn: ${post.votes}`}
+                                />
 
-                            {/* Hiển thị danh sách người vote */}
-                            {post.voterDetails && post.voterDetails.length > 0 && (
-                                <div style={{ marginTop: '10px' }}>
-                                    <Text strong>Người đã bình chọn:</Text>
-                                    <List
-                                        itemLayout="horizontal"
-                                        dataSource={post.voterDetails}
-                                        renderItem={voter => (
-                                            <List.Item key={voter._id}>
-                                                <List.Item.Meta
-                                                    avatar={<Avatar src="https://via.placeholder.com/150" />}
-                                                    title={voter.fullName}
-                                                    description={`Email: ${voter.email}`}
-                                                />
-                                            </List.Item>
+                                <p className='line-clamp-2'
+                                    dangerouslySetInnerHTML={{
+                                        __html: post.description,
+                                    }}></p>
+
+                                {post.voterDetails && post.voterDetails.length > 0 ? (
+                                    <div style={{ marginTop: '10px' }}>
+                                        <Typography>Số phiếu: {post.votes}</Typography>
+                                        <Text strong>Người đã bình chọn:</Text>
+                                        <Row gutter={8} style={{ marginTop: '5px' }}>
+                                            {post.voterDetails.slice(0, 3).map(voter => (
+                                                <Col key={voter._id}>
+                                                    <Text>{voter.fullName}</Text>
+                                                </Col>
+                                            ))}
+                                        </Row>
+                                        {post.voterDetails.length > 3 && (
+                                            <Text strong style={{ marginTop: '5px', display: 'block' }}>
+                                                +{post.voterDetails.length - 3} more
+                                            </Text>
                                         )}
-                                    />
-                                </div>
-                            )}
-                        </List.Item>
-                    )}
-                />
+                                    </div>
+                                ) : (
+                                    <div style={{ marginTop: '10px' }}>
+                                        <Text strong>Người đã bình chọn:</Text>
+                                        <div className="mt-3">
+                                            <Tag color="red">Không có người bình chọn</Tag>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    ))}
+                </div>
             </Card>
         </div>
     );

@@ -2,20 +2,17 @@ import React, { useState } from 'react';
 import { FaRegClock, FaCalendarAlt } from 'react-icons/fa';
 
 const Category = ({ onCategoryChange }) => {
-    const [activeCategorySlug, setActiveCategorySlug] = useState(null); // Trạng thái để theo dõi danh mục đang mở
+    const [activeCategorySlug, setActiveCategorySlug] = useState(null);
 
     const handleCategoryClick = (slug) => {
-        setActiveCategorySlug(activeCategorySlug === slug ? null : slug); // Toggle dropdown khi click
+        setActiveCategorySlug(activeCategorySlug === slug ? null : slug);
     };
 
     return (
         <div className="bg-white shadow-lg rounded-xl p-8 hover:shadow-2xl transition duration-300">
-            {/* Tiêu đề */}
             <h3 className="text-4xl font-bold text-gray-800 mb-8 border-b-2 border-gray-200 pb-3 bg-gradient-to-r from-blue-500 to-blue-800 text-transparent bg-clip-text text-center tracking-wide">
                 Sự kiện
             </h3>
-
-            {/* Danh mục nút */}
             <ul className="space-y-8">
                 {/* Nút 1 */}
                 <li>
@@ -42,8 +39,6 @@ const Category = ({ onCategoryChange }) => {
                         <span className="text-2xl leading-relaxed">Sự kiện sắp diễn ra</span>
                     </button>
                 </li>
-
-                {/* Nút 2 */}
                 <li>
                     <button
                         onClick={() => {

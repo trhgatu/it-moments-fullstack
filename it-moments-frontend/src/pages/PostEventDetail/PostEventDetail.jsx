@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { API_URL } from '../../config/config';
-import { Modal, Spin } from 'antd';
+import { Modal, Spin, Badge } from 'antd';
 import { ClockCircleOutlined, EnvironmentOutlined } from '@ant-design/icons';
 
 const PostEventDetail = () => {
   const { slug } = useParams();
+  const navigate = useNavigate();
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
   const [imageModalVisible, setImageModalVisible] = useState(false);
@@ -21,7 +22,8 @@ const PostEventDetail = () => {
       setPost(postData);
       setLoading(false);
     } catch(error) {
-      console.error('Error fetching post details:', error);
+      console.error('Lỗi khi tải chi tiết bài đăng:', error);
+      navigate('/404');
       setLoading(false);
     }
   };
@@ -81,7 +83,9 @@ const PostEventDetail = () => {
           <span className="flex items-baseline gap-2">
             <EnvironmentOutlined className="text-white text-xl" />
             {post.event_id.location || 'Đang cập nhật'}
+
           </span>
+          Sự kiện: <Badge className='z-40 text-white bg-blue-500 px-4 py-2 rounded-full'>{post.event_id.title}</Badge>
         </div>
       </div>
 
@@ -188,10 +192,12 @@ const PostEventDetail = () => {
               />
               <div className="mt-4">
                 <h3 className="text-lg font-semibold text-gray-800">{event.title}</h3>
+
                 <p className="text-sm text-gray-500">
                   {new Date(event.createdAt).toLocaleString()}
                 </p>
                 <p className="text-sm text-gray-600 mt-2">{event.description}</p>
+
               </div>
             </div>
           ))}

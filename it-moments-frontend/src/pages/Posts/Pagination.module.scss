@@ -23,6 +23,8 @@
 .pageItem:hover {
     background-color: var(--primary);
     color: var(--white);
+    transition: all;
+    transition-duration: 300ms;
 }
 
 .activePage {

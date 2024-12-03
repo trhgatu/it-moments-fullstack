@@ -64,9 +64,9 @@ export default function Academic() {
   }
 
   return (
-    <div className='pt-36 pb-36'>
+    <>
       {!slug ? (
-        <div className="container mx-auto px-6 grid grid-cols-12 gap-8">
+        <div className="container mx-auto px-6 grid grid-cols-12 gap-8 pt-36">
           <div className="col-span-12 md:col-span-8 bg-white p-6 rounded-lg">
             <div className=" p-4 flex items-center mb-8 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg">
               <Link to="/" className="font-semibold hover:text-white transition duration-300">
@@ -95,6 +95,6 @@ export default function Academic() {
       ) : (
         <Outlet />
       )}
-    </div>
+    </>
   );
 }

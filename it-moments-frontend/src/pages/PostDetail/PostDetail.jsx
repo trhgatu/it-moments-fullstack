@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
-import { useParams, useLocation } from 'react-router-dom';
+import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { API_URL } from '../../config/config';
 import { useClientUser } from '../../context/ClientUserContext';
 import { message, Modal, Row, Col, Input, Button, Spin, Image, Tag, Badge } from 'antd';
-import { LoadingOutlined } from '@ant-design/icons';
+import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import { FaRegCalendarAlt } from "react-icons/fa";
 import { FaUser } from 'react-icons/fa';
 import RelatedPosts from './RelatedPosts';
@@ -12,6 +12,7 @@ import styles from './PostDetail.module.scss';
 const PostDetail = () => {
   const { slug } = useParams();
   const location = useLocation();
+  const navigate = useNavigate()
   const query = new URLSearchParams(location.search);
   const commentId = query.get('commentId');
   const commentRefs = useRef({})
@@ -58,6 +59,7 @@ const PostDetail = () => {
       setLoading(false);
     } catch(error) {
       console.error('Lỗi khi tải chi tiết bài đăng:', error);
+      navigate('/404');
       setLoading(false);
     }
   };
@@ -392,7 +394,9 @@ const PostDetail = () => {
 
 
   if(userLoading || loading) {
-    return <div>Đang tải...</div>;
+    return <div className="flex justify-center items-center min-h-screen">
+      <Spin size="large" />
+    </div>
   }
   if(!post) {
     return <div>Không tìm thấy bài đăng.</div>;
@@ -424,16 +428,16 @@ const PostDetail = () => {
                   <h1 className="text-4xl font-bold mb-4 text-black leading-10">{post.title}</h1>
                   <div className="space-x-2 flex  items-center ">
                     <Badge className="bg-blue-600 text-white text-2xl px-4 py-2 rounded-full">
-                      Danh mục: {post.post_category_id?.title || 'Không có thể loại'}
+                      {post.post_category_id?.title || 'Không có thể loại'}
                     </Badge>
                     <Badge className="bg-green-600 text-white text-2xl px-4 py-2 rounded-full">
-                      Sự kiện: {post.event_id?.title || 'Không có sự kiện'}
+                      {post.event_id?.title || 'Không có sự kiện'}
                     </Badge>
                   </div>
                 </div>
                 <div className="mt-6">
                   {isEventNotStarted ? (
-                    <div>
+                    <div className='flex items-center'>
                       <div className="flex items-center">
                         <Spin spinning={true} tip="Sự kiện chưa bắt đầu..." size="small" />
                         <Tag className='text-black ml-2 text-xl' color='blue'>
@@ -442,41 +446,48 @@ const PostDetail = () => {
                       </div>
                     </div>
                   ) : isEventOngoing ? (
-                    <div className='flex items-cnter'>
+                    <div className='flex items-center justify-between'>
                       <div className="flex items-center ">
                         <Tag color='green'>
                           Thời gian còn lại của sự kiện: {formatTime(timeRemaining)}
                         </Tag>
                       </div>
                       {isVotingOpen ? (
-                        <>
-                          <div className="flex items-center mb-2">
-                            <Tag color='green' className='py-2 px-2 text-2x'>
+                        <div className='flex items-center'>
+                          <div className="flex items-center">
+                            <Tag color='green'>
                               Thời gian bình chọn còn lại: {formatTime(votingTimeRemaining)}
                             </Tag>
                           </div>
                           <button
                             onClick={showVoteModal}
                             disabled={voted}
-                            className={`px-4 py-2 rounded bg-blue-600 text-white ${voted ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700'}`}
+                            className={`flex items-center space-x-2 px-4 py-2 rounded bg-blue-600 text-white ${voted ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700'}`}
                           >
-                            {voted ? 'Đã bình chọn' : 'Bình chọn'}
+                            <div className="flex items-center justify-center w-6 h-6 rounded-full">
+                              <CheckOutlined className={`text-${voted ? 'black' : 'white'}`} />
+                            </div>
+                            <span>{voted ? 'Đã bình chọn' : 'Bình chọn'}</span>
                           </button>
+
                           {voted && (
                             <button
                               onClick={showCancelVoteModal}
-                              className="ml-4 px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700"
+                              className="flex items-center space-x-2 ml-4 px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700 transition-all duration-300"
                             >
-                              Hủy bình chọn
+                              <div className="flex items-center justify-center w-6 h-6 rounded-full">
+                                <CloseOutlined className="text-white" />
+                              </div>
+                              <span>Hủy bình chọn</span>
                             </button>
                           )}
-                        </>
+                        </div>
                       ) : (
-                        <Tag color='red' className='py-2 px-2 text-2x'>Bình chọn đã kết thúc</Tag>
+                        <Tag color='red'>Bình chọn đã kết thúc</Tag>
                       )}
                     </div>
                   ) : (
-                    <Tag color='red' className='py-2 px-2 text-2xl'>Sự kiện đã kết thúc.</Tag>
+                    <Tag color='red'>Sự kiện đã kết thúc.</Tag>
                   )}
                 </div>
                 {post.video && (

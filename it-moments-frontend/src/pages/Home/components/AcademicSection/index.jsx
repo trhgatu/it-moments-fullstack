@@ -74,7 +74,7 @@ const AcademicSection = () => {
                                         alt={post.title}
                                         className="w-full h-56 object-cover rounded-lg group-hover:brightness-75 transition-all duration-300"
                                     />
-                                    <div className="absolute top-0 left-0 w-full h-full bg-black bg-opacity-20 transition-all duration-300 group-hover:bg-opacity-50"></div>
+                                    <div className="absolute top-0 left-0 w-full h-full  bg-opacity-20 transition-all duration-300 group-hover:bg-opacity-50"></div>
                                 </div>
                                 <div className="p-4">
                                     <h3 className="text-2xl font-semibold text-black group-hover:text-blue-500 transition-all duration-300 line-clamp-1">

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useParams, useSearchParams, Outlet } from 'react-router-dom';
-import { Spin } from 'antd';
+import { useParams, useSearchParams, useNavigate, Outlet } from 'react-router-dom';
 import { API_URL } from '../../config/config';
 import ActivityList from './ActivityList';
 
@@ -10,14 +9,25 @@ export default function Posts() {
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [cachedPosts, setCachedPosts] = useState({});
-    const [currentPage, setCurrentPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
-    const [searchParams] = useSearchParams();
 
+    const [totalPages, setTotalPages] = useState(1);
+    const [searchParams, setSearchParams] = useSearchParams();
+    const navigate = useNavigate();
+
+    const pageFromUrl = parseInt(searchParams.get('page')) || 1;
+    const [currentPage, setCurrentPage] = useState(pageFromUrl);
     useEffect(() => {
-        const pageFromUrl = parseInt(searchParams.get('page')) || 1;
         setCurrentPage(pageFromUrl);
-    }, [searchParams]);
+    }, [pageFromUrl]);
+    useEffect(() => {
+        // Reset state khi đổi danh mục
+        setPosts([]);
+        setCurrentPage(1);
+        setCachedPosts((prev) => ({
+            ...prev,
+            [category]: {}, // Reset cache cho danh mục mới
+        }));
+    }, [category]);
 
     useEffect(() => {
         const fetchPosts = async () => {
@@ -36,13 +46,12 @@ export default function Posts() {
                         limit: 6,
                     },
                 });
-
-                const pagination = response.data.pagination || {};
+                const pagination = response.data.data.pagination;
                 const posts = response.data.data.posts || [];
-                const totalPages = pagination.totalPage || 1;
-
+                const totalPages = pagination.totalPage;
                 setPosts(posts);
                 setTotalPages(totalPages);
+
                 setCachedPosts((prev) => ({
                     ...prev,
                     [category]: {
@@ -61,25 +70,15 @@ export default function Posts() {
     }, [category, currentPage, cachedPosts]);
 
     const handlePageChange = (page) => {
-        setCurrentPage(page);
+        if(page !== currentPage) {
+            setCurrentPage(page);
+            navigate(`/posts/${category}?page=${page}`);
+        }
     };
 
-    if(loading) {
-        return (
-            <div style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: '100vh'
-            }}>
-                <Spin size="large" tip="Đang tải dữ liệu..." />
-            </div>
-        );
-    }
 
     return (
         <>
-
             {!slug ? (
                 <ActivityList
                     posts={posts}
@@ -87,6 +86,7 @@ export default function Posts() {
                     totalPages={totalPages}
                     onPageChange={handlePageChange}
                     currentPage={currentPage}
+                    loading={loading}
                 />
             ) : (
                 <Outlet />

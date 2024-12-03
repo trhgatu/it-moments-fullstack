@@ -23,7 +23,7 @@ const Background = () => {
         { image: slide1, title: 'Lưu giữ', subtitle: 'những khoảnh khắc', description: 'Mỗi khoảnh khắc đều quý giá và đáng nhớ.' },
         { image: slide2, title: 'Hoạt động Văn nghệ', subtitle: 'Chúc mừng các sự kiện sắp tới', description: 'Bình chọn cho các tiết mục bạn ưa thích.' },
         { image: slide3, title: 'Sự kiện', subtitle: 'Khám phá các hoạt động sôi nổi', description: 'Cập nhật nhanh chóng các sự kiện đặc sắc đang diễn ra.' },
-        { image: slide4, title: 'Học thuật', subtitle: 'thế giới', description: 'Mở rộng tầm nhìn và khám phá những điều mới mẻ.' },
+        { image: slide4, title: 'Học thuật', subtitle: 'thế giới', description: 'Cập nhật thông tin về các hoạt động học thuật của khoa CNTT' },
     ];
 
     useEffect(() => {

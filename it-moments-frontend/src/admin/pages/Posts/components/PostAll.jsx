@@ -15,7 +15,7 @@ function PostsAll() {
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [actionType, setActionType] = useState('');
   const [filterValue, setFilterValue] = useState('');
-
+  const [searchKeyword, setSearchKeyword] = useState('');
   const [pagination, setPagination] = useState({
     currentPage: 1,
     totalPage: 1,
@@ -52,6 +52,11 @@ function PostsAll() {
 
     try {
       const response = await axios.get(`${API_URL}/admin/posts?page=${pagination.currentPage}`, {
+        params: {
+          page: pagination.currentPage,
+          keyword: searchKeyword, // Gửi từ khóa tìm kiếm
+          status: filterValue,
+        },
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
@@ -79,13 +84,15 @@ function PostsAll() {
       setLoadingPosts(false);
     }
   };
-
+  const handleSearch = (keyword) => {
+    setSearchKeyword(keyword); // Cập nhật trạng thái từ khóa tìm kiếm
+    setPagination((prev) => ({ ...prev, currentPage: 1 })); // Reset trang về 1 khi tìm kiếm
+  };
   useEffect(() => {
     if (!userLoading && user) {
       fetchPosts();
     }
-  }, [pagination.currentPage, userLoading, user]);
-
+  }, [pagination.currentPage, searchKeyword, user, userLoading]);
   const filteredPosts = posts.filter(post => {
     if (filterValue === '') return true;
     return post.status === filterValue;
@@ -197,6 +204,7 @@ function PostsAll() {
               handlePageChange={handlePageChange}
               filterValue={filterValue}
               setFilterValue={setFilterValue}
+              handleSearch={handleSearch}
             />
           )}
         </Col>

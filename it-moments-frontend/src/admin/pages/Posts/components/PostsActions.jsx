@@ -3,11 +3,17 @@ import { Button, Select, Input } from 'antd';
 
 const { Option } = Select;
 
-const PostsActions = ({ error, actionType, setActionType, selectedRowKeys, handleActionSubmit }) => {
+const PostsActions = ({ error, actionType, setActionType, selectedRowKeys, handleActionSubmit, onSearch }) => {
   const [searchKeyword, setSearchKeyword] = useState('');
 
   const handleSearchChange = (e) => {
     setSearchKeyword(e.target.value);
+  };
+
+  const handleSearchSubmit = (value) => {
+    if (onSearch) {
+      onSearch(value);
+    }
   };
 
   return (
@@ -17,7 +23,7 @@ const PostsActions = ({ error, actionType, setActionType, selectedRowKeys, handl
           <strong className="font-bold">Lỗi:</strong> {error}
         </div>
       )}
-      <form onSubmit={handleActionSubmit} className="flex items-center justify-between">
+      <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2">
           <Select
             placeholder="-- Chọn hành động --"
@@ -32,7 +38,7 @@ const PostsActions = ({ error, actionType, setActionType, selectedRowKeys, handl
 
           <Button
             type="primary"
-            htmlType="submit"
+            onClick={handleActionSubmit}
             size="small"
             className="m-0 ml-11"
           >
@@ -40,21 +46,24 @@ const PostsActions = ({ error, actionType, setActionType, selectedRowKeys, handl
           </Button>
         </div>
 
-        <Input
-          placeholder="Tìm kiếm..."
+        {/* Ô tìm kiếm riêng biệt khỏi form */}
+        <Input.Search
+          placeholder="Tìm kiếm bài viết..."
           value={searchKeyword}
           onChange={handleSearchChange}
+          onSearch={handleSearchSubmit}
           className="w-96"
         />
+      </div>
 
-        <input
-          type="text"
-          name="ids"
-          value={selectedRowKeys.join(',')}
-          className="hidden"
-          readOnly
-        />
-      </form>
+      {/* Ẩn ID trong form (nếu cần) */}
+      <input
+        type="text"
+        name="ids"
+        value={selectedRowKeys.join(',')}
+        className="hidden"
+        readOnly
+      />
     </div>
   );
 };
