@@ -296,7 +296,7 @@ const PostAcademicDetail = () => {
               </span>
               <span className="flex items-center gap-2">
                 <EnvironmentOutlined className="text-white text-xl" />
-                {post.location || 'Đang cập nhật'}
+                {post.event_id.location || 'Đang cập nhật'}
               </span>
             </div>
           </div>
@@ -333,7 +333,7 @@ const PostAcademicDetail = () => {
               <div className="flex items-center gap-3">
                 <EnvironmentOutlined className="text-green-600 text-2xl" />
                 <span className="text-lg font-semibold text-gray-800">
-                  {post.location || 'Đang cập nhật'}
+                  {post.event_id.location || 'Đang cập nhật'}
                 </span>
               </div>
             </div>

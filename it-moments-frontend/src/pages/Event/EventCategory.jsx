@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { FaRegClock, FaCalendarAlt } from 'react-icons/fa';
 
-const Category = ({ onCategoryChange }) => {
+const EventCategory = ({ onCategoryChange }) => {
     const [activeCategorySlug, setActiveCategorySlug] = useState(null);
 
     const handleCategoryClick = (slug) => {
@@ -14,12 +14,11 @@ const Category = ({ onCategoryChange }) => {
                 Sự kiện
             </h3>
             <ul className="space-y-8">
-                {/* Nút 1 */}
                 <li>
                     <button
                         onClick={() => {
                             onCategoryChange("ongoing");
-                            handleCategoryClick("ongoing"); // Toggle dropdown
+                            handleCategoryClick("ongoing");
                         }}
                         className="flex items-center justify-start space-x-6 text-blue-600 hover:text-blue-800 font-semibold hover:bg-blue-50 px-8 py-5 rounded-lg transition duration-200 group"
                     >
@@ -56,4 +55,4 @@ const Category = ({ onCategoryChange }) => {
     );
 };
 
-export default Category;
+export default EventCategory;

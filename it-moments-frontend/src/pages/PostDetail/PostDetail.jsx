@@ -9,6 +9,7 @@ import { FaRegCalendarAlt } from "react-icons/fa";
 import { FaUser } from 'react-icons/fa';
 import RelatedPosts from './RelatedPosts';
 import styles from './PostDetail.module.scss';
+
 const PostDetail = () => {
   const { slug } = useParams();
   const location = useLocation();

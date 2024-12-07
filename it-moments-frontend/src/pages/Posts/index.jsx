@@ -20,12 +20,11 @@ export default function Posts() {
         setCurrentPage(pageFromUrl);
     }, [pageFromUrl]);
     useEffect(() => {
-        // Reset state khi đổi danh mục
         setPosts([]);
         setCurrentPage(1);
         setCachedPosts((prev) => ({
             ...prev,
-            [category]: {}, // Reset cache cho danh mục mới
+            [category]: {},
         }));
     }, [category]);
 

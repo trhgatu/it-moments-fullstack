@@ -77,7 +77,7 @@ const Profile = () => {
         formData.append('youtube', values.youtube || '');
         formData.append('instagram', values.instagram || '');
         if(avatar) {
-          formData.append('avatar', avatar); // Gửi file avatar
+          formData.append('avatar', avatar);
         }
 
         try {
@@ -87,7 +87,7 @@ const Profile = () => {
             {
               withCredentials: true,
               headers: {
-                'Content-Type': 'multipart/form-data', // Đảm bảo gửi dạng FormData
+                'Content-Type': 'multipart/form-data',
               },
             }
           );
@@ -144,7 +144,7 @@ const Profile = () => {
               <img
                 src={imagePreview}
                 alt="Avatar"
-                className="w-40 h-40 md:w-60 md:h-60 rounded-full border-4 border-white ring-8 ring-white"
+                className="w-40 h-40 md:w-60 md:h-60 rounded-full border-4 border-white ring-8 ring-white object-cover"
               />
             ) : (
               <div className="w-40 h-40 md:w-60 md:h-60 rounded-full border-4 border-white ring-8 ring-white bg-gray-200 flex items-center justify-center">

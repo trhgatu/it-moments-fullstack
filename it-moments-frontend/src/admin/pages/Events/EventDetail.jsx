@@ -6,6 +6,7 @@ import moment from 'moment';
 import { useUser } from '../../../context/UserContext';
 import { API_URL } from '../../../config/config';
 import * as XLSX from 'xlsx';
+import html2pdf from 'html2pdf.js'; // Import thư viện html2pdf.js
 
 const { Title, Text } = Typography;
 
@@ -74,6 +75,7 @@ const EventDetail = () => {
         updatedAt
     } = eventDetail;
 
+    // Hàm xuất dữ liệu ra Excel
     const exportToExcel = () => {
         const data = [];
         data.push({
@@ -124,13 +126,53 @@ const EventDetail = () => {
         XLSX.writeFile(wb, `Event_Detail_${title}.xlsx`);
     };
 
+    const exportToPDF = () => {
+        const element = document.getElementById("event-detail-to-pdf");
+        const generatePDF = () => {
+            const options = {
+                margin: 0,
+                filename: `${title}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 4, logging: true, useCORS: true },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
 
+            html2pdf().from(element).set(options).save();
+        };
 
+        const images = element.getElementsByTagName("img");
+        let imagesLoaded = 0;
+        const checkImagesLoaded = () => {
+            for(let i = 0; i < images.length; i++) {
+                if(images[i].complete) {
+                    imagesLoaded++;
+                } else {
+                    images[i].onload = () => {
+                        imagesLoaded++;
+                        if(imagesLoaded === images.length) {
+                            generatePDF();
+                        }
+                    };
+                    images[i].onerror = () => {
+                        imagesLoaded++;
+                        if(imagesLoaded === images.length) {
+                            generatePDF();
+                        }
+                    };
+                }
+            }
+            if(imagesLoaded === images.length || images.length === 0) {
+                generatePDF();
+            }
+        };
+
+        checkImagesLoaded();
+    };
 
 
 
     return (
-        <div style={{ padding: '20px', background: '#f0f2f5' }}>
+        <div style={{ background: '#f0f2f5' }} id='event-detail-to-pdf'>
             <Card
                 title={<Title level={2}>{title}</Title>}
                 bordered={false}
@@ -185,11 +227,9 @@ const EventDetail = () => {
 
                 <div>
                     <Text strong>Mô tả:</Text>
-                    <div style={{ marginTop: '10px', color: '#595959' }}>{description}</div>
+                    <div style={{ color: '#595959' }}>{description}</div>
                 </div>
-
                 <Divider />
-
                 <Row gutter={16}>
                     <Col xs={24} sm={12}>
                         <Text strong>Trạng thái bình chọn:</Text>
@@ -208,9 +248,11 @@ const EventDetail = () => {
                     </Col>
                 </Row>
 
-                {/* Export Button */}
-                <Button type="primary" onClick={exportToExcel} style={{ marginTop: '20px' }}>
+                <Button className='inline-block' type="primary" onClick={exportToExcel} style={{ marginTop: '20px', marginRight: '10px' }}>
                     Xuất ra Excel
+                </Button>
+                <Button type="primary" onClick={exportToPDF} style={{ marginTop: '20px' }}>
+                    Xuất ra PDF
                 </Button>
             </Card>
 
@@ -226,7 +268,6 @@ const EventDetail = () => {
                         <div key={post._id}
                             style={{ marginBottom: '20px', display: 'flex', alignItems: 'flex-start' }}
                             className='p-4 border-2 rounded-lg'>
-                            {/* Cột bên trái: Ảnh bìa */}
                             <div style={{ flex: '0 0 150px', marginRight: '16px' }}>
                                 <img
                                     alt="thumbnail"
@@ -239,15 +280,8 @@ const EventDetail = () => {
                                     title={<a href={`/posts/${post.post_category_id.slug}/${post.slug}`}>{post.title}</a>}
                                     description={`Lượt xem: ${post.views} - Tổng số bình chọn: ${post.votes}`}
                                 />
-
-                                <p className='line-clamp-2'
-                                    dangerouslySetInnerHTML={{
-                                        __html: post.description,
-                                    }}></p>
-
                                 {post.voterDetails && post.voterDetails.length > 0 ? (
                                     <div style={{ marginTop: '10px' }}>
-                                        <Typography>Số phiếu: {post.votes}</Typography>
                                         <Text strong>Người đã bình chọn:</Text>
                                         <Row gutter={8} style={{ marginTop: '5px' }}>
                                             {post.voterDetails.slice(0, 3).map(voter => (
@@ -257,7 +291,7 @@ const EventDetail = () => {
                                             ))}
                                         </Row>
                                         {post.voterDetails.length > 3 && (
-                                            <Text strong style={{ marginTop: '5px', display: 'block' }}>
+                                            <Text strong style={{ marginTop: '5px', display: 'block' }} >
                                                 +{post.voterDetails.length - 3} more
                                             </Text>
                                         )}

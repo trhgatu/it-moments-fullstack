@@ -1,7 +1,7 @@
 import React from 'react';
 import EventItem from '../Event/EventItem';
 import Pagination from '../Posts/Pagination';
-import Category from './Category';
+import EventCategory from './EventCategory';
 import { Spin } from 'antd';
 import { Link } from 'react-router-dom';
 import { IoIosArrowForward } from "react-icons/io";
@@ -51,7 +51,7 @@ const EventList = ({ posts, category, totalPages, onPageChange, currentPage, onC
                 </div>
             </div>
             <div className="col-span-12 md:col-span-4 space-y-8">
-                <Category onCategoryChange={onCategoryChange} />
+                <EventCategory onCategoryChange={onCategoryChange} />
             </div>
         </>
     );

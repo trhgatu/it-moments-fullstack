@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { API_URL } from '../../config/config'; // Thay đổi với đúng URL của API
+import { API_URL } from '../../config/config';
 import { useParams } from 'react-router-dom';
 import { Divider } from 'antd';
 
@@ -15,15 +15,14 @@ const RelatedPosts = ({ eventId }) => {
                     params: {
                         event_id: eventId,
                         category,
+                        limit: 5
                     },
                 });
-
                 setRelatedPosts(response.data.data.posts || []);
             } catch(error) {
                 console.error("Lỗi khi tải bài viết liên quan:", error);
             }
         };
-
         if(eventId) {
             fetchRelatedPosts();
         }

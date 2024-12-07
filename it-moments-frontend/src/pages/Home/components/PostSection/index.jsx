@@ -26,7 +26,7 @@ const PostSection = ({ postData }) => {
                                 >
                                     {post.title}
                                 </Link>
-                                <p className="text-white text-sm leading-8 line-clamp-2 m-0 "
+                                <p className="text-white leading-8 line-clamp-2 m-0 "
                                     dangerouslySetInnerHTML={{
                                         __html: post.description
                                     }}>

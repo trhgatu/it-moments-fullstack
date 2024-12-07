@@ -20,15 +20,16 @@ export default function TopPostsSection() {
 
             try {
                 const [viewsResponse, votesResponse] = await Promise.all([
-                    axios.get(`${API_URL}/posts?category=van-nghe&sortKey=views&sortValue=desc&limit=6`),
-                    axios.get(`${API_URL}/posts?category=van-nghe&sortKey=votes&sortValue=desc&limit=2`),
+                    axios.get(`${API_URL}/posts?category=van-nghe&sortKey=views&sortValue=desc&limit=6&isFeatured=true`),
+                    axios.get(`${API_URL}/posts?category=van-nghe&sortKey=votes&sortValue=desc&limit=2&isFeatured=true`),
                 ]);
 
                 const viewsData = viewsResponse.data;
                 const votesData = votesResponse.data;
                 if(viewsData.success && votesData.success) {
+                    const filteredVotesPosts = votesData.data.posts.filter(post => post.votes > 0);
                     setTopPosts(viewsData.data.posts);
-                    setTopVotesPosts(votesData.data.posts);
+                    setTopVotesPosts(filteredVotesPosts);
                 } else {
                     throw new Error('Failed to fetch posts data');
                 }

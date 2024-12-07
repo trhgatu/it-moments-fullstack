@@ -12,7 +12,7 @@ export default function Event() {
     const [pagination, setPagination] = useState({
         currentPage: 1,
         totalPages: 1,
-        pageSize: 6,
+        pageSize: 3,
     });
     const [loadingEventList, setLoadingEventList] = useState(false);
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Card, Avatar, Typography, Alert, Image, Row, Col, Divider, Spin } from "antd";
+import { Card, Avatar, Typography, Alert, Image, Row, Col,Tag, Divider, Spin } from "antd";
 import axios from 'axios';
 import moment from 'moment';
 import { useUser } from '../../../context/UserContext';
@@ -86,9 +86,13 @@ function PostDetail() {
                             {status === 'active' ? 'Hoạt động' : 'Dừng hoạt động'}
                         </Text>
                     </Col>
-                    <Col xs={24} sm={12} md={8}>
+                    <Col xs={24} sm={12} md={4}>
                         <Text strong>Ngày tạo:</Text> <Text>{moment(createdAt).format('DD/MM/YYYY')}</Text>
                     </Col>
+                    <Col xs={24} sm={12} md={4}>
+                        <Text strong>Lượt xem:</Text> <Text>{post.views}</Text>
+                    </Col>
+
                 </Row>
 
                 <Divider />
@@ -96,15 +100,17 @@ function PostDetail() {
                 <Row gutter={16}>
                     <Col xs={24}>
                         <Text strong>Danh mục:</Text>
-                        <Text style={{ marginLeft: '10px' }}>
-                            {post_category_id?.title ? post_category_id.title : 'Không tìm thấy danh mục'}
-                        </Text>
+                        <Tag color='blue' style={{ marginLeft: '10px' }}>
+                            {post_category_id?.title ? post_category_id.title : 'Không có danh mục'}
+                        </Tag>
+                        <Text strong>Sự kiện:</Text>
+                        <Tag color='green' style={{ marginLeft: '10px' }}>
+                            {event_id?.title ? event_id.title : 'Không có sự kiện'}
+                        </Tag>
                     </Col>
                 </Row>
 
                 <Divider />
-
-                {/* Hiển thị thông tin sự kiện nếu có */}
                 {event_id && (
                     <div>
                         <Text strong>Sự kiện:</Text>
