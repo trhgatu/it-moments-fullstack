@@ -1,8 +1,9 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { FaArrowRight } from "react-icons/fa";
+import Pagination from "../Posts/Pagination";
 
-const MainNotifications = ({ posts = [], category }) => {
+const MainNotifications = ({ posts, category, currentPage, totalPages, onPageChange }) => {
   const navigate = useNavigate();
 
   const handleNotificationClick = (slug) => {
@@ -41,12 +42,12 @@ const MainNotifications = ({ posts = [], category }) => {
                 </span>
               </h3>
               <p className=" line-clamp-2 mb-4">
-                    <span
-                        dangerouslySetInnerHTML={{
-                            __html: post.description,
-                        }}
-                    />
-                </p>
+                <span
+                  dangerouslySetInnerHTML={{
+                    __html: post.description,
+                  }}
+                />
+              </p>
               <a
                 href="#"
                 className="text-blue-500 text-sm font-semibold hover:underline mt-4"
@@ -60,12 +61,11 @@ const MainNotifications = ({ posts = [], category }) => {
         <div className="text-center text-gray-500">Không có thông báo nào.</div>
       )}
       <div className="flex justify-center mt-8">
-        <button
-          className="flex items-center justify-center px-6 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-blue-700 text-white text-lg font-semibold shadow-md transition-transform duration-200 transform hover:scale-105 hover:from-blue-600 hover:to-blue-800"
-        >
-          Xem Thêm
-          <FaArrowRight className="ml-2 text-white transition-transform duration-200 transform hover:translate-x-1" />
-        </button>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={onPageChange}
+        />
       </div>
     </div>
   );

@@ -27,7 +27,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
             <button
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
-                className={`${styles.navButton} hover:bg-blue-800`}
+                className={`${styles.navButton}`}
             >
                 <FaAngleLeft />
             </button>

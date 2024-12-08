@@ -15,7 +15,7 @@ export default function Academic() {
   const [pagination, setPagination] = useState({
     currentPage: 1,
     totalPages: 1,
-    pageSize: 6,
+    pageSize: 3,
   });
 
   const fetchPosts = async (type = "all", page = 1) => {
