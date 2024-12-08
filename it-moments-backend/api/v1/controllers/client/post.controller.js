@@ -110,7 +110,6 @@ const controller = {
             }
         }
 
-        // Trả về kết quả
         res.json({
             success: true,
             data: {

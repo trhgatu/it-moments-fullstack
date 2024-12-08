@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Outlet, useParams, useNavigate } from 'react-router-dom';
 import { API_URL } from '../../config/config';
 import EventList from './EventList';
+import { Spin } from 'antd';
 
 export default function Event() {
     const { category = "su-kien", slug } = useParams();
@@ -15,9 +16,12 @@ export default function Event() {
         pageSize: 3,
     });
     const [loadingEventList, setLoadingEventList] = useState(false);
+    const [keyword, setKeyword] = useState('');
+    const [searchLoading, setSearchLoading] = useState(false);
 
-    const fetchPosts = async (type = "all", page = 1) => {
+    const fetchPosts = async (type = "all", page = 1, searchKeyword = '') => {
         setLoadingEventList(true);
+        setSearchLoading(true);
         try {
             let eventStatus = '';
             if (type === "ongoing") {
@@ -25,11 +29,11 @@ export default function Event() {
             } else if (type === "completed") {
                 eventStatus = "completed";
             } else if (type === "pending") {
-                eventStatus = "pending"
+                eventStatus = "pending";
             }
 
             const response = await axios.get(
-                `${API_URL}/posts?category=${category}&eventStatus=${eventStatus}&page=${page}&limit=${pagination.pageSize}`
+                `${API_URL}/posts?category=${category}&eventStatus=${eventStatus}&page=${page}&limit=${pagination.pageSize}&keyword=${keyword}`
             );
             const data = response.data.data;
             setPosts(data.posts);
@@ -44,16 +48,21 @@ export default function Event() {
             navigate('/404');
         } finally {
             setLoadingEventList(false);
+            setSearchLoading(false);
         }
     };
 
     useEffect(() => {
-        fetchPosts(selectedCategory, pagination.currentPage);
-    }, [selectedCategory, pagination.currentPage]);
+        fetchPosts(selectedCategory, pagination.currentPage, keyword);
+    }, [selectedCategory, pagination.currentPage, keyword]);
 
     const handleCategoryChange = (type) => {
         setSelectedCategory(type);
         setPagination((prev) => ({ ...prev, currentPage: 1 }));
+    };
+
+    const handleSearch = () => {
+        fetchPosts(selectedCategory, pagination.currentPage, keyword);
     };
 
     return (
@@ -68,6 +77,10 @@ export default function Event() {
                         onPageChange={(page) => setPagination((prev) => ({ ...prev, currentPage: page }))}
                         onCategoryChange={handleCategoryChange}
                         loading={loadingEventList}
+                        keyword={keyword}
+                        setKeyword={setKeyword}
+                        handleSearch={handleSearch}
+                        searchLoading={searchLoading}
                     />
                 </div>
             ) : (

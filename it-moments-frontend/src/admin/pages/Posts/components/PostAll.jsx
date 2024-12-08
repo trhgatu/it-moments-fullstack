@@ -54,7 +54,7 @@ function PostsAll() {
       const response = await axios.get(`${API_URL}/admin/posts?page=${pagination.currentPage}`, {
         params: {
           page: pagination.currentPage,
-          keyword: searchKeyword, // Gửi từ khóa tìm kiếm
+          keyword: searchKeyword,
           status: filterValue,
         },
         headers: {
@@ -85,8 +85,8 @@ function PostsAll() {
     }
   };
   const handleSearch = (keyword) => {
-    setSearchKeyword(keyword); // Cập nhật trạng thái từ khóa tìm kiếm
-    setPagination((prev) => ({ ...prev, currentPage: 1 })); // Reset trang về 1 khi tìm kiếm
+    setSearchKeyword(keyword);
+    setPagination((prev) => ({ ...prev, currentPage: 1 }));
   };
   useEffect(() => {
     if (!userLoading && user) {

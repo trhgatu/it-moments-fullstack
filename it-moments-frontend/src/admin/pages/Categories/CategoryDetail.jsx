@@ -51,7 +51,7 @@ function CategoryDetail() {
         return <Alert message="Category not found." type="warning" showIcon />;
     }
 
-    const { title, description, thumbnail, status, createdAt, position } = category;
+    const { title, description, status, createdAt, position } = category;
 
     return (
         <div style={{ padding: '20px'}}>
@@ -61,9 +61,6 @@ function CategoryDetail() {
                 style={{ marginBottom: '20px', borderRadius: '10px', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)' }}
             >
                 <Row gutter={16}>
-                    <Col xs={24} sm={12} md={8}>
-                        <Avatar shape="square" size={128} src={thumbnail} alt="Thumbnail" />
-                    </Col>
                     <Col xs={24} sm={12} md={16}>
                         <div style={{ marginLeft: '20px' }}>
                             <Text strong>Mô tả:</Text>

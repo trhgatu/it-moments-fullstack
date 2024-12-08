@@ -71,3 +71,10 @@
         max-height: calc(100vh - 150px); /* Điều chỉnh chiều cao cho sidebar khi màn hình nhỏ */
     }
 }
+.custom-button-height .ant-input-search-button {
+    height: 32px;
+    line-height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

@@ -124,12 +124,6 @@ function CategoriesAll() {
             render: (_, __, index) => (pagination.currentPage - 1) * pagination.pageSize + index + 1,
         },
         {
-            title: "Ảnh bìa",
-            dataIndex: "thumbnail",
-            key: "thumbnail",
-            render: (thumbnail) => <Avatar shape="square" size={64} src={thumbnail} alt="Thumbnail" />,
-        },
-        {
             title: "Tiêu đề",
             dataIndex: "title",
             key: "title",
