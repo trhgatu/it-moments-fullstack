@@ -107,7 +107,7 @@ const PostEventDetail = () => {
               onClick={toggleDescription}
               className="mt-4 text-blue-600 font-medium border border-blue-500 px-4 py-2 rounded-lg hover:bg-blue-500 hover:text-white transition"
             >
-              {showFullDescription ? 'Xem bớt' : 'Xem thêm'}
+              {showFullDescription ? 'Thu gọn' : 'Xem thêm'}
             </button>
           </div>
           <div className="mt-6 border-t border-gray-300 pt-6">

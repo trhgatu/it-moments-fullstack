@@ -17,19 +17,29 @@ export default function Academic() {
     totalPages: 1,
     pageSize: 3,
   });
-
-  const fetchPosts = async (type = "all", page = 1) => {
+  const [keyword, setKeyword] = useState('');
+  const [searchLoading, setSearchLoading] = useState(false);
+  const fetchPosts = async (sortType = "all", page = 1) => {
     setLoading(true);
     try {
-      let eventStatus = '';
-      if(type === "ongoing") {
-        eventStatus = "active";
-      } else if(type === "completed") {
-        eventStatus = "completed";
+      let sortKey = "";
+      let sortValue = "";
+
+      switch(sortType) {
+        case "newest":
+          sortKey = "createdAt";
+          sortValue = "desc";
+          break;
+        case "oldest":
+          sortKey = "createdAt";
+          sortValue = "asc";
+          break;
+        default:
+          break;
       }
 
       const response = await axios.get(
-        `${API_URL}/posts?category=${category}&eventStatus=${eventStatus}&page=${page}&limit=${pagination.pageSize}`
+        `${API_URL}/posts?category=${category}&sortKey=${sortKey}&sortValue=${sortValue}&page=${page}&limit=${pagination.pageSize}&keyword=${keyword}`
       );
       const data = response.data.data;
       setPosts(data.posts);
@@ -40,12 +50,22 @@ export default function Academic() {
         totalPages: data.pagination.totalPage,
       }));
     } catch(error) {
-      console.error('Error fetching posts:', error);
+      console.error("Error fetching posts:", error);
     } finally {
       setLoading(false);
+      setSearchLoading(false);
     }
   };
 
+  const handleSortChange = (sortType) => {
+    fetchPosts(sortType, pagination.currentPage);
+  };
+
+  const handleSearch = () => {
+    setLoading(true);
+    fetchPosts(selectedCategory, pagination.currentPage, keyword);
+    setSearchLoading(true);
+  };
   useEffect(() => {
     fetchPosts(selectedCategory, pagination.currentPage);
   }, [selectedCategory, pagination.currentPage]);
@@ -55,13 +75,7 @@ export default function Academic() {
     setPagination((prev) => ({ ...prev, currentPage: 1 }));
   };
 
-  if(loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-100">
-        <Spin size="large" tip="Loading data..." />
-      </div>
-    );
-  }
+
 
   return (
     <>
@@ -81,8 +95,14 @@ export default function Academic() {
               currentPage={pagination.currentPage}
               totalPages={pagination.totalPages}
               onPageChange={(page) => setPagination((prev) => ({ ...prev, currentPage: page }))}
-              onCategoryChange={handleCategoryChange}
+              keyword={keyword}
+              setKeyword={setKeyword}
+              handleSearch={handleSearch}
+              searchLoading={searchLoading}
+              onSortChange={handleSortChange}
+              fetchPosts={fetchPosts}
             />
+
           </div>
           <div className="col-span-12 md:col-span-4 space-y-8">
             <div className="bg-white rounded-lg shadow-lg">
