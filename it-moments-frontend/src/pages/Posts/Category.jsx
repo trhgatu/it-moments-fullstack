@@ -126,8 +126,8 @@ const Category = ({ onCategoryChange }) => {
     };
 
     return (
-        <div className="container">
-            <div className="text-center text-white bg-blue-500 p-4">
+        <div className="container bg-white rounded-lg">
+            <div className="text-center bg-blue-500 rounded-t-lg text-white p-4">
                 <span className="font-semibold text-3xl">Danh mục</span>
             </div>
             <div className="space-y-4 pt-4 p-4">

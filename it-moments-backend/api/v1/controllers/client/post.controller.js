@@ -93,11 +93,7 @@ const controller = {
                 match: eventStatus,
             })
             .lean();
-
-        // Lọc các bài viết có sự kiện (chắc chắn không phải null)
         posts = posts.filter((post) => post.event_id !== null);
-
-        // Cập nhật thông tin người tạo bài viết và người cập nhật
         for(const post of posts) {
             const user = await User.findOne({ _id: post.createdBy.account_id });
             if(user) {

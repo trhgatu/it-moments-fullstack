@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Badge, Avatar, Button, Popover, Menu, message } from 'antd';
-import { BellOutlined, MoreOutlined } from '@ant-design/icons';
+import { Badge, Avatar, Button, Divider, Popover, Menu, message, Empty } from 'antd';
+import { MoreOutlined } from '@ant-design/icons';
+import { TbBell } from 'react-icons/tb'
 import io from 'socket.io-client';
 import axios from 'axios';
 import { API_URL } from '../../config/config';
@@ -194,9 +195,9 @@ const NotificationComponent = ({ userId }) => {
                     }}
                     className="group-hover:bg-blue-100 group-hover:scale-105"
                 >
-                    <BellOutlined
+                    <TbBell
                         style={{
-                            fontSize: '24px',
+                            fontSize: '26px',
                             color: 'black',
                             transition: 'color 0.3s',
                         }}
@@ -221,24 +222,26 @@ const NotificationComponent = ({ userId }) => {
             {isVisible && (
                 <div
                     ref={notificationRef}
-                    className="absolute right-0 mt-2 w-[40rem] p-4 bg-white border border-gray-200 rounded-lg shadow z-50 transform transition-all duration-300 ease-in-out opacity-0 visible opacity-100"
+                    className="absolute right-0 mt-4 w-[40rem] bg-white border border-gray-200 rounded-lg shadow z-50 transform transition-all duration-300 ease-in-out opacity-0 visible opacity-100"
                 >
-                    <div className="flex justify-between items-center mb-4">
-                        <h2 className="text-lg font-bold text-gray-800">Thông báo</h2>
-                        <button
-                            onClick={markAllAsRead}
-                            className="text-blue-500 hover:underline text-sm"
-                        >
-                            Đánh dấu đã đọc
-                        </button>
-                        <button
-                            onClick={deleteAllNotifications}
-                            className="text-red-500 hover:underline text-sm"
-                        >
-                            Xóa tất cả
-                        </button>
+                    <div>
+                        <div className="flex p-4 justify-between items-center border-b-2">
+                            <h2 className="text-3xl m-0 font-bold text-gray-800">Thông báo</h2>
+                            <button
+                                onClick={markAllAsRead}
+                                className="text-blue-500 hover:underline"
+                            >
+                                Đánh dấu đã đọc
+                            </button>
+                            <button
+                                onClick={deleteAllNotifications}
+                                className="text-red-500 hover:underline"
+                            >
+                                Xóa tất cả
+                            </button>
+                        </div>
                     </div>
-                    <div className="max-h-96 overflow-y-auto scrollbar-hide">
+                    <div className="max-h-[400px] overflow-y-auto scrollbar-hide">
                         {notifications.length > 0 ? (
                             notifications.map((notif) => (
                                 <div key={notif._id} className="flex items-center p-4">
@@ -255,7 +258,7 @@ const NotificationComponent = ({ userId }) => {
                                             className="mr-3"
                                         />
                                         <div className="flex-grow">
-                                            <p className="text-sm text-gray-700">{notif.content}</p>
+                                            <p className=" text-gray-700">{notif.content}</p>
                                             <p className="text-xs text-gray-400">
                                                 {new Date(notif.createdAt).toLocaleString()}
                                             </p>
@@ -273,9 +276,20 @@ const NotificationComponent = ({ userId }) => {
                                 </div>
                             ))
                         ) : (
-                            <p className="text-sm text-gray-500 text-center">
-                                Không có thông báo mới
-                            </p>
+                            <div className='overflow-hidden p-6'>
+                                <div style={{ textAlign: "center", overflow: 'hidden' }}>
+                                    <Empty
+                                        className='text-center'
+                                        description={
+                                            <p style={{ fontSize: "14px", color: "gray" }}>
+                                                Bạn không có thông báo mới.
+                                            </p>
+                                        }
+                                        imageStyle={{ height: 200, textAlign: '-webkit-center' }}
+                                        image="https://cdni.iconscout.com/illustration/premium/thumb/empty-notification-illustration-download-in-svg-png-gif-file-formats--state-no-bell-states-pack-user-interface-illustrations-8593295.png?f=webp"
+                                    />
+                                </div>
+                            </div>
                         )}
                     </div>
                 </div>

@@ -409,7 +409,7 @@ const PostDetail = () => {
   const isEventNotStarted = post.event_id?.status === 'pending';
 
   return (
-    <div className="max-w-screen-2xl mx-auto pt-36 pb-36">
+    <div className="max-w-screen-2xl mx-auto pb-36">
       <div className="grid grid-cols-4 gap-6">
         <div className="col-span-3">
           <div className="bg-white rounded-xl p-12">

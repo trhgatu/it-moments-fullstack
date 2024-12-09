@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Pagination } from 'swiper/modules';
+import { Pagination, Autoplay } from 'swiper/modules';
 import { Link } from 'react-scroll';
 import slide1 from '../../../../assets/images/slider_1.jpg';
 import slide2 from '../../../../assets/images/slider_2.jpg';
@@ -48,10 +48,10 @@ const Background = () => {
                     clickable: true,
                     el: `.${styles.swiperPagination}`,
                 }}
-                /*                 autoplay={{
-                                    delay: 3000,
-                                }} */
-                modules={[Pagination]}
+                autoplay={{
+                    delay: 7000,
+                }}
+                modules={[Pagination, Autoplay]}
                 direction="vertical"
                 className="h-full mySwiper"
                 onSlideChange={handleSlideChange}
@@ -116,7 +116,7 @@ const Background = () => {
                         className='w-full sm:w-1/3 hover:opacity-60 duration-300 transition-all'
                     >
                         <motion.div
-                            className="bg-blue-700 text-black p-6 shadow-lg transform transition-all cursor-pointer border-white border-4 relative"
+                            className="bg-blue-700 rounded-xl text-black p-6 shadow-lg transform transition-all cursor-pointer border-white border-4 relative"
                             initial={{ opacity: 0, y: -150 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 1 }}
@@ -135,7 +135,7 @@ const Background = () => {
                         className='w-full sm:w-1/3 hover:opacity-60 duration-300 transition-all'
                     >
                         <motion.div
-                            className="bg-blue-700 text-black p-6 shadow-lg transform transition-all cursor-pointer border-white border-4 relative"
+                            className="bg-blue-700 rounded-xl text-black p-6 shadow-lg transform transition-all cursor-pointer border-white border-4 relative"
                             initial={{ opacity: 0, y: -150 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 1, ease: "easeOut", delay: 0.4 }}
@@ -154,7 +154,7 @@ const Background = () => {
                         className='w-full sm:w-1/3 hover:opacity-60 duration-300 transition-all'
                     >
                         <motion.div
-                            className="bg-blue-700   text-black p-6 shadow-lg transform transition-all cursor-pointer border-white border-4 relative"
+                            className="bg-blue-700 rounded-xl text-black p-6 shadow-lg transform transition-all cursor-pointer border-white border-4 relative"
                             initial={{ opacity: 0, y: -150 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 1, ease: "easeOut", delay: 0.6 }}

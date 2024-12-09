@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import styles from '../../Home.module.scss';
 import axios from 'axios';
+import { FaRegCalendarAlt } from "react-icons/fa";
 import { EyeOutlined } from '@ant-design/icons';
 import { API_URL } from '../../../../config/config';
-import AOS from 'aos';  // Import AOS
-import 'aos/dist/aos.css'; // Import AOS CSS
+import AOS from 'aos';
+import 'aos/dist/aos.css';
+import { Spin } from 'antd';
 
 export default function TopPostsSection() {
     const [topPosts, setTopPosts] = useState([]);
@@ -41,16 +43,14 @@ export default function TopPostsSection() {
         };
 
         fetchData();
-
-        // Initialize AOS
         AOS.init({
-            duration: 1000,  // Thời gian hiệu ứng
-            easing: 'ease-in-out',  // Easing hiệu ứng
+            duration: 1000,
+            easing: 'ease-in-out',
         });
     }, []);
 
     if(isLoading) {
-        return <div>Loading...</div>;
+        return <div><Spin size='large' ></Spin></div>;
     }
 
     if(error) {
@@ -88,30 +88,32 @@ export default function TopPostsSection() {
                                         <h3 className="font-semibold text-white line-clamp-2 group-hover:text-blue-500 transition-all duration-300">
                                             {post.title}
                                         </h3>
-                                        <div className="flex justify-between text-sm text-gray-300">
+                                        <div className="flex justify-between text-gray-300">
                                             <div className="flex items-center">
                                                 <EyeOutlined />
                                                 <span className="ml-2">{post.views}</span>
                                             </div>
-                                            <span>{new Date(post.createdAt).toLocaleDateString('vi-VN')}</span>
+                                            <span className='flex items-center'>
+                                                <FaRegCalendarAlt />
+                                                <span className='ml-2'>
+                                                    {new Date(post.createdAt).toLocaleDateString('vi-VN')}
+                                                </span>
+                                            </span>
                                         </div>
                                     </div>
                                 </Link>
                             </div>
                         ))}
                     </div>
-                    {/* Link "Xem tất cả" */}
                     <div className="mt-6 text-center">
                         <Link to="/posts/van-nghe?sortKey=views&sortValue=desc" className="text-blue-600 hover:text-blue-800 font-semibold">
                             Xem tất cả
                         </Link>
                     </div>
                 </div>
-
-                {/* Phần "Nhiều lượt bình chọn" với hiệu ứng fade */}
                 <div
                     className="col-span-4 pl-20"
-                    data-aos="fade-up"  // Áp dụng hiệu ứng fade-up
+                    data-aos="fade-up"
                 >
                     <h2 className={`${styles.titleHeading} flex items-center text-4xl font-bold text-left mb-10`}>
                         <span className="border-l-4 border-blue-500 h-8 mr-4 inline-block"></span>
@@ -137,9 +139,17 @@ export default function TopPostsSection() {
                                         <h3 className="text-xl font-semibold line-clamp-2 text-white mb-2 group-hover:text-blue-500 transition-all duration-300">
                                             {post.title}
                                         </h3>
-                                        <div className="flex justify-between text-sm text-gray-300">
-                                            <span>{post.views} lượt xem</span>
-                                            <span>{new Date(post.createdAt).toLocaleDateString('vi-VN')}</span>
+                                        <div className="flex justify-between text-white">
+                                            <div className="flex items-center">
+                                                <EyeOutlined />
+                                                <span className="ml-2">{post.views}</span>
+                                            </div>
+                                            <span className='flex items-center'>
+                                                <FaRegCalendarAlt />
+                                                <span className='ml-2'>
+                                                    {new Date(post.createdAt).toLocaleDateString('vi-VN')}
+                                                </span>
+                                            </span>
                                         </div>
                                     </div>
                                 </Link>

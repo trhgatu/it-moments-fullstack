@@ -6,7 +6,7 @@ import moment from 'moment';
 import { useUser } from '../../../context/UserContext';
 import { API_URL } from '../../../config/config';
 import * as XLSX from 'xlsx';
-import html2pdf from 'html2pdf.js'; // Import thư viện html2pdf.js
+import html2pdf from 'html2pdf.js';
 
 const { Title, Text } = Typography;
 

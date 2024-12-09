@@ -5,7 +5,7 @@ import { useUser } from "../../../../../context/UserContext";
 
 function Sidenav({ color }) {
     const { pathname } = useLocation();
-    const { user, role: userRole } = useUser(); // Lấy cả user và role
+    const { user, role: userRole } = useUser();
 
     useEffect(() => {
         console.log("User role has changed:", userRole);

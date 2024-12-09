@@ -13,7 +13,7 @@ const EventItem = ({ title, description, date, imageUrl, slug, category, eventSt
 
     return (
         <div
-            className=" flex items-start mb-6 cursor-pointer transition-all duration-300 group bg-white hover:bg-gray-300 rounded-lg p-4"
+            className=" flex border-2 items-start mb-6 cursor-pointer transition-all duration-300 group bg-white hover:bg-gray-300 rounded-lg p-4"
             onClick={handleEventItemClick}
         >
             <div className="relative w-1/3 h-60 overflow-hidden rounded-lg shadow-md">

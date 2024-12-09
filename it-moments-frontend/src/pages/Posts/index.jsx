@@ -77,19 +77,21 @@ export default function Posts() {
 
 
     return (
-        <>
+        <div className='pt-36 pb-36'>
             {!slug ? (
-                <ActivityList
-                    posts={posts}
-                    category={category}
-                    totalPages={totalPages}
-                    onPageChange={handlePageChange}
-                    currentPage={currentPage}
-                    loading={loading}
-                />
+                <div className="container mx-auto px-6 gap-8 grid grid-cols-12">
+                    <ActivityList
+                        posts={posts}
+                        category={category}
+                        totalPages={totalPages}
+                        onPageChange={handlePageChange}
+                        currentPage={currentPage}
+                        loading={loading}
+                    />
+                </div>
             ) : (
                 <Outlet />
             )}
-        </>
+        </div>
     );
 }

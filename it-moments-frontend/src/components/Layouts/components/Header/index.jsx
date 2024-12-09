@@ -150,8 +150,9 @@ export const Header = () => {
                         className={({ isActive }) =>
                             cx('flex items-center relative transition-colors duration-300 h-full', {
                                 'text-white': !isScrolled && location.pathname === '/',
-                                'text-black': isScrolled || location.pathname !== '/',
+                                'text-black hover:text-blue-500': isScrolled || location.pathname !== '/',
                                 'hover:text-blue-500': !isActive && location.pathname === '/',
+
                             })
                         }
                     >
@@ -249,8 +250,6 @@ export const Header = () => {
 
 
             </div>
-
-            {/* Modal Confirm Logout */}
             <Modal
                 title="Xác nhận đăng xuất"
                 visible={isModalVisible}
@@ -261,8 +260,6 @@ export const Header = () => {
             >
                 <p>Bạn có chắc chắn muốn đăng xuất không?</p>
             </Modal>
-
-            {/* Mobile Menu */}
             {isMenuOpen && (
                 <div className="md:hidden fixed top-16 left-0 right-0 bg-white shadow-md z-40 p-4">
                     <nav className="flex flex-col items-center">
